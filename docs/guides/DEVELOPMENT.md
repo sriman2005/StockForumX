@@ -486,7 +486,24 @@ mongosh
 > db.dropDatabase()
 ```
 
-## Resources
+## CI/CD Workflow
+
+StockForumX uses GitHub Actions for continuous integration and delivery.
+
+### Automated Checks (CI)
+Every pull request and push to the `main` branch triggers the **CI** workflow which:
+- Validates the backend code.
+- Builds the frontend to ensure no regressions.
+
+### Automated Deployment (CD)
+When code is pushed to `main` or a new version tag (e.g., `v1.0.0`) is created:
+1. The **Docker Publish** workflow triggers.
+2. It builds production Docker images for both the frontend and backend.
+3. It pushes these images to the GitHub Container Registry (GHCR).
+
+You can monitor these processes in the **Actions** tab of the GitHub repository.
+
+## resources
 
 - [React Docs](https://react.dev/)
 - [Express Docs](https://expressjs.com/)
