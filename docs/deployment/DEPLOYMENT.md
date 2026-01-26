@@ -244,83 +244,17 @@ vercel --prod
 
 ---
 
-### Option 4: Docker
+### Option 4: Docker (Recommended for Production)
 
-#### Dockerfile (Backend)
+For a modern, containerized deployment using Docker and Nginx as a reverse proxy, please refer to our dedicated guide:
 
-```dockerfile
-FROM node:18-alpine
+👉 [Docker Deployment Guide](./DOCKER.md)
 
-WORKDIR /app
-
-COPY package*.json ./
-RUN npm install --production
-
-COPY . .
-
-EXPOSE 5000
-
-CMD ["node", "index.js"]
-```
-
-#### Dockerfile (Frontend)
-
-```dockerfile
-FROM node:18-alpine as build
-
-WORKDIR /app
-
-COPY package*.json ./
-RUN npm install
-
-COPY . .
-RUN npm run build
-
-FROM nginx:alpine
-COPY --from=build /app/dist /usr/share/nginx/html
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
-```
-
-#### docker-compose.yml
-
-```yaml
-version: '3.8'
-
-services:
-  mongodb:
-    image: mongo:6
-    volumes:
-      - mongodb_data:/data/db
-    ports:
-      - "27017:27017"
-
-  backend:
-    build: ./server
-    ports:
-      - "5000:5000"
-    environment:
-      - MONGODB_URI=mongodb://mongodb:27017/stockforumx
-      - JWT_SECRET=${JWT_SECRET}
-      - NODE_ENV=production
-    depends_on:
-      - mongodb
-
-  frontend:
-    build: ./client
-    ports:
-      - "80:80"
-    depends_on:
-      - backend
-
-volumes:
-  mongodb_data:
-```
-
-**Deploy:**
-```bash
-docker-compose up -d
-```
+This setup includes:
+- Multi-stage Docker builds for frontend and backend
+- Nginx reverse proxy for SSL and load balancing
+- Database persistence with MongoDB volumes
+- Orchestration with Docker Compose
 
 ---
 

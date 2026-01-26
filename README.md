@@ -79,6 +79,21 @@ npm run dev:server  # Backend on http://localhost:5000
 npm run dev:client  # Frontend on http://localhost:5173
 ```
 
+### Docker Quick Start (Recommended)
+
+1. **Configure Environment**
+   ```bash
+   cp .env.docker .env
+   ```
+2. **Start Services**
+   ```bash
+   docker-compose up -d --build
+   ```
+3. **Access**
+   Open http://localhost
+
+See the [Docker Deployment Guide](docs/deployment/DOCKER.md) for details.
+
 ### Environment Variables
 
 Create `server/.env`:
