@@ -3,6 +3,8 @@ import { createServer } from 'http';
 import { Server } from 'socket.io';
 import cors from 'cors';
 import rateLimit from 'express-rate-limit';
+import helmet from 'helmet';
+import compression from 'compression';
 import dotenv from 'dotenv';
 import connectDB from './config/db.js';
 import validateEnv from './config/validateEnv.js';
@@ -54,6 +56,8 @@ const limiter = rateLimit({
 });
 
 // Middleware
+app.use(helmet());
+app.use(compression());
 app.use(cors());
 app.use(limiter); // Apply to all requests
 app.use(express.json({ limit: '50mb' }));

@@ -1,5 +1,8 @@
 # StockForumX 
 
+![CI](https://github.com/udaykiriti/StockForumX/actions/workflows/ci.yml/badge.svg)
+![Docker Publish](https://github.com/udaykiriti/StockForumX/actions/workflows/docker-publish.yml/badge.svg)
+
 A real-time stock discussion and prediction platform with accuracy-based reputation, time-expiring knowledge, and live analytics.
 
 ## Features
