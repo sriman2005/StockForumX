@@ -1,0 +1,45 @@
+/* Neo-Brutalist overrides for Quill */
+.brutalist-editor .ql-container {
+    font-family: var(--font-family);
+    font-size: 1rem;
+    border: var(--border-width) solid var(--border-color) !important;
+    border-top: none !important;
+    background: white;
+    min-height: 150px;
+}
+
+.brutalist-editor .ql-toolbar {
+    border: var(--border-width) solid var(--border-color) !important;
+    background: var(--bg-tertiary);
+    font-family: var(--font-family);
+}
+
+.brutalist-editor .ql-editor {
+    min-height: 150px;
+    font-family: 'Space Mono', monospace;
+    /* Or main font */
+    color: black;
+}
+
+.brutalist-editor .ql-editor.ql-blank::before {
+    font-style: normal;
+    color: #64748b;
+    font-weight: 600;
+}
+
+/* Toolbar buttons */
+.brutalist-editor .ql-snow.ql-toolbar button:hover,
+.brutalist-editor .ql-snow.ql-toolbar button.ql-active {
+    background: var(--color-accent);
+    color: black;
+}
+
+.brutalist-editor .ql-snow.ql-toolbar button:hover .ql-stroke,
+.brutalist-editor .ql-snow.ql-toolbar button.ql-active .ql-stroke {
+    stroke: black !important;
+}
+
+.brutalist-editor .ql-snow.ql-toolbar button:hover .ql-fill,
+.brutalist-editor .ql-snow.ql-toolbar button.ql-active .ql-fill {
+    fill: black !important;
+}
