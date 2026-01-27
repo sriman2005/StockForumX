@@ -19,6 +19,10 @@ const CandlestickChart = ({ data, volumeData, height = 400 }) => {
             }
         };
 
+        if (chartContainerRef.current) {
+            chartContainerRef.current.innerHTML = '';
+        }
+
         const chart = createChart(chartContainerRef.current, {
             layout: {
                 background: { type: ColorType.Solid, color: 'white' },

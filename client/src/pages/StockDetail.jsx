@@ -154,9 +154,9 @@ const StockDetail = () => {
                             </div>
                         </div>
                         <div className="stock-price-info">
-                            <div className="current-price">${stock.currentPrice.toFixed(2)}</div>
-                            <div className={`price-change ${stock.change >= 0 ? 'positive' : 'negative'}`}>
-                                {stock.change >= 0 ? '+' : ''}{Math.abs(stock.change).toFixed(2)} ({Math.abs(stock.changePercent)}%)
+                            <div className="current-price">${stock?.currentPrice?.toFixed(2) || '0.00'}</div>
+                            <div className={`price-change ${stock?.change >= 0 ? 'positive' : 'negative'}`}>
+                                {stock?.change >= 0 ? '+' : ''}{Math.abs(stock?.change || 0).toFixed(2)} ({Math.abs(stock?.changePercent || 0)}%)
                             </div>
                         </div>
                     </div>
