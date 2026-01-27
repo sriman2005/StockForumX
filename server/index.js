@@ -103,11 +103,16 @@ startStockPriceUpdater();
 const PORT = process.env.PORT || 5000;
 httpServer.listen(PORT, () => {
     console.log(`
-  ╔═══════════════════════════════════════╗
-  ║   StockForumX Server Running         ║
-  ║   Port: ${PORT}                       ║
-  ║   http://localhost:${PORT}            ║
-  ╚═══════════════════════════════════════╝
+  ____________________________________________________
+ |                                                    |
+ |   StockForumX API Server                           |
+ |   ----------------------------------------------   |
+ |                                                    |
+ |   > Status:   Online                               |
+ |   > Port:     ${PORT}                                 |
+ |   > URL:      http://localhost:${PORT}                |
+ |   > Env:      ${process.env.NODE_ENV || 'development'}                          |
+ |____________________________________________________|
   `);
 });
 
