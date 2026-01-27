@@ -64,10 +64,10 @@
 
 .tab-btn {
     flex: 1;
-    padding: 25px;
+    padding: 20px 10px;
     border: none;
     background: transparent;
-    font-size: 1.1rem;
+    font-size: clamp(0.9rem, 1vw, 1.1rem);
     font-weight: 900;
     cursor: pointer;
     display: flex;
@@ -76,6 +76,8 @@
     gap: 12px;
     transition: all var(--transition-brute);
     border-right: var(--border-width) solid var(--border-color);
+    border-bottom: var(--border-width) solid transparent;
+    text-transform: uppercase;
 }
 
 .tab-btn:last-child {
@@ -84,11 +86,13 @@
 
 .tab-btn:hover {
     background: var(--color-accent);
+    transform: translateY(-2px);
 }
 
 .tab-btn.active {
-    background: var(--color-secondary);
-    color: white;
+    background: black;
+    color: var(--color-accent);
+    box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.1);
 }
 
 /* Holdings Grid */
