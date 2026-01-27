@@ -13,10 +13,15 @@ const router = express.Router();
 // @access  Public
 router.get('/', async (req, res) => {
     try {
-        const { stockId, stockSymbol, tag, sort = 'recent', search } = req.query;
+        const { userId, stockId, stockSymbol, tag, sort = 'recent', search } = req.query;
         const query = {};
 
-        console.log('Questions API called with:', { stockId, stockSymbol, tag, sort, search }); // Debug
+        console.log('Questions API called with:', { userId, stockId, stockSymbol, tag, sort, search }); // Debug
+
+        // Filter by user
+        if (userId) {
+            query.userId = userId;
+        }
 
         // Filter by stock
         if (stockId) {
