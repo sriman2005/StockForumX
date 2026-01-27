@@ -62,11 +62,18 @@ const Home = () => {
 
             setError(null);
 
-            const [questionsRes, stocksRes, userCountRes] = await Promise.all([
+            const results = await Promise.allSettled([
                 getQuestions(params),
                 getStocks({ search: searchQuery }),
                 getUserCount()
             ]);
+
+            const questionsRes = results[0].status === 'fulfilled' ? results[0].value : { data: [] };
+            const stocksRes = results[1].status === 'fulfilled' ? results[1].value : { data: [] };
+            const userCountRes = results[2].status === 'fulfilled' ? results[2].value : { data: { count: 0 } };
+
+            if (results[0].status === 'rejected') console.error('Feed failed:', results[0].reason);
+            if (results[1].status === 'rejected') console.error('Stocks failed:', results[1].reason);
 
             setQuestions(Array.isArray(questionsRes.data) ? questionsRes.data : []);
             setUserCount(userCountRes.data?.count || 0);

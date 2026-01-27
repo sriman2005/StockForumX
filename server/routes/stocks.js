@@ -26,6 +26,54 @@ router.get('/', async (req, res) => {
 
         const localStocks = await Stock.find(query).sort({ symbol: 1 });
 
+        // Auto-seed if empty and no search
+        if (!search && localStocks.length === 0) {
+            console.log('No stocks found in DB. Seeding popular stocks...');
+            const POPULAR_TICKERS = ['AAPL', 'MSFT', 'GOOGL', 'AMZN', 'TSLA', 'NVDA', 'META', 'NFLX', 'AMD', 'INTC'];
+
+            try {
+                const results = await Promise.all(
+                    POPULAR_TICKERS.map(async (symbol) => {
+                        try {
+                            const quote = await yahooFinance.quote(symbol);
+                            if (!quote) return null;
+
+                            return Stock.findOneAndUpdate(
+                                { symbol },
+                                {
+                                    $set: {
+                                        name: quote.longName || quote.shortName || symbol,
+                                        symbol,
+                                        currentPrice: quote.regularMarketPrice,
+                                        previousClose: quote.regularMarketPreviousClose,
+                                        change: quote.regularMarketChange,
+                                        changePercent: quote.regularMarketChangePercent,
+                                        volume: quote.regularMarketVolume,
+                                        marketCap: quote.marketCap,
+                                        high24h: quote.regularMarketDayHigh,
+                                        low24h: quote.regularMarketDayLow,
+                                        sector: 'Technology' // Default/Placeholder as quote doesn't always have it
+                                    }
+                                },
+                                { upsert: true, new: true, setDefaultsOnInsert: true }
+                            );
+                        } catch (e) {
+                            console.error(`Failed to seed ${symbol}:`, e.message);
+                            return null;
+                        }
+                    })
+                );
+
+                const seededStocks = results.filter(Boolean);
+                // Return immediately if specifically asking for list
+                if (seededStocks.length > 0) {
+                    return res.json(seededStocks.sort((a, b) => a.symbol.localeCompare(b.symbol)));
+                }
+            } catch (seedError) {
+                console.error('Auto-seed failed:', seedError);
+            }
+        }
+
         // 2. Yahoo Finance Search (if search term exists)
         let yahooResults = [];
         if (search && search.length > 1) { // Avoid searching for single chars if performance is a concern
@@ -150,9 +198,23 @@ router.get('/:symbol', async (req, res) => {
             );
         }
 
-        // 3. If stock still doesn't exist (neither in DB nor valid in Yahoo), 404
+        // 3. If stock still doesn't exist (neither in DB nor valid in Yahoo), use Mock Fallback
         if (!stock) {
-            return res.status(404).json({ message: 'Stock not found' });
+            console.log(`Generating mock data for ${symbol}`);
+            const basePrice = Math.random() * 200 + 50;
+            stock = await Stock.create({
+                symbol,
+                name: `${symbol} Inc. (Mock)`,
+                currentPrice: basePrice,
+                previousClose: basePrice * 0.98,
+                sector: 'Technology',
+                description: 'This is a mock description generated because the external data provider is unavailable.',
+                industry: 'Mock Industry',
+                volume: 1000000,
+                marketCap: 2000000000000,
+                high24h: basePrice * 1.05,
+                low24h: basePrice * 0.95
+            });
         }
 
         // 4. Get additional stats
