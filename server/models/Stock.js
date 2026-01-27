@@ -51,6 +51,30 @@ const stockSchema = new mongoose.Schema({
     description: {
         type: String,
         default: ''
+    },
+    peRatio: {
+        type: Number,
+        default: 0
+    },
+    dividendYield: {
+        type: Number,
+        default: 0
+    },
+    fiftyTwoWeekHigh: {
+        type: Number,
+        default: 0
+    },
+    fiftyTwoWeekLow: {
+        type: Number,
+        default: 0
+    },
+    industry: {
+        type: String,
+        default: 'General'
+    },
+    website: {
+        type: String,
+        default: ''
     }
 }, {
     timestamps: true

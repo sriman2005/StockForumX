@@ -6,6 +6,9 @@ import { useSocket } from '../context/SocketContext';
 import { formatDistanceToNow } from 'date-fns';
 import toast from 'react-hot-toast';
 import Voting from '../components/questions/Voting';
+import Loader from '../components/common/Loader';
+import DOMPurify from 'dompurify';
+import RichTextEditor from '../components/common/RichTextEditor';
 import './QuestionDetail.css';
 
 const QuestionDetail = () => {
@@ -44,7 +47,13 @@ const QuestionDetail = () => {
 
     const handleAnswerSubmit = async (e) => {
         e.preventDefault();
-        if (!newAnswer.trim()) return;
+
+        // Check for empty content (stripping HTML tags to check real text)
+        const plainText = newAnswer.replace(/<[^>]+>/g, '').trim();
+        if (!plainText) {
+            toast.error('Answer definition cannot be empty');
+            return;
+        }
 
         setSubmitting(true);
         try {
@@ -81,7 +90,7 @@ const QuestionDetail = () => {
         }
     };
 
-    if (loading) return <div className="loading-spinner"></div>;
+    if (loading) return <Loader />;
     if (!question) return <div className="error-message">Question not found</div>;
 
     // Safe access helpers
@@ -91,7 +100,6 @@ const QuestionDetail = () => {
     const authorAvatar = authorName.charAt(0).toUpperCase();
     const views = question.views || 0;
     const upvotes = question.upvotes || 0;
-    const downvotes = question.downvotes || 0;
     const tags = Array.isArray(question.tags) ? question.tags : [];
     const answers = Array.isArray(question.answers) ? question.answers : [];
 
@@ -130,7 +138,10 @@ const QuestionDetail = () => {
                             />
                         </div>
                         <div className="post-cell">
-                            <div className="post-text">{question.content || ''}</div>
+                            <div
+                                className="post-text"
+                                dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(question.content || '') }}
+                            />
 
                             <div className="post-tags">
                                 {tags.map(tag => (
@@ -163,7 +174,6 @@ const QuestionDetail = () => {
                     <div className="answers-section">
                         <div className="answers-header">
                             <h2>{answers.length} Answers</h2>
-                            {/* Sort controls could go here */}
                         </div>
 
                         {answers.map(answer => {
@@ -193,7 +203,10 @@ const QuestionDetail = () => {
                                         )}
                                     </div>
                                     <div className="post-cell">
-                                        <div className="post-text">{answer.content}</div>
+                                        <div
+                                            className="post-text"
+                                            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(answer.content) }}
+                                        />
 
                                         <div className="post-footer">
                                             <div className="post-actions">
@@ -221,21 +234,20 @@ const QuestionDetail = () => {
                         <h2 className="section-title">Your Answer</h2>
                         {isAuthenticated ? (
                             <form onSubmit={handleAnswerSubmit} className="answer-form">
-                                <textarea
+                                <RichTextEditor
                                     value={newAnswer}
-                                    onChange={(e) => setNewAnswer(e.target.value)}
-                                    className="answer-input"
-                                    rows={10}
+                                    onChange={(value) => setNewAnswer(value)}
                                     placeholder="Type your answer here..."
-                                    required
                                 />
-                                <button
-                                    type="submit"
-                                    className="btn btn-primary submit-answer-btn"
-                                    disabled={submitting}
-                                >
-                                    {submitting ? 'Posting...' : 'Post Your Answer'}
-                                </button>
+                                <div style={{ marginTop: '20px' }}>
+                                    <button
+                                        type="submit"
+                                        className="btn btn-primary submit-answer-btn"
+                                        disabled={submitting}
+                                    >
+                                        {submitting ? 'Posting...' : 'Post Your Answer'}
+                                    </button>
+                                </div>
                             </form>
                         ) : (
                             <div className="auth-prompt">
@@ -246,7 +258,6 @@ const QuestionDetail = () => {
                 </div>
 
                 <aside className="question-sidebar">
-                    {/* Sidebar widgets */}
                     <div className="sidebar-widget">
                         <h3>Stats</h3>
                         <div className="sidebar-stat-item">

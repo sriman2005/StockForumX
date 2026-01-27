@@ -1,26 +1,30 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { getStock, getQuestions } from '../services/api';
+import { getStock, getQuestions, toggleWatchlist, getWatchlist, getStockHistory, getPredictions } from '../services/api';
 import { useSocket } from '../context/SocketContext';
 import { useAuth } from '../context/AuthContext';
 import QuestionList from '../components/questions/QuestionList';
 import AskQuestionButton from '../components/questions/AskQuestionButton';
+import CandlestickChart from '../components/stocks/CandlestickChart';
 import toast from 'react-hot-toast';
+import { FaStar, FaRegStar } from 'react-icons/fa6';
 import './StockDetail.css';
 import PredictionForm from '../components/predictions/PredictionForm';
 import PredictionList from '../components/predictions/PredictionList';
 import PredictionStats from '../components/predictions/PredictionStats';
-import { getPredictions } from '../services/api';
 import Loader from '../components/common/Loader';
+import TradeBox from '../components/predictions/TradeBox';
 
 const StockDetail = () => {
     const { symbol } = useParams();
     const [stock, setStock] = useState(null);
     const [questions, setQuestions] = useState([]);
-    const [predictions, setPredictions] = useState([]); // Add predictions state
+    const [predictions, setPredictions] = useState([]);
+    const [chartData, setChartData] = useState([]);
+    const [volumeData, setVolumeData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState('questions');
-    const [isAskModalOpen, setIsAskModalOpen] = useState(false);
+    const [isInWatchlist, setIsInWatchlist] = useState(false);
     const { socket } = useSocket();
     const { isAuthenticated } = useAuth();
 
@@ -30,14 +34,12 @@ const StockDetail = () => {
 
     useEffect(() => {
         if (socket && stock) {
-            // Listen for new questions
             socket.on('question:new', (newQuestion) => {
                 if (newQuestion.stockId._id === stock._id) {
                     setQuestions(prev => [newQuestion, ...prev]);
                 }
             });
 
-            // Listen for new predictions
             socket.on('prediction:new', (newPrediction) => {
                 if (newPrediction.stockId._id === stock._id) {
                     setPredictions(prev => [newPrediction, ...prev]);
@@ -56,14 +58,36 @@ const StockDetail = () => {
             const { data } = await getStock(symbol);
             setStock(data);
 
-            // Fetch related questions and predictions
-            const [questionsRes, predictionsRes] = await Promise.all([
+            const [questionsRes, predictionsRes, historyRes] = await Promise.all([
                 getQuestions({ stockId: data._id }),
-                getPredictions({ stockId: data._id })
+                getPredictions({ stockId: data._id }),
+                getStockHistory(symbol)
             ]);
 
             setQuestions(Array.isArray(questionsRes.data) ? questionsRes.data : []);
             setPredictions(Array.isArray(predictionsRes.data) ? predictionsRes.data : []);
+            setQuestions(Array.isArray(questionsRes.data) ? questionsRes.data : []);
+            setPredictions(Array.isArray(predictionsRes.data) ? predictionsRes.data : []);
+
+            const history = Array.isArray(historyRes.data) ? historyRes.data : [];
+            // Map data for chart
+            setChartData(history.map(item => ({
+                time: item.time || item.date, // support both just in case
+                open: item.open,
+                high: item.high,
+                low: item.low,
+                close: item.close
+            })));
+
+            setVolumeData(history.map(item => ({
+                time: item.time || item.date,
+                value: item.volume
+            })));
+
+            if (isAuthenticated) {
+                const watchlistRes = await getWatchlist();
+                setIsInWatchlist(watchlistRes.data.some(s => s._id === data._id));
+            }
         } catch (error) {
             toast.error('Failed to load stock data');
             console.error(error);
@@ -76,9 +100,15 @@ const StockDetail = () => {
         setPredictions(prev => [newPrediction, ...prev]);
     };
 
-    // fetchQuestions removed as it is now integrated into fetchStockData
-    // We keep a separate function for manual refreshing if needed, but for now
-    // let's just expose a refresh function if the button needs it.
+    const handleToggleWatchlist = async () => {
+        try {
+            const { data } = await toggleWatchlist(stock._id);
+            setIsInWatchlist(data.isInWatchlist);
+            toast.success(data.message);
+        } catch (error) {
+            toast.error('Failed to update watchlist');
+        }
+    };
 
     const refreshQuestions = async () => {
         if (!stock) return;
@@ -90,9 +120,7 @@ const StockDetail = () => {
         }
     };
 
-    if (loading) {
-        return <Loader />;
-    }
+    if (loading) return <Loader />;
 
     if (!stock) {
         return (
@@ -103,15 +131,27 @@ const StockDetail = () => {
     }
 
     return (
-        <div className="stock-detail-page">
-            {/* Stock Header */}
+        <div className="stock-detail-page fade-in">
             <div className="stock-header-section">
                 <div className="container">
                     <div className="stock-header-content">
                         <div className="stock-info">
-                            <h1 className="stock-symbol">{stock.symbol}</h1>
-                            <p className="stock-name">{stock.name}</p>
-                            <span className="badge badge-info">{stock.sector}</span>
+                            <div className="symbol-wrapper">
+                                <h1 className="stock-symbol">{stock.symbol}</h1>
+                                {isAuthenticated && (
+                                    <button
+                                        className={`watchlist-btn ${isInWatchlist ? 'active' : ''}`}
+                                        onClick={handleToggleWatchlist}
+                                        title={isInWatchlist ? "Remove from watchlist" : "Add to watchlist"}
+                                    >
+                                        {isInWatchlist ? <FaStar /> : <FaRegStar />}
+                                    </button>
+                                )}
+                            </div>
+                            <div className="stock-name-badge">
+                                <p className="stock-name">{stock.name}</p>
+                                <span className="badge badge-info">{stock.sector}</span>
+                            </div>
                         </div>
                         <div className="stock-price-info">
                             <div className="current-price">${stock.currentPrice.toFixed(2)}</div>
@@ -120,54 +160,19 @@ const StockDetail = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="stock-stats-bar">
-                        <div className="stat-item">
-                            <span className="stat-label">Volume</span>
-                            <span className="stat-value">{(stock.volume / 1000000).toFixed(1)}M</span>
-                        </div>
-                        <div className="stat-item">
-                            <span className="stat-label">Market Cap</span>
-                            <span className="stat-value">${(stock.marketCap / 1000000000).toFixed(1)}B</span>
-                        </div>
-                        <div className="stat-item">
-                            <span className="stat-label">High</span>
-                            <span className="stat-value">${stock.high24h.toFixed(2)}</span>
-                        </div>
-                        <div className="stat-item">
-                            <span className="stat-label">Low</span>
-                            <span className="stat-value">${stock.low24h.toFixed(2)}</span>
-                        </div>
-                    </div>
                 </div>
             </div>
 
-            {/* Main Content */}
             <div className="container">
                 <div className="stock-content">
-                    {/* Sidebar */}
-                    <aside className="stock-sidebar">
-                        <div className="sidebar-card">
-                            <h3>About {stock.symbol}</h3>
-                            <p className="stock-description">{stock.description}</p>
-                        </div>
-                        <div className="sidebar-card">
-                            <h3>Stats</h3>
-                            <div className="sidebar-stats">
-                                <div className="sidebar-stat">
-                                    <span className="stat-label">Questions</span>
-                                    <span className="stat-value">{stock.stats?.questionCount || 0}</span>
-                                </div>
-                                <div className="sidebar-stat">
-                                    <span className="stat-label">Predictions</span>
-                                    <span className="stat-value">{stock.stats?.predictionCount || 0}</span>
-                                </div>
-                            </div>
-                        </div>
-                    </aside>
-
-                    {/* Main Content Area */}
                     <main className="stock-main">
-                        {/* Tabs */}
+                        {/* Interactive Price History Chart */}
+                        <CandlestickChart
+                            data={chartData}
+                            volumeData={volumeData}
+                            height={450}
+                        />
+
                         <div className="tabs-container">
                             <div className="tabs">
                                 <button
@@ -194,16 +199,11 @@ const StockDetail = () => {
                             )}
                         </div>
 
-                        {/* Tab Content */}
                         <div className="tab-content">
                             {activeTab === 'questions' && (
                                 <div className="questions-section">
                                     <div className="section-header">
                                         <h3>{questions.length} Questions</h3>
-                                        <div className="section-actions">
-                                            <button className="btn btn-secondary btn-sm">Newest</button>
-                                            <button className="btn btn-secondary btn-sm">Votes</button>
-                                        </div>
                                     </div>
                                     <QuestionList questions={questions} />
                                 </div>
@@ -212,12 +212,11 @@ const StockDetail = () => {
                             {activeTab === 'predictions' && (
                                 <div className="predictions-section">
                                     <PredictionStats predictions={predictions} />
-
                                     <PredictionForm
                                         stockId={stock._id}
                                         onPredictionCreated={handlePredictionCreated}
                                     />
-                                    <div className="section-header">
+                                    <div className="section-header" style={{ marginTop: '30px' }}>
                                         <h3>Community Predictions</h3>
                                     </div>
                                     <PredictionList predictions={predictions} />
@@ -234,6 +233,65 @@ const StockDetail = () => {
                             )}
                         </div>
                     </main>
+
+                    <aside className="stock-sidebar">
+                        {isAuthenticated && <TradeBox stock={stock} />}
+                        <div className="sidebar-widget brute-frame">
+                            <h3>About {stock.symbol}</h3>
+                            <div className="widget-content">
+                                <p className="stock-description">{stock.description || "No description available."}</p>
+                                <div className="profile-meta">
+                                    <div className="meta-item">
+                                        <span className="meta-label">Industry</span>
+                                        <span className="meta-value">{stock.industry}</span>
+                                    </div>
+                                    <div className="meta-item">
+                                        <span className="meta-label">Website</span>
+                                        <a href={stock.website} target="_blank" rel="noopener noreferrer" className="meta-link">
+                                            {stock.website ? new URL(stock.website).hostname : 'N/A'}
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="sidebar-widget">
+                            <h3>Stats</h3>
+                            <div className="widget-content">
+                                <div className="sidebar-stat">
+                                    <span className="stat-label">Volume</span>
+                                    <span className="stat-value">{(stock.volume / 1000000).toFixed(1)}M</span>
+                                </div>
+                                <div className="sidebar-stat">
+                                    <span className="stat-label">Market Cap</span>
+                                    <span className="stat-value">${(stock.marketCap / 1000000000).toFixed(1)}B</span>
+                                </div>
+                                <div className="sidebar-stat">
+                                    <span className="stat-label">High 24h</span>
+                                    <span className="stat-value">${stock.high24h.toFixed(2)}</span>
+                                </div>
+                                <div className="sidebar-stat">
+                                    <span className="stat-label">Low 24h</span>
+                                    <span className="stat-value">${stock.low24h.toFixed(2)}</span>
+                                </div>
+                                <div className="sidebar-stat">
+                                    <span className="stat-label">52W High</span>
+                                    <span className="stat-value">${stock.fiftyTwoWeekHigh?.toFixed(2) || 'N/A'}</span>
+                                </div>
+                                <div className="sidebar-stat">
+                                    <span className="stat-label">52W Low</span>
+                                    <span className="stat-value">${stock.fiftyTwoWeekLow?.toFixed(2) || 'N/A'}</span>
+                                </div>
+                                <div className="sidebar-stat">
+                                    <span className="stat-label">P/E Ratio</span>
+                                    <span className="stat-value">{stock.peRatio?.toFixed(2) || 'N/A'}</span>
+                                </div>
+                                <div className="sidebar-stat">
+                                    <span className="stat-label">Div Yield</span>
+                                    <span className="stat-value">{stock.dividendYield ? (stock.dividendYield * 100).toFixed(2) + '%' : 'N/A'}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </aside>
                 </div>
             </div>
         </div>

@@ -61,8 +61,8 @@ const sendEmail = async (options) => {
             });
 
             const info = await devTransporter.sendMail(message);
-            console.log('✅ Fallback Email Sent: %s', info.messageId);
-            console.log('📧 Preview URL: %s', nodemailer.getTestMessageUrl(info));
+            console.log('Fallback Email Sent: %s', info.messageId);
+            console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
         } else {
             throw error;
         }

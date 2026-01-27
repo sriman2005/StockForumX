@@ -15,6 +15,8 @@ import VerifyEmail from './pages/VerifyEmail';
 import LoginOTP from './pages/LoginOTP';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
+import NotFound from './pages/error/NotFound';
+import Portfolio from './pages/Portfolio';
 
 function App() {
     return (
@@ -37,16 +39,41 @@ function App() {
                                 <Route path="/login-otp" element={<LoginOTP />} />
                                 <Route path="/forgot-password" element={<ForgotPassword />} />
                                 <Route path="/reset-password" element={<ResetPassword />} />
+                                <Route path="/portfolio" element={<Portfolio />} />
+                                <Route path="*" element={<NotFound />} />
                             </Routes>
                         </main>
                         <Toaster
                             position="top-right"
                             toastOptions={{
+                                className: 'brute-toast',
                                 style: {
-                                    background: '#1e293b',
-                                    color: '#f1f5f9',
-                                    border: '1px solid #334155'
-                                }
+                                    borderRadius: '0',
+                                    border: '3px solid #000',
+                                    background: '#fff',
+                                    color: '#000',
+                                    padding: '16px',
+                                    fontWeight: '900',
+                                    textTransform: 'uppercase',
+                                    fontSize: '0.9rem',
+                                    boxShadow: '6px 6px 0px #000',
+                                },
+                                success: {
+                                    style: {
+                                        background: 'var(--color-success)',
+                                    },
+                                },
+                                error: {
+                                    style: {
+                                        background: 'var(--color-danger)',
+                                        color: '#fff',
+                                    },
+                                },
+                                loading: {
+                                    style: {
+                                        background: 'var(--color-info)',
+                                    },
+                                },
                             }}
                         />
                     </div>

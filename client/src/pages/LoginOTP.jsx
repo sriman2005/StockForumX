@@ -42,69 +42,87 @@ const LoginOTP = () => {
     };
 
     return (
-        <div className="auth-page">
-            <div className="auth-container">
-                <div className="auth-card">
-                    <div className="auth-header">
-                        <div className="auth-logo">
-                            <div className="auth-logo-icon">
-                                <FaMobileAlt />
-                            </div>
-                        </div>
-                        <h1 className="auth-title">Passwordless Login</h1>
-                        <p className="auth-subtitle">
-                            {step === 1 ? 'Enter your email to receive an OTP.' : 'Enter the OTP sent to your email.'}
-                        </p>
+        <div className="auth-page brute-dot">
+            <div className="auth-split">
+                {/* Visual Side */}
+                <div className="auth-visual brute-grid">
+                    <div className="visual-content">
+                        <h1 className="visual-title">Fast <br /><span>Access.</span></h1>
+                        <p className="visual-tagline">Secure, passwordless login for traders.</p>
                     </div>
 
-                    {step === 1 ? (
-                        <form onSubmit={handleInit} className="auth-form">
-                            <div className="form-group">
-                                <label className="form-label" htmlFor="email">Email</label>
-                                <input
-                                    type="email"
-                                    id="email"
-                                    className="form-input"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    required
-                                    placeholder="name@company.com"
-                                />
+                    <div className="ticker-wrap">
+                        <div className="ticker-content">
+                            <span className="ticker-item">OTP DISPATCHED</span>
+                            <span className="ticker-item">INSTANT VERIFICATION</span>
+                            <span className="ticker-item">NO PASSWORD NEEDED</span>
+                            <span className="ticker-item">SESSION ENCRYPTED</span>
+                            <span className="ticker-item">OTP DISPATCHED</span>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Form Side */}
+                <div className="auth-form-side">
+                    <div className="auth-container">
+                        <div className="auth-card brute-frame">
+                            <div className="auth-header">
+                                <h1 className="auth-title">Quick Login</h1>
+                                <p className="auth-subtitle">
+                                    {step === 1 ? 'Enter your email for an OTP.' : 'Verify the code sent to your email.'}
+                                </p>
                             </div>
-                            <button type="submit" className="btn btn-primary btn-lg" disabled={loading}>
-                                {loading ? 'Sending OTP...' : 'Send OTP'}
-                            </button>
-                        </form>
-                    ) : (
-                        <form onSubmit={handleVerify} className="auth-form">
-                            <div className="form-group">
-                                <label className="form-label" htmlFor="otp">OTP Code</label>
-                                <input
-                                    type="text"
-                                    id="otp"
-                                    className="form-input"
-                                    value={otp}
-                                    onChange={(e) => setOtp(e.target.value)}
-                                    required
-                                    placeholder="Enter 6-digit code"
-                                    maxLength={6}
-                                />
+
+                            {step === 1 ? (
+                                <form onSubmit={handleInit} className="auth-form">
+                                    <div className="form-group">
+                                        <label className="form-label" htmlFor="email">Email Address</label>
+                                        <input
+                                            type="email"
+                                            id="email"
+                                            className="form-input"
+                                            value={email}
+                                            onChange={(e) => setEmail(e.target.value)}
+                                            required
+                                            placeholder="name@company.com"
+                                        />
+                                    </div>
+                                    <button type="submit" className="btn btn-primary btn-lg" disabled={loading}>
+                                        {loading ? 'Sending OTP...' : 'Send OTP Code'}
+                                    </button>
+                                </form>
+                            ) : (
+                                <form onSubmit={handleVerify} className="auth-form">
+                                    <div className="form-group">
+                                        <label className="form-label" htmlFor="otp">OTP Code</label>
+                                        <input
+                                            type="text"
+                                            id="otp"
+                                            className="form-input"
+                                            value={otp}
+                                            onChange={(e) => setOtp(e.target.value)}
+                                            required
+                                            placeholder="Enter 6-digit code"
+                                            maxLength={6}
+                                        />
+                                    </div>
+                                    <button type="submit" className="btn btn-primary btn-lg" disabled={loading}>
+                                        {loading ? 'Verifying...' : 'Secure Login'}
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className="btn btn-secondary btn-lg"
+                                        style={{ marginTop: '16px', display: 'block', width: '100%' }}
+                                        onClick={() => setStep(1)}
+                                    >
+                                        Back to Email
+                                    </button>
+                                </form>
+                            )}
+                            <div className="auth-footer">
+                                <Link to="/login">Password login instead</Link>
                             </div>
-                            <button type="submit" className="btn btn-primary btn-lg" disabled={loading}>
-                                {loading ? 'Verifying...' : 'Login'}
-                            </button>
-                            <button
-                                type="button"
-                                className="btn btn-secondary btn-lg"
-                                style={{ marginTop: '10px' }}
-                                onClick={() => setStep(1)}
-                            >
-                                Back
-                            </button>
-                        </form>
-                    )}
-                    <div className="auth-footer">
-                        <Link to="/login">Back to Password Login</Link>
+                        </div>
                     </div>
                 </div>
             </div>

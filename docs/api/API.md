@@ -109,7 +109,7 @@ POST /auth/login
 ```http
 GET /auth/me
 ```
-🔒 **Requires Authentication**
+(Requires Authentication)
 
 ### Login with OTP (Init)
 ```http
@@ -266,7 +266,7 @@ GET /questions/:id
 ```http
 POST /questions
 ```
-🔒 **Requires Authentication**
+(Requires Authentication)
 
 **Body:**
 ```json
@@ -282,7 +282,7 @@ POST /questions
 ```http
 POST /questions/:id/answers
 ```
-🔒 **Requires Authentication**
+(Requires Authentication)
 
 **Body:**
 ```json
@@ -295,25 +295,25 @@ POST /questions/:id/answers
 ```http
 PUT /questions/:id/upvote
 ```
-🔒 **Requires Authentication**
+(Requires Authentication)
 
 ### Downvote Question
 ```http
 PUT /questions/:id/downvote
 ```
-🔒 **Requires Authentication**
+(Requires Authentication)
 
 ### Upvote Answer
 ```http
 PUT /questions/answers/:answerId/upvote
 ```
-🔒 **Requires Authentication**
+(Requires Authentication)
 
 ### Downvote Answer
 ```http
 PUT /questions/answers/:answerId/downvote
 ```
-🔒 **Requires Authentication**
+(Requires Authentication)
 
 ### Accept Answer
 ```http
@@ -341,7 +341,7 @@ GET /predictions
 ```http
 POST /predictions
 ```
-🔒 **Requires Authentication**
+(Requires Authentication)
 
 **Body (Price Prediction):**
 ```json
@@ -374,7 +374,7 @@ GET /predictions/user/:userId
 ```http
 GET /predictions/stats
 ```
-🔒 **Requires Authentication**
+(Requires Authentication)
 
 **Response:**
 ```json
@@ -470,7 +470,7 @@ GET /users/:userId/stats
 ```http
 PUT /users/profile
 ```
-🔒 **Requires Authentication**
+(Requires Authentication)
 
 **Body:**
 ```json

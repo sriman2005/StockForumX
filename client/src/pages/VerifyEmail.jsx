@@ -33,50 +33,68 @@ const VerifyEmail = () => {
     };
 
     return (
-        <div className="auth-page">
-            <div className="auth-container">
-                <div className="auth-card">
-                    <div className="auth-header">
-                        <div className="auth-logo">
-                            <div className="auth-logo-icon">
-                                <FaEnvelopeOpenText />
-                            </div>
-                        </div>
-                        <h1 className="auth-title">Verify your email</h1>
-                        <p className="auth-subtitle">Enter the OTP sent to your email.</p>
+        <div className="auth-page brute-dot">
+            <div className="auth-split">
+                {/* Visual Side */}
+                <div className="auth-visual brute-grid">
+                    <div className="visual-content">
+                        <h1 className="visual-title">Verify <br /><span>Identity.</span></h1>
+                        <p className="visual-tagline">Security is our top priority.</p>
                     </div>
 
-                    <form onSubmit={handleSubmit} className="auth-form">
-                        <div className="form-group">
-                            <label className="form-label" htmlFor="email">Email</label>
-                            <input
-                                type="email"
-                                id="email"
-                                className="form-input"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                required
-                            />
+                    <div className="ticker-wrap">
+                        <div className="ticker-content">
+                            <span className="ticker-item">ENCRYPTED PROTOCOL</span>
+                            <span className="ticker-item">MULTI-FACTOR AUTH</span>
+                            <span className="ticker-item">SECURE GATEWAY</span>
+                            <span className="ticker-item">VERIFIED STATUS pending</span>
+                            <span className="ticker-item">ENCRYPTED PROTOCOL</span>
                         </div>
-                        <div className="form-group">
-                            <label className="form-label" htmlFor="otp">OTP Code</label>
-                            <input
-                                type="text"
-                                id="otp"
-                                className="form-input"
-                                value={otp}
-                                onChange={(e) => setOtp(e.target.value)}
-                                required
-                                placeholder="Enter 6-digit code"
-                                maxLength={6}
-                            />
+                    </div>
+                </div>
+
+                {/* Form Side */}
+                <div className="auth-form-side">
+                    <div className="auth-container">
+                        <div className="auth-card brute-frame">
+                            <div className="auth-header">
+                                <h1 className="auth-title">Verify Email</h1>
+                                <p className="auth-subtitle">Enter the OTP sent to your email.</p>
+                            </div>
+
+                            <form onSubmit={handleSubmit} className="auth-form">
+                                <div className="form-group">
+                                    <label className="form-label" htmlFor="email">Email</label>
+                                    <input
+                                        type="email"
+                                        id="email"
+                                        className="form-input"
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        required
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label className="form-label" htmlFor="otp">OTP Code</label>
+                                    <input
+                                        type="text"
+                                        id="otp"
+                                        className="form-input"
+                                        value={otp}
+                                        onChange={(e) => setOtp(e.target.value)}
+                                        required
+                                        placeholder="Enter 6-digit code"
+                                        maxLength={6}
+                                    />
+                                </div>
+                                <button type="submit" className="btn btn-primary btn-lg" disabled={loading}>
+                                    {loading ? 'Verifying...' : 'Verify Email'}
+                                </button>
+                            </form>
+                            <div className="auth-footer">
+                                <Link to="/login">Back to Login</Link>
+                            </div>
                         </div>
-                        <button type="submit" className="btn btn-primary btn-lg" disabled={loading}>
-                            {loading ? 'Verifying...' : 'Verify Email'}
-                        </button>
-                    </form>
-                    <div className="auth-footer">
-                        <Link to="/login">Back to Login</Link>
                     </div>
                 </div>
             </div>

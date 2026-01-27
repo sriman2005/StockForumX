@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react';
-import { getQuestions, getStocks } from '../services/api';
+import { getQuestions, getStocks, getUserCount } from '../services/api';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import QuestionList from '../components/questions/QuestionList';
 import SearchBar from '../components/search/SearchBar';
-import FilterBar from '../components/search/FilterBar';
+import DiscussionFilters from '../components/search/DiscussionFilters';
 
-// import Loader from '../components/common/Loader';
 import toast from 'react-hot-toast';
 import { FaRegComments, FaArrowTrendUp, FaUsers, FaFire, FaBolt, FaTrophy, FaChartSimple } from 'react-icons/fa6';
+import EmptyState from '../components/common/EmptyState';
 import './Home.css';
 
 
@@ -17,14 +17,23 @@ const Home = () => {
     const { isAuthenticated } = useAuth();
     const [questions, setQuestions] = useState([]);
     const [trendingStocks, setTrendingStocks] = useState([]);
+    const [userCount, setUserCount] = useState(0);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
     const [sortBy, setSortBy] = useState('recent');
     const [selectedTags, setSelectedTags] = useState([]);
+    const [error, setError] = useState(null);
+
+    // Dynamic formatting for user count
+    const formatUserCount = (count) => {
+        if (count >= 1000000) return (count / 1000000).toFixed(1) + 'M+';
+        if (count >= 1000) return (count / 1000).toFixed(1) + 'K+';
+        return count;
+    };
 
     // Extract unique tags from all questions dynamically
     const availableTags = [...new Set(
-        questions.flatMap(q => q.tags || [])
+        questions.flatMap(q => q?.tags || [])
     )].filter(Boolean).slice(0, 10); // Limit to top 10 most common tags
 
     // Sync searchQuery with URL params when they change
@@ -37,7 +46,6 @@ const Home = () => {
 
     useEffect(() => {
         const timeoutId = setTimeout(() => {
-            console.log('Fetching with search:', searchQuery); // Debug log
             fetchData();
         }, 300); // Debounce search
 
@@ -52,24 +60,31 @@ const Home = () => {
                 tag: selectedTags.length > 0 ? selectedTags[0] : undefined
             };
 
-            console.log('API params:', params); // Debug log
+            setError(null);
 
-            const [questionsRes, stocksRes] = await Promise.all([
+            const [questionsRes, stocksRes, userCountRes] = await Promise.all([
                 getQuestions(params),
-                getStocks({})
+                getStocks({ search: searchQuery }),
+                getUserCount()
             ]);
 
-            console.log('Questions fetched:', questionsRes.data?.length); // Debug log
             setQuestions(Array.isArray(questionsRes.data) ? questionsRes.data : []);
+            setUserCount(userCountRes.data?.count || 0);
 
-            const stocksData = Array.isArray(stocksRes.data) ? stocksRes.data : [];
-            const sortedStocks = stocksData
-                .sort((a, b) => b.volume - a.volume)
-                .slice(0, 5);
-            setTrendingStocks(sortedStocks);
-        } catch (error) {
-            console.error('Fetch error:', error);
+            let stocksData = Array.isArray(stocksRes.data) ? stocksRes.data : [];
+
+            // If NOT searching, show trending (high volume). 
+            // If searching, keep API order (which prioritizes matches)
+            if (!searchQuery) {
+                stocksData = stocksData.sort((a, b) => b.volume - a.volume);
+            }
+
+            // Limit to 5 items for the widget
+            setTrendingStocks(stocksData.slice(0, 5));
+        } catch (err) {
+            console.error('Fetch error:', err);
             toast.error('Failed to load feed');
+            setError(err);
         } finally {
             setLoading(false);
         }
@@ -87,21 +102,19 @@ const Home = () => {
         setSelectedTags([]);
     };
 
-    // Loading state is now handled by components
-    // if (loading) return <Loader />;
-
     return (
         <div className="home-page fade-in">
-            {/* Hero Section */}
-            <div className="hero-section">
+            <div className="hero-section brute-grid">
                 <div className="container">
                     <div className="hero-content">
-                        <h1 className="hero-title">
-                            <span className="gradient-text">Stock Market</span> Discussion Hub
-                        </h1>
-                        <p className="hero-subtitle">
-                            Where investors discuss market trends, share insights, and learn together
-                        </p>
+                        <div className="hero-text-wrapper">
+                            <h1 className="hero-title">
+                                <span className="gradient-text">Stock Market</span> Discussion Hub
+                            </h1>
+                            <p className="hero-subtitle">
+                                Where investors discuss market trends, share insights, and learn together
+                            </p>
+                        </div>
 
                         {/* Quick Stats */}
                         <div className="stats-grid">
@@ -123,7 +136,7 @@ const Home = () => {
                                 <div className="stat-icon">
                                     <FaUsers />
                                 </div>
-                                <div className="stat-value">1K+</div>
+                                <div className="stat-value">{formatUserCount(userCount)}</div>
                                 <div className="stat-label">Active Users</div>
                             </div>
                         </div>
@@ -144,15 +157,17 @@ const Home = () => {
                             )}
                         </div>
 
-                        {/* Search Bar */}
-                        <SearchBar
-                            value={searchQuery}
-                            onChange={setSearchQuery}
-                            placeholder="Search questions..."
-                        />
+                        {/* Search Bar Section */}
+                        <div className="search-section-wrapper">
+                            <SearchBar
+                                value={searchQuery}
+                                onChange={setSearchQuery}
+                                placeholder="Search stocks (e.g., RELIANCE.NS, AAPL)..."
+                            />
+                        </div>
 
                         {/* Filter Bar */}
-                        <FilterBar
+                        <DiscussionFilters
                             sortBy={sortBy}
                             onSortChange={setSortBy}
                             selectedTags={selectedTags}
@@ -161,19 +176,36 @@ const Home = () => {
                             onClearFilters={handleClearFilters}
                         />
 
-                        <QuestionList questions={questions} loading={loading} />
+                        {error && !loading ? (
+                            <div className="feed-error-brute brute-frame">
+                                <h3>FEED UNAVAILABLE</h3>
+                                <p>We're having trouble reaching the exchange. Try refreshing the page.</p>
+                                <button className="btn btn-primary" onClick={fetchData}>
+                                    RETRY CONNECTION
+                                </button>
+                            </div>
+                        ) : questions.length === 0 && !loading ? (
+                            <EmptyState
+                                title="NO DISCUSSIONS"
+                                message="The forum is quiet... be the first to start a conversation!"
+                                action="Clear Filters"
+                                onAction={handleClearFilters}
+                            />
+                        ) : (
+                            <QuestionList questions={questions} loading={loading} />
+                        )}
                     </div>
 
                     {/* Right Sidebar */}
                     <aside className="feed-sidebar">
-                        <div className="sidebar-widget">
+                        <div className="sidebar-widget brute-frame">
                             <h3>
                                 <FaFire className="widget-icon" />
                                 Trending Stocks
                             </h3>
                             <div className="widget-content">
                                 {trendingStocks.map(stock => (
-                                    <Link to={`/stock/${stock.symbol}`} key={stock._id} className="trending-stock-item">
+                                    <Link to={`/stock/${stock.symbol}`} key={stock.symbol} className="trending-stock-item">
                                         <div className="trending-stock-info">
                                             <span className="stock-symbol">{stock.symbol}</span>
                                             <span className={`stock-change ${stock.change >= 0 ? 'positive' : 'negative'}`}>
@@ -183,7 +215,7 @@ const Home = () => {
                                     </Link>
                                 ))}
                                 <div className="view-more-link">
-                                    <Link to="/stocks">View all stocks →</Link>
+                                    <Link to="/stocks">View all stocks</Link>
                                 </div>
                             </div>
                         </div>

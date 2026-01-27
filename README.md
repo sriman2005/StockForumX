@@ -165,7 +165,7 @@ cd client && npm test
 
 ## Development Roadmap
 
-- [x] Project setup
+- [X] Project setup
 - [ ] Authentication system
 - [ ] Stock listing
 - [ ] Q&A system

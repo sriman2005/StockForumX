@@ -248,7 +248,7 @@ vercel --prod
 
 For a modern, containerized deployment using Docker and Nginx as a reverse proxy, please refer to our dedicated guide:
 
-👉 [Docker Deployment Guide](./DOCKER.md)
+[Docker Deployment Guide](./DOCKER.md)
 
 This setup includes:
 - Multi-stage Docker builds for frontend and backend

@@ -80,191 +80,210 @@ const Register = () => {
     };
 
     return (
-        <div className="auth-page">
-            <div className="auth-container auth-container-wide">
-                <div className="auth-card">
-                    <div className="auth-header">
-                        <div className="auth-logo">
-                            <div className="auth-logo-icon">
-                                <FaChartLine />
-                            </div>
-                        </div>
-                        <h1 className="auth-title">Create an account</h1>
-                        <p className="auth-subtitle">Join thousands of traders today.</p>
+        <div className="auth-page brute-dot">
+            <div className="auth-split">
+                {/* Visual Side */}
+                <div className="auth-visual brute-grid">
+                    <div className="visual-content">
+                        <h1 className="visual-title">Join the <br /><span>Consensus.</span></h1>
+                        <p className="visual-tagline">Crowdsourced market wisdom, verified by data.</p>
                     </div>
 
-                    <div className="social-buttons">
-                        <button type="button" className="social-btn">
-                            <FaGoogle /> Google
-                        </button>
-                        <button type="button" className="social-btn">
-                            <FaGithub /> GitHub
-                        </button>
+                    <div className="ticker-wrap">
+                        <div className="ticker-content">
+                            <span className="ticker-item">NEW MEMBER: @trader_pro</span>
+                            <span className="ticker-item">$BTC ALL-TIME HIGH</span>
+                            <span className="ticker-item">500+ DAILY PREDICTIONS</span>
+                            <span className="ticker-item">VERIFIED DATA ONLY</span>
+                            <span className="ticker-item">$ETH +3.1%</span>
+                            <span className="ticker-item">SECURE STORAGE</span>
+                        </div>
                     </div>
+                </div>
 
-                    <div className="auth-divider">
-                        <span>or register with email</span>
-                    </div>
-
-                    <form onSubmit={handleSubmit} className="auth-form">
-                        <div className="form-group">
-                            <label className="form-label" htmlFor="fullName">Full Name</label>
-                            <input
-                                type="text"
-                                id="fullName"
-                                name="fullName"
-                                className="form-input"
-                                value={fullName}
-                                onChange={handleChange}
-                                required
-                                placeholder="John Doe"
-                            />
-                        </div>
-
-                        <div className="form-row">
-                            <div className="form-group">
-                                <label className="form-label" htmlFor="username">Username</label>
-                                <input
-                                    type="text"
-                                    id="username"
-                                    name="username"
-                                    className="form-input"
-                                    value={username}
-                                    onChange={handleChange}
-                                    required
-                                    minLength={3}
-                                    placeholder="johndoe"
-                                />
+                {/* Form Side */}
+                <div className="auth-form-side">
+                    <div className="auth-container" style={{ maxWidth: '600px' }}>
+                        <div className="auth-card brute-frame">
+                            <div className="auth-header">
+                                <h1 className="auth-title">Create Account</h1>
+                                <p className="auth-subtitle">Join thousands of traders today.</p>
                             </div>
-                            <div className="form-group">
-                                <label className="form-label" htmlFor="email">Email</label>
-                                <input
-                                    type="email"
-                                    id="email"
-                                    name="email"
-                                    className="form-input"
-                                    value={email}
-                                    onChange={handleChange}
-                                    required
-                                    placeholder="name@company.com"
-                                />
-                            </div>
-                        </div>
 
-                        <div className="form-row">
-                            <div className="form-group">
-                                <label className="form-label" htmlFor="phone">Phone</label>
-                                <input
-                                    type="tel"
-                                    id="phone"
-                                    name="phone"
-                                    className="form-input"
-                                    value={phone}
-                                    onChange={handleChange}
-                                    placeholder="+1 (555) 000-0000"
-                                />
+                            <div className="social-buttons">
+                                <button type="button" className="social-btn google">
+                                    <FaGoogle /> Google
+                                </button>
+                                <button type="button" className="social-btn github">
+                                    <FaGithub /> GitHub
+                                </button>
                             </div>
-                            <div className="form-group">
-                                <label className="form-label" htmlFor="location">Location</label>
-                                <input
-                                    type="text"
-                                    id="location"
-                                    name="location"
-                                    className="form-input"
-                                    value={location}
-                                    onChange={handleChange}
-                                    placeholder="New York, NY"
-                                />
+
+                            <div className="auth-divider">
+                                <span>OR REGISTER WITH EMAIL</span>
                             </div>
-                        </div>
 
-                        <div className="form-group">
-                            <label className="form-label" htmlFor="tradingExperience">Trading Experience</label>
-                            <select
-                                id="tradingExperience"
-                                name="tradingExperience"
-                                className="form-input"
-                                value={tradingExperience}
-                                onChange={handleChange}
-                            >
-                                <option value="">Select your experience level</option>
-                                <option value="beginner">Beginner - Just starting out</option>
-                                <option value="intermediate">Intermediate - 1-3 years</option>
-                                <option value="advanced">Advanced - 3-5 years</option>
-                                <option value="expert">Expert - 5+ years</option>
-                            </select>
-                        </div>
-
-                        <div className="form-row">
-                            <div className="form-group">
-                                <label className="form-label" htmlFor="password">Password</label>
-                                <div className="input-wrapper">
+                            <form onSubmit={handleSubmit} className="auth-form">
+                                <div className="form-group">
+                                    <label className="form-label" htmlFor="fullName">Full Name</label>
                                     <input
-                                        type={showPassword ? 'text' : 'password'}
-                                        id="password"
-                                        name="password"
+                                        type="text"
+                                        id="fullName"
+                                        name="fullName"
                                         className="form-input"
-                                        value={password}
+                                        value={fullName}
                                         onChange={handleChange}
                                         required
-                                        minLength={6}
-                                        placeholder="••••••••"
+                                        placeholder="John Doe"
                                     />
-                                    <button
-                                        type="button"
-                                        className="password-toggle"
-                                        onClick={() => setShowPassword(!showPassword)}
-                                    >
-                                        {showPassword ? <FaEyeSlash /> : <FaEye />}
-                                    </button>
                                 </div>
-                                {password && (
-                                    <div style={{ marginTop: '5px', fontSize: '12px', color: '#6b7280' }}>
-                                        Strength: <span style={{
-                                            color: passwordStrength.level === 'weak' ? '#ef4444' :
-                                                passwordStrength.level === 'fair' ? '#f59e0b' :
-                                                    passwordStrength.level === 'good' ? '#10b981' : '#059669',
-                                            fontWeight: '600'
-                                        }}>{passwordStrength.label}</span>
+
+                                <div className="form-row">
+                                    <div className="form-group">
+                                        <label className="form-label" htmlFor="username">Username</label>
+                                        <input
+                                            type="text"
+                                            id="username"
+                                            name="username"
+                                            className="form-input"
+                                            value={username}
+                                            onChange={handleChange}
+                                            required
+                                            minLength={3}
+                                            placeholder="johndoe"
+                                        />
                                     </div>
-                                )}
-                            </div>
-                            <div className="form-group">
-                                <label className="form-label" htmlFor="confirmPassword">Confirm Password</label>
-                                <div className="input-wrapper">
-                                    <input
-                                        type={showConfirmPassword ? 'text' : 'password'}
-                                        id="confirmPassword"
-                                        name="confirmPassword"
-                                        className="form-input"
-                                        value={confirmPassword}
-                                        onChange={handleChange}
-                                        required
-                                        minLength={6}
-                                        placeholder="••••••••"
-                                    />
-                                    <button
-                                        type="button"
-                                        className="password-toggle"
-                                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                    >
-                                        {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
-                                    </button>
+                                    <div className="form-group">
+                                        <label className="form-label" htmlFor="email">Email</label>
+                                        <input
+                                            type="email"
+                                            id="email"
+                                            name="email"
+                                            className="form-input"
+                                            value={email}
+                                            onChange={handleChange}
+                                            required
+                                            placeholder="name@company.com"
+                                        />
+                                    </div>
                                 </div>
+
+                                <div className="form-row">
+                                    <div className="form-group">
+                                        <label className="form-label" htmlFor="phone">Phone</label>
+                                        <input
+                                            type="tel"
+                                            id="phone"
+                                            name="phone"
+                                            className="form-input"
+                                            value={phone}
+                                            onChange={handleChange}
+                                            placeholder="+1 (555) 000-0000"
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="form-label" htmlFor="location">Location</label>
+                                        <input
+                                            type="text"
+                                            id="location"
+                                            name="location"
+                                            className="form-input"
+                                            value={location}
+                                            onChange={handleChange}
+                                            placeholder="New York, NY"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="form-group">
+                                    <label className="form-label" htmlFor="tradingExperience">Trading Experience</label>
+                                    <select
+                                        id="tradingExperience"
+                                        name="tradingExperience"
+                                        className="form-input"
+                                        value={tradingExperience}
+                                        onChange={handleChange}
+                                        style={{ appearance: 'auto' }}
+                                    >
+                                        <option value="">Select your experience level</option>
+                                        <option value="beginner">Beginner - Just starting out</option>
+                                        <option value="intermediate">Intermediate - 1-3 years</option>
+                                        <option value="advanced">Advanced - 3-5 years</option>
+                                        <option value="expert">Expert - 5+ years</option>
+                                    </select>
+                                </div>
+
+                                <div className="form-row">
+                                    <div className="form-group">
+                                        <label className="form-label" htmlFor="password">Password</label>
+                                        <div className="input-wrapper">
+                                            <input
+                                                type={showPassword ? 'text' : 'password'}
+                                                id="password"
+                                                name="password"
+                                                className="form-input"
+                                                value={password}
+                                                onChange={handleChange}
+                                                required
+                                                minLength={6}
+                                                placeholder="••••••••"
+                                            />
+                                            <button
+                                                type="button"
+                                                className="password-toggle"
+                                                onClick={() => setShowPassword(!showPassword)}
+                                            >
+                                                {showPassword ? <FaEyeSlash /> : <FaEye />}
+                                            </button>
+                                        </div>
+                                        {password && (
+                                            <span className="password-strength-text" style={{
+                                                color: passwordStrength.level === 'weak' ? '#ef4444' :
+                                                    passwordStrength.level === 'fair' ? '#f59e0b' :
+                                                        passwordStrength.level === 'good' ? '#10b981' : '#059669'
+                                            }}>
+                                                STRENGTH: {passwordStrength.label}
+                                            </span>
+                                        )}
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="form-label" htmlFor="confirmPassword">Confirm Password</label>
+                                        <div className="input-wrapper">
+                                            <input
+                                                type={showConfirmPassword ? 'text' : 'password'}
+                                                id="confirmPassword"
+                                                name="confirmPassword"
+                                                className="form-input"
+                                                value={confirmPassword}
+                                                onChange={handleChange}
+                                                required
+                                                minLength={6}
+                                                placeholder="••••••••"
+                                            />
+                                            <button
+                                                type="button"
+                                                className="password-toggle"
+                                                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                            >
+                                                {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <button
+                                    type="submit"
+                                    className="btn btn-primary btn-lg"
+                                    disabled={loading || (password && confirmPassword && password !== confirmPassword)}
+                                >
+                                    {loading ? 'Creating account...' : 'Create account'}
+                                </button>
+                            </form>
+
+                            <div className="auth-footer">
+                                Already have an account? <Link to="/login">Sign in</Link>
                             </div>
                         </div>
-
-                        <button
-                            type="submit"
-                            className="btn btn-primary btn-lg"
-                            disabled={loading || (password && confirmPassword && password !== confirmPassword)}
-                        >
-                            {loading ? 'Creating account...' : 'Create account'}
-                        </button>
-                    </form>
-
-                    <div className="auth-footer">
-                        Already have an account? <Link to="/login">Sign in</Link>
                     </div>
                 </div>
             </div>

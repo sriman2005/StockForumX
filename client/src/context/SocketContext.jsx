@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
+import toast from 'react-hot-toast';
 
 const SocketContext = createContext();
 
@@ -19,6 +20,32 @@ export const SocketProvider = ({ children }) => {
         const newSocket = io('http://localhost:5000', {
             transports: ['websocket'],
             autoConnect: true
+        });
+
+        newSocket.on('notification', (notif) => {
+            toast(notif.message, { icon: '🔔' });
+        });
+
+        newSocket.on('prediction_result', (data) => {
+            const isDirect = data.precisionLevel === 'direct';
+            let message = data.isCorrect
+                ? `🎯 BOOM! Prediction on ${data.symbol} was CORRECT! (+Reputation)`
+                : `❌ Prediction on ${data.symbol} was incorrect. Better luck next time!`;
+
+            if (isDirect) {
+                message = `🔥 BULLSEYE! Dynamic Direct Hit on ${data.symbol}! (+Massive XP)`;
+            }
+
+            toast(message, {
+                icon: isDirect ? '💎' : (data.isCorrect ? '💰' : '📉'),
+                duration: 6000,
+                style: {
+                    border: '4px solid #000',
+                    boxShadow: '8px 8px 0px #000',
+                    background: data.isCorrect ? 'var(--color-success)' : 'var(--color-danger)',
+                    color: '#fff'
+                }
+            });
         });
 
         newSocket.on('connect', () => {

@@ -3,6 +3,7 @@ import Prediction from '../models/Prediction.js';
 import Stock from '../models/Stock.js';
 import User from '../models/User.js';
 import { updateUserReputation } from '../utils/reputation.js';
+import { io } from '../index.js';
 
 // Run every 15 minutes
 export const startPredictionEvaluator = () => {
@@ -29,8 +30,12 @@ export const startPredictionEvaluator = () => {
                 // Evaluate correctness
                 if (prediction.predictionType === 'price') {
                     // For price predictions, check if within 5% margin
+                    const diff = Math.abs(actualPrice - prediction.targetPrice);
                     const margin = prediction.targetPrice * 0.05;
-                    prediction.isCorrect = Math.abs(actualPrice - prediction.targetPrice) <= margin;
+                    const directMargin = prediction.targetPrice * 0.01;
+
+                    prediction.isCorrect = diff <= margin;
+                    prediction.precisionLevel = diff <= directMargin ? 'direct' : 'normal';
                 } else if (prediction.predictionType === 'direction') {
                     const priceChange = actualPrice - prediction.initialPrice;
                     if (prediction.direction === 'up') {
@@ -54,6 +59,18 @@ export const startPredictionEvaluator = () => {
                     // Update reputation
                     await updateUserReputation(User, user._id);
                     console.log(`Updated reputation for user ${user.username}`);
+
+                    // Emit real-time notification
+                    if (io) {
+                        io.to(user._id.toString()).emit('prediction_result', {
+                            predictionId: prediction._id,
+                            isCorrect: prediction.isCorrect,
+                            precisionLevel: prediction.precisionLevel || 'normal',
+                            symbol: stock.symbol,
+                            actualPrice,
+                            targetPrice: prediction.targetPrice || null
+                        });
+                    }
                 }
             }
 

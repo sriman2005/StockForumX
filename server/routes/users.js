@@ -9,7 +9,18 @@ import { getReputationTier } from '../utils/reputation.js';
 
 const router = express.Router();
 
-// Mock Data
+// @route   GET /api/users/count
+// @desc    Get total user count
+// @access  Public
+router.get('/count', async (req, res) => {
+    try {
+        const count = await User.countDocuments();
+        res.json({ count });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
 // @route   GET /api/users/leaderboard
 
 // @route   GET /api/users/leaderboard
@@ -146,3 +157,38 @@ router.put('/profile', protect, async (req, res) => {
 });
 
 export default router;
+
+// @route   POST /api/users/:id/follow
+// @desc    Follow or Unfollow a user
+// @access  Private
+router.post('/:id/follow', protect, async (req, res) => {
+    try {
+        if (req.params.id === req.user._id.toString()) {
+            return res.status(400).json({ message: 'You cannot follow yourself' });
+        }
+
+        const targetUser = await User.findById(req.params.id);
+        const currentUser = await User.findById(req.user._id);
+
+        if (!targetUser) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        const isFollowing = currentUser.following.includes(req.params.id);
+
+        if (isFollowing) {
+            // Unfollow
+            await User.findByIdAndUpdate(req.user._id, { $pull: { following: req.params.id } });
+            await User.findByIdAndUpdate(req.params.id, { $pull: { followers: req.user._id } });
+            res.json({ message: 'Unfollowed successfully', isFollowing: false });
+        } else {
+            // Follow
+            await User.findByIdAndUpdate(req.user._id, { $push: { following: req.params.id } });
+            await User.findByIdAndUpdate(req.params.id, { $push: { followers: req.user._id } });
+            res.json({ message: 'Followed successfully', isFollowing: true });
+        }
+    } catch (error) {
+        console.error('Follow error:', error);
+        res.status(500).json({ message: error.message });
+    }
+});

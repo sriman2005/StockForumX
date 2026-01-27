@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import RichTextEditor from '../common/RichTextEditor';
 import { createQuestion } from '../../services/api';
 import toast from 'react-hot-toast';
 import './AskQuestionModal.css';
@@ -99,20 +100,16 @@ const AskQuestionModal = ({ stockId, onClose, onSuccess }) => {
                     </div>
 
                     <div className="form-group">
+
                         <label className="form-label">
                             Question Details
                             <span className="label-hint">Include all the information someone would need to answer your question</span>
                         </label>
-                        <textarea
-                            className="form-textarea"
+                        <RichTextEditor
                             value={content}
-                            onChange={(e) => setContent(e.target.value)}
+                            onChange={(value) => setContent(value)}
                             placeholder="Provide more context about your question..."
-                            rows={8}
-                            maxLength={5000}
-                            required
                         />
-                        <div className="char-count">{content.length}/5000</div>
                     </div>
 
                     <div className="form-group">

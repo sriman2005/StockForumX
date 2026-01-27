@@ -1,0 +1,135 @@
+.trade-box {
+    background: white;
+    margin-bottom: 30px;
+    overflow: hidden;
+}
+
+.trade-tabs {
+    display: flex;
+    border-bottom: var(--border-width) solid var(--border-color);
+}
+
+.trade-tab {
+    flex: 1;
+    padding: 15px;
+    font-weight: 950;
+    font-size: 1.1rem;
+    border: none;
+    cursor: pointer;
+    transition: all var(--transition-brute);
+}
+
+.trade-tab.buy.active {
+    background: var(--color-success);
+    color: white;
+}
+
+.trade-tab.sell.active {
+    background: var(--color-danger);
+    color: white;
+}
+
+.trade-form {
+    padding: 25px;
+}
+
+.form-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 25px;
+    background: var(--bg-tertiary);
+    padding: 15px;
+}
+
+.info-item .label {
+    display: block;
+    font-size: 0.7rem;
+    font-weight: 900;
+    opacity: 0.6;
+}
+
+.info-item .value {
+    font-size: 1.2rem;
+    font-weight: 950;
+}
+
+.input-group {
+    margin-bottom: 25px;
+}
+
+.input-group label {
+    display: block;
+    font-weight: 900;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 15px;
+    font-size: 1.5rem;
+    font-weight: 900;
+    border: var(--border-width) solid var(--border-color);
+    outline: none;
+    box-shadow: 4px 4px 0px var(--border-color);
+}
+
+.trade-summary {
+    margin-bottom: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 900;
+    font-size: 0.85rem;
+}
+
+.summary-row .total {
+    font-size: 1.8rem;
+    color: black;
+}
+
+.summary-row.balance {
+    padding: 10px;
+    background: #f0f0f0;
+}
+
+.btn-trade {
+    width: 100%;
+    padding: 22px;
+    border: var(--border-width) solid var(--border-color);
+    font-weight: 950;
+    font-size: 1.1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    text-transform: uppercase;
+    box-shadow: 6px 6px 0px var(--border-color);
+    transition: all var(--transition-brute);
+}
+
+.btn-trade.buy {
+    background: var(--color-success);
+}
+
+.btn-trade.sell {
+    background: var(--color-danger);
+    color: white;
+}
+
+.btn-trade:active {
+    transform: translate(3px, 3px);
+    box-shadow: 0px 0px 0px var(--border-color);
+}
+
+.btn-trade.loading {
+    opacity: 0.7;
+    cursor: wait;
+}

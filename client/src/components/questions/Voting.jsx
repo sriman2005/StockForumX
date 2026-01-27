@@ -23,7 +23,7 @@ const Voting = ({ type, id, initialVotes, initialUpvotedBy = [] }) => {
         }
 
         if (direction === -1) {
-            toast('Downvoting is currently disabled', { icon: '🚧' });
+            toast('Downvoting is currently disabled');
             return;
         }
 

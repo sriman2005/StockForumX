@@ -1,35 +1,23 @@
-import { Link } from 'react-router-dom';
-import { FaInbox } from 'react-icons/fa';
+import { FaGhost } from 'react-icons/fa';
 import './EmptyState.css';
 
 const EmptyState = ({
-    title = 'No Data Found',
-    message = 'We couldn\'t find what you were looking for.',
-    icon = <FaInbox />,
-    actionLabel,
-    actionLink,
+    title = "Nothing Found",
+    message = "Try a different search or filter.",
+    action,
     onAction
 }) => {
     return (
-        <div className="empty-state">
-            <div className="empty-state-icon">
-                {icon}
+        <div className="empty-state-brute fade-in">
+            <div className="empty-state-visual">
+                <FaGhost className="empty-icon" />
+                <div className="glitch-text" data-text={title}>{title}</div>
             </div>
-            <h3 className="empty-state-title">{title}</h3>
-            <p className="empty-state-message">{message}</p>
-
-            {(actionLabel && (actionLink || onAction)) && (
-                <div className="empty-state-action">
-                    {actionLink ? (
-                        <Link to={actionLink} className="btn btn-primary">
-                            {actionLabel}
-                        </Link>
-                    ) : (
-                        <button onClick={onAction} className="btn btn-primary">
-                            {actionLabel}
-                        </button>
-                    )}
-                </div>
+            <p className="empty-message">{message}</p>
+            {action && (
+                <button className="btn btn-primary btn-brute-lg" onClick={onAction}>
+                    {action}
+                </button>
             )}
         </div>
     );

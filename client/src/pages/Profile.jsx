@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { getUserStats, getUserPredictions, getQuestions } from '../services/api';
+import { getUserStats, getUserPredictions, getQuestions, followUser } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import ProfileEdit from '../components/profile/ProfileEdit';
 import Loader from '../components/common/Loader';
-import { FaTrophy, FaCalendar, FaEdit } from 'react-icons/fa';
+import { FaTrophy, FaCalendar, FaEdit, FaMapMarkerAlt, FaUser } from 'react-icons/fa';
 import { format } from 'date-fns';
 import toast from 'react-hot-toast';
 import './Profile.css';
@@ -29,13 +29,15 @@ const UserPredictionsList = ({ userId }) => {
     }, [userId]);
 
     if (loading) {
-        return <div style={{ padding: '2rem', textAlign: 'center' }}>Loading predictions...</div>;
+        return <Loader />;
     }
 
     if (predictions.length === 0) {
         return (
-            <div style={{ padding: '2rem', textAlign: 'center', color: '#666' }}>
-                No predictions yet
+            <div className="empty-state-brute">
+                <div className="empty-icon">🔮</div>
+                <h3>No Predictions Yet</h3>
+                <p>This user hasn't made any market calls.</p>
             </div>
         );
     }
@@ -95,13 +97,15 @@ const UserQuestionsList = ({ userId }) => {
     }, [userId]);
 
     if (loading) {
-        return <div style={{ padding: '2rem', textAlign: 'center' }}>Loading questions...</div>;
+        return <Loader />;
     }
 
     if (questions.length === 0) {
         return (
-            <div style={{ padding: '2rem', textAlign: 'center', color: '#666' }}>
-                No questions asked yet
+            <div className="empty-state-brute">
+                <div className="empty-icon">💬</div>
+                <h3>No Questions Yet</h3>
+                <p>This user hasn't started any discussions.</p>
             </div>
         );
     }
@@ -141,6 +145,29 @@ const Profile = () => {
             ...updatedData
         }));
         toast.success('Profile updated successfully!');
+    };
+
+    const handleFollow = async () => {
+        try {
+            const { data } = await followUser(id);
+            toast.success(data.message);
+
+            // Update local user state to reflect changes
+            setUser(prev => {
+                const isFollowing = prev.followers.includes(currentUser._id);
+                let newFollowers = [...(prev.followers || [])];
+
+                if (isFollowing) {
+                    newFollowers = newFollowers.filter(uid => uid !== currentUser._id);
+                } else {
+                    newFollowers.push(currentUser._id);
+                }
+
+                return { ...prev, followers: newFollowers };
+            });
+        } catch (error) {
+            toast.error(error.response?.data?.message || 'Failed to update follow status');
+        }
     };
 
     useEffect(() => {
@@ -201,7 +228,7 @@ const Profile = () => {
             <div className="container">
                 {/* Profile Header */}
                 <div className="profile-header">
-                    <div className="profile-avatar">
+                    <div className="profile-avatar brute-frame">
                         {user.avatar ? (
                             <img src={user.avatar} alt={user.username} />
                         ) : (
@@ -214,57 +241,91 @@ const Profile = () => {
                                 <h1>{user.username}</h1>
                                 {user.status && <p className="user-status">{user.status}</p>}
                             </div>
-                            <div className="profile-actions">
+                            <div className="profile-actions-top">
                                 <div className="reputation-badge">
-                                    {stats?.user?.tier?.label || stats?.user?.tier || 'Member'}
+                                    Reputation: {user.reputation?.toFixed(0) || 0}
                                 </div>
-                                {isOwnProfile && (
+                                {isOwnProfile ? (
                                     <button
                                         className="btn btn-primary btn-edit-profile"
                                         onClick={() => setShowEditModal(true)}
                                     >
                                         <FaEdit /> Edit Profile
                                     </button>
+                                ) : (
+                                    currentUser && (
+                                        <button
+                                            className={`btn ${user.followers?.includes(currentUser._id) ? 'btn-secondary' : 'btn-primary'}`}
+                                            onClick={handleFollow}
+                                        >
+                                            {user.followers?.includes(currentUser._id) ? 'Unfollow' : 'Follow'}
+                                        </button>
+                                    )
                                 )}
                             </div>
                         </div>
-                        {user.bio && <p className="user-bio">{user.bio}</p>}
+
+                        <p className="user-bio">
+                            {user.bio || 'This user hasn\'t added a bio yet. A dedicated trader exploring market trends and sharing insights with the community.'}
+                        </p>
+
                         <div className="profile-stats-badges">
-                            <div className="stat-badge">
-                                <FaTrophy /> {user.reputation || 0} reputation
-                            </div>
                             <div className="stat-badge">
                                 <FaCalendar /> Joined {user.createdAt ? format(new Date(user.createdAt), 'MMM yyyy') : 'N/A'}
                             </div>
+                            {user.location && (
+                                <div className="stat-badge">
+                                    <FaMapMarkerAlt /> {user.location}
+                                </div>
+                            )}
+                            {user.tradingExperience && (
+                                <div className="stat-badge">
+                                    <FaUser /> {user.tradingExperience}
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
 
                 {/* Key Stats Grid */}
                 <div className="stats-grid-container">
-                    <div className="stat-card-profile">
+                    <div className="stat-card-profile brute-frame">
                         <span className="label">Predictions</span>
                         <span className="value">{stats?.predictions?.total || 0}</span>
-                        <span className="sub-value">{stats?.predictions?.correct || 0} Correct</span>
+                        <span className="sub-value">{stats?.predictions?.correct || 0} CORRECT</span>
                     </div>
-                    <div className="stat-card-profile">
+                    <div className="stat-card-profile brute-frame">
+                        <span className="label">Community</span>
+                        <div className="community-stats">
+                            <div className="stat-column">
+                                <span className="value compact">{user.followers?.length || 0}</span>
+                                <span className="sub-value">FOLLOWERS</span>
+                            </div>
+                            <div className="stat-divider"></div>
+                            <div className="stat-column">
+                                <span className="value compact">{user.following?.length || 0}</span>
+                                <span className="sub-value">FOLLOWING</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="stat-card-profile brute-frame">
                         <span className="label">Accuracy</span>
                         <span className="value">
                             {stats?.predictions?.evaluated > 0
                                 ? ((stats.predictions.correct / stats.predictions.evaluated) * 100).toFixed(1)
                                 : 0}%
                         </span>
-                        <span className="sub-value">{stats?.predictions?.evaluated || 0} evaluated</span>
+                        <span className="sub-value">{stats?.predictions?.evaluated || 0} EVALUATED</span>
                     </div>
-                    <div className="stat-card-profile">
+                    <div className="stat-card-profile brute-frame">
                         <span className="label">Questions</span>
                         <span className="value">{stats?.questions?.total || 0}</span>
-                        <span className="sub-value">{stats?.questions?.totalUpvotes || 0} votes</span>
+                        <span className="sub-value">{stats?.questions?.totalUpvotes || 0} VOTES</span>
                     </div>
-                    <div className="stat-card-profile">
+                    <div className="stat-card-profile brute-frame">
                         <span className="label">Answers</span>
                         <span className="value">{stats?.answers?.total || 0}</span>
-                        <span className="sub-value">{stats?.answers?.accepted || 0} accepted</span>
+                        <span className="sub-value">{stats?.answers?.accepted || 0} ACCEPTED</span>
                     </div>
                 </div>
 

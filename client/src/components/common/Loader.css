@@ -3,59 +3,38 @@
     justify-content: center;
     align-items: center;
     min-height: 200px;
-    width: 100%;
 }
 
 .trading-loader {
     display: flex;
-    align-items: center;
-    gap: 6px;
-    height: 40px;
+    gap: 8px;
+    padding: 20px;
+    background: white;
+    border: var(--border-width) solid var(--border-color);
+    box-shadow: var(--shadow-hard);
 }
 
 .candle {
-    width: 8px;
-    background: #ff9800;
-    /* ORANGE */
-    border-radius: 2px;
-    animation: candle-grow 1s ease-in-out infinite;
+    width: 12px;
+    background: black;
+    border: var(--border-width) solid var(--border-color);
+    animation: brute-grow 0.6s ease-in-out infinite alternate;
 }
 
-.candle:nth-child(1) {
-    height: 20px;
-    animation-delay: 0s;
+.candle:nth-child(even) {
+    background: var(--color-accent);
 }
 
-.candle:nth-child(2) {
-    height: 35px;
-    animation-delay: 0.1s;
+.candle:nth-child(odd) {
+    background: var(--color-primary);
 }
 
-.candle:nth-child(3) {
-    height: 15px;
-    animation-delay: 0.2s;
-}
-
-.candle:nth-child(4) {
-    height: 40px;
-    animation-delay: 0.3s;
-}
-
-.candle:nth-child(5) {
-    height: 25px;
-    animation-delay: 0.4s;
-}
-
-@keyframes candle-grow {
-
-    0%,
-    100% {
-        transform: scaleY(1);
-        opacity: 0.8;
+@keyframes brute-grow {
+    from {
+        height: 10px;
     }
 
-    50% {
-        transform: scaleY(1.5);
-        opacity: 1;
+    to {
+        height: 50px;
     }
 }

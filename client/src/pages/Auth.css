@@ -1,183 +1,163 @@
 /* =====================================================
-   Professional Minimal Auth Design (Light)
-   Clean, corporate, simple
+   Premium Neo-Brutalist Auth Redesign
+   Phase 2: Vibrance Injection (Animated & Physical)
    ===================================================== */
 
-:root {
-    --auth-bg: #f9fafb;
-    --auth-card-bg: #ffffff;
-    --auth-text-main: #111827;
-    --auth-text-muted: #6b7280;
-    --auth-border: #e5e7eb;
-    --auth-input-bg: #ffffff;
-    --auth-primary: #f48024;
-    --auth-primary-hover: #e06c10;
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    --radius-md: 8px;
-    --radius-sm: 6px;
-}
-
-body {
-    background-color: var(--auth-bg);
-    color: var(--auth-text-main);
-}
-
 .auth-page {
-    min-height: 100vh;
+    height: calc(100vh - 105px);
+    display: flex;
+    background-color: var(--bg-primary);
+    overflow: hidden;
+}
+
+/* Split Layout */
+.auth-split {
+    display: flex;
+    width: 100%;
+    height: 100%;
+}
+
+.auth-visual {
+    flex: 1.1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 60px;
+    background-color: var(--color-accent);
+    border-right: var(--border-width) solid var(--border-color);
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+}
+
+/* Decorative Patterns */
+.auth-visual::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(var(--border-color) 2px, transparent 2px);
+    background-size: 30px 30px;
+    opacity: 0.1;
+    z-index: -1;
+}
+
+/* Animated Ticker Tape */
+.ticker-wrap {
+    position: absolute;
+    bottom: 40px;
+    left: -10%;
+    width: 120%;
+    background: var(--bg-dark);
+    color: var(--color-accent);
+    padding: 15px 0;
+    border: var(--border-width) solid var(--border-color);
+    transform: rotate(-2deg);
+    white-space: nowrap;
+    overflow: hidden;
+    box-shadow: 10px 10px 0px var(--border-color);
+}
+
+.ticker-content {
+    display: inline-block;
+    padding-left: 100%;
+    animation: ticker 30s linear infinite;
+    font-size: 1.2rem;
+    font-weight: 900;
+    text-transform: uppercase;
+}
+
+.ticker-item {
+    display: inline-block;
+    padding: 0 40px;
+}
+
+@keyframes ticker {
+    0% {
+        transform: translate3d(0, 0, 0);
+    }
+
+    100% {
+        transform: translate3d(-100%, 0, 0);
+    }
+}
+
+.visual-content {
+    position: relative;
+    z-index: 2;
+}
+
+.visual-title {
+    font-size: clamp(3rem, 5vw, 5rem);
+    font-weight: 900;
+    line-height: 0.85;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    color: var(--text-primary);
+    letter-spacing: -0.05em;
+    filter: drop-shadow(8px 8px 0px var(--bg-primary));
+}
+
+.visual-title span {
+    display: block;
+    color: var(--color-primary);
+    -webkit-text-stroke: 2px var(--border-color);
+    text-shadow: 6px 6px 0px var(--border-color);
+}
+
+.visual-tagline {
+    font-size: 1.4rem;
+    font-weight: 800;
+    background: var(--bg-dark);
+    color: var(--bg-primary);
+    padding: 10px 20px;
+    display: inline-block;
+    box-shadow: 6px 6px 0px var(--color-primary);
+}
+
+/* Form Side */
+.auth-form-side {
+    flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 24px;
-    background-color: var(--auth-bg);
+    padding: 40px;
+    background: var(--bg-tertiary);
+    background-image: radial-gradient(var(--border-color) 1px, transparent 1px);
+    background-size: 24px 24px;
+    overflow-y: auto;
 }
 
-/* Auth Container */
 .auth-container {
     width: 100%;
-    max-width: 400px;
+    max-width: 480px;
 }
 
-.auth-container-wide {
-    max-width: 600px;
-}
-
-/* Card */
+/* Auth Card */
 .auth-card {
-    background: var(--auth-card-bg);
-    border: 1px solid var(--auth-border);
-    border-radius: var(--radius-md);
-    padding: 40px;
-    box-shadow: var(--shadow-card);
+    background: var(--bg-primary);
+    padding: 30px 40px;
+    border: var(--border-width) solid var(--border-color);
+    box-shadow: var(--shadow-hard-lg);
+    position: relative;
 }
 
-/* Header */
 .auth-header {
-    text-align: center;
-    margin-bottom: 32px;
-}
-
-.auth-logo {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 24px;
-}
-
-.auth-logo-icon {
-    width: 48px;
-    height: 48px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--auth-primary);
-    background: linear-gradient(135deg, #fff0e6 0%, #fff 100%);
-    border: 1px solid #fed7aa;
-    border-radius: 12px;
-    font-size: 24px;
+    margin-bottom: 25px;
 }
 
 .auth-title {
-    font-size: 24px;
-    font-weight: 700;
-    color: var(--auth-text-main);
+    font-size: 2.22rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    line-height: 1;
     margin-bottom: 8px;
-    letter-spacing: -0.025em;
+    letter-spacing: -0.02em;
 }
 
 .auth-subtitle {
-    font-size: 14px;
-    color: var(--auth-text-muted);
-}
-
-/* Form Groups */
-.auth-form .form-group {
-    margin-bottom: 20px;
-}
-
-.form-label {
-    display: block;
-    font-size: 14px;
-    font-weight: 500;
-    color: #374151;
-    margin-bottom: 6px;
-}
-
-.input-wrapper {
-    position: relative;
-}
-
-.form-input,
-.uiverse-input,
-.uiverse-select {
-    width: 100%;
-    padding: 10px 12px;
-    font-size: 14px;
-    line-height: 1.5;
-    color: var(--auth-text-main);
-    background-color: var(--auth-input-bg);
-    background-image: none;
-    /* Reset uiverse bg if any */
-    border: 1px solid var(--auth-border);
-    border-radius: var(--radius-sm);
-    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-}
-
-.form-input:focus,
-.uiverse-input:focus,
-.uiverse-select:focus {
-    outline: none;
-    border-color: var(--auth-primary);
-    box-shadow: 0 0 0 3px rgba(244, 128, 36, 0.15);
-}
-
-.form-input::placeholder {
-    color: #9ca3af;
-}
-
-/* Adjustments for uiverse compat or reset */
-.uiverse-input-container {
-    position: relative;
-    /* We will use a standard layout, so resetting some floating styles if specific classes persist */
-}
-
-/* If using floating labels, we can keep them but style them minimally.
-   For "Professional Professional", standard top labels are often preferred.
-   I'll style .uiverse-label to look standard if present, or hide/transform it.
-   Let's assume the component might still use the structure but we want standard look.
-   However, Login.jsx uses standard inputs? No, I updated it to use uiverse structure.
-   I will need to update Login.jsx structure primarily.
-   But to be safe, I'll style uiverse classes to look standard-ish or cleaner.
-*/
-
-/* Buttons */
-.auth-form .btn-lg {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    padding: 10px 16px;
-    font-size: 14px;
-    font-weight: 600;
-    color: #ffffff;
-    background: var(--auth-primary);
-    border: 1px solid transparent;
-    border-radius: var(--radius-sm);
-    cursor: pointer;
-    transition: background-color 0.15s ease-in-out;
-    box-shadow: var(--shadow-sm);
-}
-
-.auth-form .btn-lg:hover:not(:disabled) {
-    background-color: var(--auth-primary-hover);
-    transform: none;
-    /* Reset uiverse transform */
-    box-shadow: var(--shadow-sm);
-}
-
-.auth-form .btn-lg:disabled {
-    opacity: 0.7;
-    cursor: not-allowed;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text-secondary);
 }
 
 /* Social Buttons */
@@ -185,138 +165,248 @@ body {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 12px;
-    margin-bottom: 24px;
+    margin-bottom: 25px;
 }
 
 .social-btn {
+    background: var(--bg-primary);
+    border: var(--border-width) solid var(--border-color);
+    padding: 12px;
+    font-weight: 900;
+    text-transform: uppercase;
+    font-size: 0.75rem;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
-    padding: 10px 16px;
-    font-size: 14px;
-    font-weight: 500;
-    color: #374151;
-    background: #ffffff;
-    border: 1px solid var(--auth-border);
-    border-radius: var(--radius-sm);
     cursor: pointer;
-    transition: background-color 0.15s ease, border-color 0.15s ease;
-    box-shadow: var(--shadow-sm);
+    box-shadow: 4px 4px 0px var(--border-color);
+    transition: all 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.social-btn.google:hover {
+    background: #fdf2f2;
+}
+
+.social-btn.github:hover {
+    background: #f3f4f6;
 }
 
 .social-btn:hover {
-    background-color: #f9fafb;
-    border-color: #d1d5db;
+    transform: translate(-3px, -3px);
+    box-shadow: 6px 6px 0px var(--border-color);
+}
+
+.social-btn:active {
+    transform: translate(4px, 4px);
+    box-shadow: 0px 0px 0px var(--border-color);
 }
 
 /* Divider */
 .auth-divider {
-    position: relative;
-    text-align: center;
-    margin: 24px 0;
+    display: flex;
+    align-items: center;
+    margin-bottom: 25px;
 }
 
-.auth-divider::before {
+.auth-divider::before,
+.auth-divider::after {
     content: '';
-    position: absolute;
-    top: 50%;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: var(--auth-border);
+    flex: 1;
+    height: var(--border-width);
+    background: var(--border-color);
 }
 
 .auth-divider span {
-    position: relative;
-    background: var(--auth-card-bg);
     padding: 0 12px;
-    color: var(--auth-text-muted);
-    font-size: 12px;
+    font-size: 0.75rem;
+    font-weight: 900;
     text-transform: uppercase;
-    font-weight: 500;
+    background: var(--bg-primary);
 }
 
-/* Extras */
-.form-extras {
+/* Form Styles */
+.auth-form .form-group {
+    margin-bottom: 15px;
+}
+
+.form-label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    letter-spacing: 0.08em;
+}
+
+.form-input {
+    width: 100%;
+    padding: 12px 45px 12px 16px;
+    font-size: 1rem;
+    font-weight: 800;
+    background: var(--bg-primary);
+    border: var(--border-width) solid var(--border-color);
+    color: var(--text-primary);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.form-input:focus {
+    outline: none;
+    background: var(--bg-secondary);
+    transform: translate(-4px, -4px);
+    box-shadow: 8px 8px 0px var(--color-info);
+}
+
+.input-wrapper {
+    position: relative;
+    width: 100%;
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    margin-bottom: 24px;
-}
-
-.forgot-password {
-    font-size: 14px;
-    color: var(--auth-primary);
-    text-decoration: none;
-    font-weight: 500;
-}
-
-.forgot-password:hover {
-    text-decoration: underline;
-    color: var(--auth-primary-hover);
 }
 
 .password-toggle {
     position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
+    right: 15px;
     background: none;
     border: none;
-    color: #9ca3af;
+    font-size: 1.2rem;
     cursor: pointer;
-    padding: 4px;
+    display: flex;
+    align-items: center;
+    color: var(--text-primary);
+    z-index: 5;
+    padding: 5px;
+    transition: all 0.2s;
 }
 
 .password-toggle:hover {
-    color: #4b5563;
+    color: var(--color-primary);
+    transform: scale(1.1);
+}
+
+.btn-lg {
+    padding: 18px !important;
+    font-size: 1.1rem !important;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.form-extras {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 20px;
+}
+
+.forgot-password {
+    font-size: 0.8rem;
+    font-weight: 800;
+    text-decoration: underline;
+    text-transform: uppercase;
+    color: var(--text-primary);
+}
+
+.otp-login-link {
+    display: block;
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 0.85rem;
+    font-weight: 900;
+    text-decoration: none;
+    text-transform: uppercase;
+    color: var(--color-primary);
+    background: var(--color-accent);
+    padding: 8px;
+    border: var(--border-width) solid var(--border-color);
+    box-shadow: 4px 4px 0px var(--border-color);
+    transition: all 0.1s;
+}
+
+.otp-login-link:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0px var(--border-color);
 }
 
 /* Footer */
 .auth-footer {
     text-align: center;
-    margin-top: 24px;
-    font-size: 14px;
-    color: var(--auth-text-muted);
+    margin-top: 25px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    padding-top: 15px;
+    border-top: var(--border-width) solid var(--border-color);
 }
 
 .auth-footer a {
-    color: var(--auth-primary);
-    text-decoration: none;
-    font-weight: 500;
+    font-weight: 900;
+    text-transform: uppercase;
+    color: var(--color-primary);
+    background: var(--color-accent);
+    padding: 2px 6px;
+    margin-left: 5px;
 }
 
-.auth-footer a:hover {
-    text-decoration: underline;
-}
-
-/* Form Row */
+/* Form Row (for register) */
 .form-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 16px;
+    gap: 15px;
 }
 
-/* Responsive */
-@media (max-width: 640px) {
-    .auth-card {
-        padding: 24px;
-        box-shadow: none;
-        border: none;
-        background: transparent;
+/* Strength Indicator */
+.password-strength-text {
+    font-size: 0.75rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    margin-top: 8px;
+    display: block;
+    padding: 4px 8px;
+    background: var(--bg-dark);
+    display: inline-block;
+}
+
+/* Responsive Customizations */
+@media (max-width: 1200px) {
+    .visual-title {
+        font-size: 4.5rem;
+    }
+}
+
+@media (max-width: 1024px) {
+    .auth-page {
+        height: auto;
+        overflow: auto;
     }
 
-    .auth-page {
-        padding: 0;
-        background: #fff;
+    .auth-split {
+        height: auto;
+    }
+
+    .auth-visual {
+        display: none;
+    }
+
+    .auth-form-side {
+        flex: 1;
+        padding: 40px 20px;
+        height: auto;
+    }
+}
+
+@media (max-width: 640px) {
+    .auth-card {
+        padding: 30px 20px;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 0;
     }
 
     .social-buttons {
         grid-template-columns: 1fr;
     }
 
-    .form-row {
-        grid-template-columns: 1fr;
+    .auth-title {
+        font-size: 2.2rem;
     }
 }

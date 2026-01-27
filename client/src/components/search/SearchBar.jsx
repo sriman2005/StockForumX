@@ -1,4 +1,4 @@
-import { FaSearch, FaTimes } from 'react-icons/fa';
+import { FaMagnifyingGlass, FaXmark } from 'react-icons/fa6';
 import './SearchBar.css';
 
 const SearchBar = ({ value = '', onChange, placeholder = 'Search questions...' }) => {
@@ -17,7 +17,7 @@ const SearchBar = ({ value = '', onChange, placeholder = 'Search questions...' }
     return (
         <div className="search-bar-container">
             <div className="search-input-wrapper">
-                <FaSearch className="search-icon" />
+                <FaMagnifyingGlass className="search-icon" />
                 <input
                     type="text"
                     className="search-input"
@@ -31,11 +31,16 @@ const SearchBar = ({ value = '', onChange, placeholder = 'Search questions...' }
                         onClick={handleClear}
                         aria-label="Clear search"
                     >
-                        <FaTimes />
+                        <FaXmark />
                     </button>
                 )}
             </div>
-        </div>
+            <div className="search-helper-text">
+                <span><b>Indian:</b> Add .NS (e.g., RELIANCE.NS)</span>
+                <span className="divider">•</span>
+                <span><b>Global:</b> Ticker (e.g., AAPL)</span>
+            </div>
+        </div >
     );
 };
 
