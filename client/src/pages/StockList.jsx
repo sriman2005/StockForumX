@@ -114,9 +114,10 @@ const StockList = () => {
                     ) : (
                         <div style={{ gridColumn: '1 / -1' }}>
                             <EmptyState
-                                title="No stocks found"
+                                title="STOCKS NOT FOUND"
                                 message={`We couldn't find any stocks matching "${searchQuery}"`}
-                                icon={<FaChartLine />}
+                                action="Reset Search"
+                                onAction={() => setSearchQuery('')}
                             />
                         </div>
                     )}

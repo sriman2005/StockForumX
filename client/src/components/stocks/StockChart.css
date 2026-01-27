@@ -1,0 +1,75 @@
+.stock-chart-container {
+    background: white;
+    border: var(--border-width) solid var(--border-color);
+    box-shadow: var(--shadow-hard);
+    padding: 25px;
+    margin-bottom: 30px;
+    position: relative;
+    overflow: hidden;
+}
+
+.chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.chart-title {
+    font-size: 1.5rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    color: black;
+    margin: 0;
+}
+
+.chart-period {
+    background: var(--color-accent);
+    border: calc(var(--border-width) / 2) solid var(--border-color);
+    padding: 5px 15px;
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+}
+
+.custom-tooltip {
+    background: white;
+    border: var(--border-width) solid var(--border-color);
+    padding: 10px 15px;
+    box-shadow: 6px 6px 0px var(--border-color);
+}
+
+.tooltip-date {
+    font-weight: 900;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    margin-bottom: 5px;
+    color: var(--border-color);
+}
+
+.tooltip-price {
+    font-size: 1.2rem;
+    font-weight: 900;
+    color: black;
+}
+
+/* Recharts Customization */
+.recharts-cartesian-grid-horizontal line,
+.recharts-cartesian-grid-vertical line {
+    stroke: #e0e0e0;
+    stroke-width: 2;
+}
+
+.recharts-xAxis .recharts-cartesian-axis-line,
+.recharts-yAxis .recharts-cartesian-axis-line {
+    stroke: var(--border-color);
+    stroke-width: var(--border-width);
+}
+
+.recharts-cartesian-axis-tick-value {
+    font-family: var(--font-family);
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    fill: var(--border-color);
+}
