@@ -9,7 +9,22 @@ import toast from 'react-hot-toast';
 import './StockList.css';
 
 import { FixedSizeGrid as Grid } from 'react-window';
-import AutoSizer from 'react-virtualized-auto-sizer';
+import AutoSizer from 'react-virtualized-auto-sizer'; // Rollup seems to catch this, but let's try a safer import if this fails, or maybe just suppression. 
+// Actually, let's try the direct default access pattern which usually fixes "default is not exported"
+// import * as AutoSizerPkg from 'react-virtualized-auto-sizer';
+// const AutoSizer = AutoSizerPkg.default || AutoSizerPkg;
+
+// The error "default is not exported" usually means it IS exported as MJS but with named exports, OR it is CJS and Vite is confused.
+// Looking at the package, it often only has a default export. 
+// A very common fix for this specific package in recent Vite versions:
+// import { default as AutoSizer } from 'react-virtualized-auto-sizer'; 
+// But if that fails, the fallback is:
+// import AutoSizerPkg from 'react-virtualized-auto-sizer';
+// const AutoSizer = AutoSizerPkg.default || AutoSizerPkg;
+
+// Let's implement the robust fallback:
+import * as AutoSizerPkg from 'react-virtualized-auto-sizer';
+const AutoSizer = AutoSizerPkg.default || AutoSizerPkg;
 
 // ... existing imports ...
 
