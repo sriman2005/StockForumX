@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { getQuestions, getStocks, getUserCount } from '../services/api';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -32,9 +32,11 @@ const Home = () => {
     };
 
     // Extract unique tags from all questions dynamically
-    const availableTags = [...new Set(
-        questions.flatMap(q => q?.tags || [])
-    )].filter(Boolean).slice(0, 10); // Limit to top 10 most common tags
+    const availableTags = useMemo(() => {
+        return [...new Set(
+            questions.flatMap(q => q?.tags || [])
+        )].filter(Boolean).slice(0, 10); // Limit to top 10 most common tags
+    }, [questions]);
 
     // Sync searchQuery with URL params when they change
     useEffect(() => {

@@ -66,8 +66,7 @@ const StockDetail = () => {
 
             setQuestions(Array.isArray(questionsRes.data) ? questionsRes.data : []);
             setPredictions(Array.isArray(predictionsRes.data) ? predictionsRes.data : []);
-            setQuestions(Array.isArray(questionsRes.data) ? questionsRes.data : []);
-            setPredictions(Array.isArray(predictionsRes.data) ? predictionsRes.data : []);
+
 
             const history = Array.isArray(historyRes.data) ? historyRes.data : [];
             // Map data for chart
