@@ -68,6 +68,17 @@ function Loader() {
 }
 ```
 
+#### ErrorBoundary
+**Location**: `components/common/ErrorBoundary.jsx`
+
+Brutalist-styled error catcher for the component tree. Wraps the main routes in `App.jsx`.
+
+```javascript
+<ErrorBoundary>
+    <AppContent />
+</ErrorBoundary>
+```
+
 #### EmptyState
 **Location**: `components/common/EmptyState.jsx`
 
