@@ -469,6 +469,8 @@ const handleClick = useCallback(() => {
 4. **Image Optimization**: Lazy load images
 5. **Memoization**: Use `React.memo`, `useMemo`, `useCallback`.
    - **Example**: `Home.jsx` memoizes tag calculation to prevent re-filtering on every render.
+6. **Virtualization**: Use `react-window` for long lists.
+   - **Implementation**: `StockList.jsx` uses `FixedSizeGrid` + `AutoSizer` to render thousands of stocks efficiently.
 
 ## Testing
 
