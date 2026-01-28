@@ -5,6 +5,7 @@ import { AuthProvider } from './context/AuthContext';
 import { SocketProvider } from './context/SocketContext';
 import Navbar from './components/common/Navbar';
 import Loader from './components/common/Loader';
+import ErrorBoundary from './components/common/ErrorBoundary';
 
 // Lazy loading pages
 const Home = lazy(() => import('./pages/Home'));
@@ -30,24 +31,26 @@ function App() {
                     <div className="app">
                         <Navbar />
                         <main>
-                            <Suspense fallback={<Loader />}>
-                                <Routes>
-                                    <Route path="/" element={<Home />} />
-                                    <Route path="/stocks" element={<StockList />} />
-                                    <Route path="/stock/:symbol" element={<StockDetail />} />
-                                    <Route path="/question/:id" element={<QuestionDetail />} />
-                                    <Route path="/login" element={<Login />} />
-                                    <Route path="/register" element={<Register />} />
-                                    <Route path="/profile/:id" element={<Profile />} />
-                                    <Route path="/leaderboard" element={<Leaderboard />} />
-                                    <Route path="/verify-email" element={<VerifyEmail />} />
-                                    <Route path="/login-otp" element={<LoginOTP />} />
-                                    <Route path="/forgot-password" element={<ForgotPassword />} />
-                                    <Route path="/reset-password" element={<ResetPassword />} />
-                                    <Route path="/portfolio" element={<Portfolio />} />
-                                    <Route path="*" element={<NotFound />} />
-                                </Routes>
-                            </Suspense>
+                            <ErrorBoundary>
+                                <Suspense fallback={<Loader />}>
+                                    <Routes>
+                                        <Route path="/" element={<Home />} />
+                                        <Route path="/stocks" element={<StockList />} />
+                                        <Route path="/stock/:symbol" element={<StockDetail />} />
+                                        <Route path="/question/:id" element={<QuestionDetail />} />
+                                        <Route path="/login" element={<Login />} />
+                                        <Route path="/register" element={<Register />} />
+                                        <Route path="/profile/:id" element={<Profile />} />
+                                        <Route path="/leaderboard" element={<Leaderboard />} />
+                                        <Route path="/verify-email" element={<VerifyEmail />} />
+                                        <Route path="/login-otp" element={<LoginOTP />} />
+                                        <Route path="/forgot-password" element={<ForgotPassword />} />
+                                        <Route path="/reset-password" element={<ResetPassword />} />
+                                        <Route path="/portfolio" element={<Portfolio />} />
+                                        <Route path="*" element={<NotFound />} />
+                                    </Routes>
+                                </Suspense>
+                            </ErrorBoundary>
                         </main>
                         <Toaster
                             position="top-right"
