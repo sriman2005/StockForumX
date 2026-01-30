@@ -158,14 +158,15 @@ Socket.io events:
 - `prediction:new` - New prediction
 - `stock:update` - Stock price update
 
-## Testing
+> [!NOTE]
+>## Testing
+>
+>```bash
+># Run backend tests
+>cd server && npm test
 
-```bash
-# Run backend tests
-cd server && npm test
-
-# Run frontend tests
-cd client && npm test
+># Run frontend tests
+>cd client && npm test
 ```
 
 ## Development Roadmap
