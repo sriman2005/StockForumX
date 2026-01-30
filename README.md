@@ -204,6 +204,5 @@ Socket.io events:
 
 MIT
 
-## Contributing
-
-<span style="color: green;">Contributions are welcome! Please open an issue or submit a pull request.</span>
+> [!TIP]
+> Contributions are welcome! Please open an issue or submit a pull request.
