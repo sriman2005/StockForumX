@@ -23,6 +23,7 @@ A real-time stock discussion and prediction platform with accuracy-based reputat
 - **Real-time:** Socket.io
 - **Auth:** JWT
 - **Jobs:** node-cron
+- **Microservices:** Go (Golang)
 - **Charts:** Recharts
 
 ## Project Structure
@@ -44,6 +45,10 @@ StockForumX/
 │   ├── jobs/
 │   ├── utils/
 │   └── package.json
+│
+│   ├── services/       # Microservices
+│   │   └── price-updater/ # Go service for stock updates
+│   │
 ├── shared/          # Shared constants
 └── package.json
 ```
@@ -173,10 +178,10 @@ cd client && npm test
 - [x] Prediction system
 - [x] Reputation algorithm
 - [x] Real-time chat
-- [ ] Analytics dashboard
-- [x] Performance Optimizations (Lazy Loading, Memoization)
-- [ ] Advanced features
-- [ ] Deployment
+- [x] Analytics dashboard
+- [x] Performance Optimizations (Lazy Loading, Memoization, Go Microservices)
+- [x] Advanced features (Manipulation Detection)
+- [x] Deployment (Docker, Nginx)
 
 ## Resume Impact
 

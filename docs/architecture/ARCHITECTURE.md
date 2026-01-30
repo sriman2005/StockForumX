@@ -28,6 +28,10 @@ graph TB
         Predictions[(Predictions)]
         Chat[(Chat Messages)]
     end
+
+    subgraph Microservices["Microservices (Go)"]
+        PriceUpdater[Price Updater Service]
+    end
     
     UI --> Router
     Router --> Context
@@ -38,6 +42,7 @@ graph TB
     API --> Database
     WS --> Database
     Jobs --> Database
+    PriceUpdater --> Database
 ```
 
 ## Technology Stack
@@ -65,6 +70,11 @@ graph TB
 - **express-validator** - Input validation
 - **express-rate-limit** - Rate limiting
 - **nodemailer** - Email service
+
+### Microservices
+- **Go (Golang)** - High-performance service language
+- **Goroutines** - Concurrent processing
+- **go.mongodb.org/mongo-driver** - MongoDB driver for Go
 
 ## Project Structure
 
@@ -151,10 +161,11 @@ Tiers:
 - **Function**: Recalculates user reputation
 - **Creates**: Reputation snapshots
 
-#### Stock Price Updater
-- **Schedule**: Every 5 minutes
-- **Function**: Updates mock stock prices
-- **Broadcasts**: Price changes via WebSocket
+#### Stock Price Updater (Go Microservice)
+- **Schedule**: Continuous (High Frequency)
+- **Function**: Updates stock prices using concurrent Goroutines
+- **Performance**: Capable of handling hundreds of stock updates simultaneously with low latency
+- **Integration**: Writes directly to MongoDB, changes broadcasted via WebSocket by main server
 
 ## Data Flow
 

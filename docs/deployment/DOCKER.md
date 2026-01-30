@@ -36,6 +36,7 @@ The setup consists of 4 containers:
 - **nginx**: Reverse proxy listening on port 80. Routes `/api` to the backend and serves the frontend.
 - **frontend**: React application served via internal Nginx.
 - **backend**: Node.js/Express API.
+- **price-updater**: Go microservice for high-frequency stock price updates.
 - **mongodb**: Database with persistent volume `mongodb_data`.
 
 ## Useful Commands
