@@ -7,7 +7,8 @@
     "scripts": {
         "dev": "nodemon index.js",
         "start": "node index.js",
-        "seed": "node utils/seeders.js"
+        "seed": "node utils/seeders.js",
+        "test": "echo \"No tests yet\" && exit 0"
     },
     "keywords": [],
     "author": "",
