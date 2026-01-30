@@ -22,6 +22,7 @@ const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
 const ResetPassword = lazy(() => import('./pages/ResetPassword'));
 const NotFound = lazy(() => import('./pages/error/NotFound'));
 const Portfolio = lazy(() => import('./pages/Portfolio'));
+const Analytics = lazy(() => import('./pages/Analytics'));
 
 function App() {
     return (
@@ -47,6 +48,7 @@ function App() {
                                         <Route path="/forgot-password" element={<ForgotPassword />} />
                                         <Route path="/reset-password" element={<ResetPassword />} />
                                         <Route path="/portfolio" element={<Portfolio />} />
+                                        <Route path="/analytics" element={<Analytics />} />
                                         <Route path="*" element={<NotFound />} />
                                     </Routes>
                                 </Suspense>
