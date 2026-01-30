@@ -65,6 +65,20 @@ services:
     networks:
       - stockforumx-network
 
+  price-updater:
+    build:
+      context: ./services/price-updater
+      dockerfile: Dockerfile
+    container_name: stockforumx-price-updater
+    restart: unless-stopped
+    environment:
+      - MONGODB_URI=mongodb://mongodb:27017/stockforumx
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - stockforumx-network
+
 networks:
   stockforumx-network:
     driver: bridge
