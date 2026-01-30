@@ -69,6 +69,10 @@ StockForumX/
 - MongoDB (v6+)
 - npm or yarn
 
+> [!NOTE]
+> **Go (Golang)** is required if you want to run or modify the microservices (e.g., `price-updater`).
+
+
 ### Installation
 
 ```bash
