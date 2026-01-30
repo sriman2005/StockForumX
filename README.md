@@ -183,12 +183,6 @@ cd client && npm test
 - [x] Advanced features (Manipulation Detection)
 - [x] Deployment (Docker, Nginx)
 
-## Resume Impact
-
-**Instead of:** "Built a MERN app"
-
-**Say:** "Built a real-time stock discussion and prediction platform with accuracy-based reputation, time-expiring knowledge, and live analytics using MERN stack, WebSockets, and MongoDB aggregation pipelines."
-
 ## License
 
 MIT
