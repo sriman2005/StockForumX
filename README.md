@@ -1,5 +1,4 @@
-# StockForumX 
-
+<h1 align="center">StockForumX</h1>
 
 <p align="center">
   <img src="https://img.shields.io/github/actions/workflow/status/udaykiriti/StockForumX/ci.yml?label=CI&style=for-the-badge" />
