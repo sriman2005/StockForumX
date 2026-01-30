@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"math/rand"
 	"net/http"
 	"os"
 	"sync"
@@ -79,6 +80,9 @@ func main() {
 		go func(s Stock) {
 			defer wg.Done()
 			defer func() { <-semaphore }() // Release token
+
+			// Random jitter to avoid 429s (0.5s to 2.5s delay)
+			time.Sleep(time.Millisecond * time.Duration(500+rand.Intn(2000)))
 
 			// Fetch real price
 			price, err := fetchPrice(s.Symbol)
