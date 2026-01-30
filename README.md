@@ -167,7 +167,7 @@ Socket.io events:
 
 ># Run frontend tests
 >cd client && npm test
-```
+>```
 
 ## Development Roadmap
 
