@@ -9,7 +9,7 @@ const StockCard = memo(({ stock }) => {
                     <h3 className="stock-symbol">{stock.symbol || 'N/A'}</h3>
                     <p className="stock-name">{stock.name || 'Unknown'}</p>
                 </div>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', justifyContent: 'flex-end', alignItems: 'flex-start' }}>
+                <div className="badge-container">
                     <span className="badge badge-info">{stock.sector || 'Other'}</span>
                     {stock.sentimentLabel && stock.sentimentLabel !== 'Neutral' && (
                         <span className={`badge ${stock.sentimentScore > 60 ? 'badge-success' : stock.sentimentScore < 40 ? 'badge-danger' : 'badge-warning'}`}>
