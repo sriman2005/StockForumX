@@ -1,24 +1,15 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import Stock from '../models/Stock.js';
-import Question from '../models/Question.js';
-import Prediction from '../models/Prediction.js';
-import yahooFinance from 'yahoo-finance2';
+import redisCache from '../middleware/cache.js';
 
 const router = express.Router();
-
-// Simple in-memory cache
-let stocksCache = {
-    data: null,
-    lastUpdated: 0,
-    ttl: 60 * 1000 // 60 seconds
-};
 
 // Mock Data
 // @route   GET /api/stocks
 // @desc    Get all stocks with pagination and filtering
 // @access  Public
-router.get('/', async (req, res) => {
+router.get('/', redisCache.route({ expire: 300 }), async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 12; // 12 stocks per page

@@ -136,6 +136,15 @@ services:
     networks:
       - stockforumx-network
 
+  redis:
+    image: redis:alpine
+    container_name: stockforumx-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    networks:
+      - stockforumx-network
+
 networks:
   stockforumx-network:
     driver: bridge
