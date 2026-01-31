@@ -14,8 +14,8 @@
       {
         devShells.default = pkgs.mkShell {
           buildInputs = with pkgs; [
-            nodejs_20
-            go_1_22
+            nodejs
+            go
             docker-compose
             mongodb-6_0
           ];
