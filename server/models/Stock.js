@@ -102,6 +102,9 @@ stockSchema.pre('save', function (next) {
 
 // Indexes
 stockSchema.index({ symbol: 'text', name: 'text' });
+stockSchema.index({ currentPrice: 1 });
+stockSchema.index({ sector: 1 });
+stockSchema.index({ sentimentScore: -1 });
 
 const Stock = mongoose.model('Stock', stockSchema);
 

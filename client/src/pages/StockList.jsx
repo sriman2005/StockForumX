@@ -4,7 +4,7 @@ import { getStocks, getSectors } from '../services/api';
 import SearchBar from '../components/search/SearchBar';
 import LoadingSkeleton from '../components/common/LoadingSkeleton';
 import EmptyState from '../components/common/EmptyState';
-import { FaChartLine } from 'react-icons/fa6';
+import StockCard from '../components/stocks/StockCard';
 import toast from 'react-hot-toast';
 import './StockList.css';
 
@@ -102,39 +102,7 @@ const StockList = () => {
                         <LoadingSkeleton type="stock" count={12} />
                     ) : stocks.length > 0 ? (
                         stocks.map(stock => (
-                            <Link to={`/stock/${stock.symbol}`} key={stock._id} className="stock-card">
-                                <div className="stock-header">
-                                    <div>
-                                        <h3 className="stock-symbol">{stock.symbol || 'N/A'}</h3>
-                                        <p className="stock-name">{stock.name || 'Unknown'}</p>
-                                    </div>
-                                    <span className="badge badge-info">{stock.sector || 'Other'}</span>
-                                    {stock.sentimentLabel && (
-                                        <span className={`badge ${stock.sentimentScore > 60 ? 'badge-success' : stock.sentimentScore < 40 ? 'badge-danger' : 'badge-warning'}`} style={{ marginLeft: '8px' }}>
-                                            {stock.sentimentScore > 60 ? '🚀 ' : stock.sentimentScore < 40 ? '📉 ' : '😐 '}
-                                            {stock.sentimentLabel}
-                                        </span>
-                                    )}
-                                </div>
-
-                                <div className="stock-price">
-                                    <span className="price">${(stock.currentPrice || 0).toFixed(2)}</span>
-                                    <span className={`change ${(stock.change || 0) >= 0 ? 'positive' : 'negative'}`}>
-                                        {(stock.change || 0) >= 0 ? '+' : ''}{Math.abs(stock.changePercent || 0)}%
-                                    </span>
-                                </div>
-
-                                <div className="stock-stats">
-                                    <div className="stat">
-                                        <span className="stat-label">Volume</span>
-                                        <span className="stat-value">{((stock.volume || 0) / 1000000).toFixed(1)}M</span>
-                                    </div>
-                                    <div className="stat">
-                                        <span className="stat-label">Market Cap</span>
-                                        <span className="stat-value">${((stock.marketCap || 0) / 1000000000).toFixed(1)}B</span>
-                                    </div>
-                                </div>
-                            </Link>
+                            <StockCard key={stock._id} stock={stock} />
                         ))
                     ) : (
                         <div style={{ gridColumn: '1 / -1' }}>

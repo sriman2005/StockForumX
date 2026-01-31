@@ -35,4 +35,7 @@ const NotificationSchema = new mongoose.Schema({
 // Index for efficient retrieval of unread notifications
 NotificationSchema.index({ recipient: 1, createdAt: -1 });
 
+// AUTO-CLEANUP: Automatically delete notifications older than 30 days
+NotificationSchema.index({ createdAt: 1 }, { expireAfterSeconds: 30 * 24 * 60 * 60 });
+
 export default mongoose.model('Notification', NotificationSchema);
