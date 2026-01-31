@@ -14,15 +14,21 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+// ==========================================
+// Domain Models
+// ==========================================
+
+// Alert represents a user's price alert settings
 type Alert struct {
 	ID          primitive.ObjectID `bson:"_id"`
 	User        primitive.ObjectID `bson:"user"`
 	Symbol      string             `bson:"symbol"`
 	TargetPrice float64            `bson:"targetPrice"`
-	Condition   string             `bson:"condition"`
+	Condition   string             `bson:"condition"` // "ABOVE" or "BELOW"
 	IsActive    bool               `bson:"isActive"`
 }
 
+// Notification represents a message sent to the user
 type Notification struct {
 	Recipient primitive.ObjectID `bson:"recipient"`
 	Type      string             `bson:"type"`
@@ -32,26 +38,16 @@ type Notification struct {
 	UpdatedAt time.Time          `bson:"updatedAt"`
 }
 
+// ==========================================
+// Main Function
+// ==========================================
+
 func main() {
-	// Load .env
-	if err := godotenv.Load("../../server/.env"); err != nil {
-		log.Println("Warning: Could not load .env file, checking environment variables")
-	}
+	loadEnvironment()
 
-	mongoURI := os.Getenv("MONGODB_URI")
-	if mongoURI == "" {
-		mongoURI = "mongodb://localhost:27017/stockforumx"
-	}
-
-	// Connect to MongoDB
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI(mongoURI))
-	if err != nil {
-		log.Fatal("Connection failed:", err)
-	}
-	defer client.Disconnect(context.Background())
+	// 1. Initialize Database Connection
+	client := connectToDatabase()
+	defer disconnectDatabase(client)
 
 	db := client.Database("stockforumx")
 	stocksColl := db.Collection("stocks")
@@ -60,7 +56,48 @@ func main() {
 
 	fmt.Println("Alert Engine started. Watching for price changes...")
 
-	// Watch for changes in the stocks collection
+	// 2. Start Watching Real-Time Stream
+	watchPriceUpdates(stocksColl, alertsColl, notifsColl)
+}
+
+// ==========================================
+// Database Helpers
+// ==========================================
+
+func loadEnvironment() {
+	if err := godotenv.Load("../../server/.env"); err != nil {
+		log.Println("Warning: Could not load .env file, checking environment variables")
+	}
+}
+
+func connectToDatabase() *mongo.Client {
+	mongoURI := os.Getenv("MONGODB_URI")
+	if mongoURI == "" {
+		mongoURI = "mongodb://localhost:27017/stockforumx"
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI(mongoURI))
+	if err != nil {
+		log.Fatal("Connection failed:", err)
+	}
+	return client
+}
+
+func disconnectDatabase(client *mongo.Client) {
+	if err := client.Disconnect(context.Background()); err != nil {
+		log.Printf("Error disconnecting database: %v", err)
+	}
+}
+
+// ==========================================
+// Core Logic: Watcher & Processor
+// ==========================================
+
+func watchPriceUpdates(stocksColl, alertsColl, notifsColl *mongo.Collection) {
+	// Define conditions to watch: Only listen for 'update' events where 'currentPrice' changes
 	pipeline := mongo.Pipeline{
 		{{Key: "$match", Value: bson.D{
 			{Key: "operationType", Value: "update"},
@@ -75,6 +112,7 @@ func main() {
 	}
 	defer stream.Close(context.Background())
 
+	// Process event stream
 	for stream.Next(context.Background()) {
 		var event struct {
 			FullDocument bson.M `bson:"fullDocument"`
@@ -84,17 +122,26 @@ func main() {
 			continue
 		}
 
-		symbol := event.FullDocument["symbol"].(string)
-		currentPrice := event.FullDocument["currentPrice"].(float64)
+		symbol, ok := event.FullDocument["symbol"].(string)
+		if !ok {
+			continue
+		}
+		
+		priceVal, ok := event.FullDocument["currentPrice"].(float64)
+		if !ok {
+			// Handle case where price might be int or other type in raw BSON
+			continue
+		}
 
-		fmt.Printf("Price Update: %s @ $%.2f\n", symbol, currentPrice)
+		fmt.Printf("Price Update: %s @ $%.2f\n", symbol, priceVal)
 
-		processAlerts(alertsColl, notifsColl, symbol, currentPrice)
+		// Check if this price change triggers any alerts associated with the stock
+		checkAndProcessAlerts(alertsColl, notifsColl, symbol, priceVal)
 	}
 }
 
-func processAlerts(alertsColl, notifsColl *mongo.Collection, symbol string, currentPrice float64) {
-	// Find active alerts for this symbol
+func checkAndProcessAlerts(alertsColl, notifsColl *mongo.Collection, symbol string, currentPrice float64) {
+	// Find all ACTIVE alerts for this specific stock symbol
 	filter := bson.M{
 		"symbol":   symbol,
 		"isActive": true,
@@ -107,6 +154,7 @@ func processAlerts(alertsColl, notifsColl *mongo.Collection, symbol string, curr
 	}
 	defer cursor.Close(context.Background())
 
+	// Iterate through matching alerts
 	for cursor.Next(context.Background()) {
 		var alert Alert
 		if err := cursor.Decode(&alert); err != nil {
@@ -114,24 +162,30 @@ func processAlerts(alertsColl, notifsColl *mongo.Collection, symbol string, curr
 			continue
 		}
 
+		// Determine if the alert condition is met
 		shouldTrigger := false
-		if alert.Condition == "ABOVE" && currentPrice >= alert.TargetPrice {
-			shouldTrigger = true
-		} else if alert.Condition == "BELOW" && currentPrice <= alert.TargetPrice {
-			shouldTrigger = true
+		switch alert.Condition {
+		case "ABOVE":
+			shouldTrigger = currentPrice >= alert.TargetPrice
+		case "BELOW":
+			shouldTrigger = currentPrice <= alert.TargetPrice
 		}
 
 		if shouldTrigger {
-			triggerAlert(alertsColl, notifsColl, alert, currentPrice)
+			executeAlert(alertsColl, notifsColl, alert, currentPrice)
 		}
 	}
 }
 
-func triggerAlert(alertsColl, notifsColl *mongo.Collection, alert Alert, currentPrice float64) {
-	fmt.Printf("🔥 Alert Triggered! %s: Target $%.2f, Current $%.2f (User: %s)\n", 
+// ==========================================
+// Alert Execution
+// ==========================================
+
+func executeAlert(alertsColl, notifsColl *mongo.Collection, alert Alert, currentPrice float64) {
+	fmt.Printf("Alert Triggered! %s: Target $%.2f, Current $%.2f (User: %s)\n",
 		alert.Symbol, alert.TargetPrice, currentPrice, alert.User.Hex())
 
-	// 1. Deactivate alert
+	// Step 1: Mark alert as inactive immediately (prevent duplicate triggers)
 	_, err := alertsColl.UpdateOne(
 		context.Background(),
 		bson.M{"_id": alert.ID},
@@ -147,22 +201,21 @@ func triggerAlert(alertsColl, notifsColl *mongo.Collection, alert Alert, current
 		return
 	}
 
-	// 2. Create notification
-	content := fmt.Sprintf("Price Alert: %s has hit $%.2f (Target: $%.2f)", 
+	// Step 2: Send Notification to User
+	message := fmt.Sprintf("Price Alert: %s has hit $%.2f (Target: $%.2f)",
 		alert.Symbol, currentPrice, alert.TargetPrice)
-	
+
 	now := time.Now()
-	notif := Notification{
+	notification := Notification{
 		Recipient: alert.User,
 		Type:      "PRICE_ALERT",
-		Content:   content,
+		Content:   message,
 		IsRead:    false,
 		CreatedAt: now,
 		UpdatedAt: now,
 	}
 
-	_, err = notifsColl.InsertOne(context.Background(), notif)
-	if err != nil {
+	if _, err := notifsColl.InsertOne(context.Background(), notification); err != nil {
 		log.Printf("Failed to create notification for user %s: %v", alert.User.Hex(), err)
 	}
 }
