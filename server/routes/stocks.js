@@ -1,6 +1,9 @@
 import express from 'express';
 import mongoose from 'mongoose';
+import yahooFinance from 'yahoo-finance2';
 import Stock from '../models/Stock.js';
+import Question from '../models/Question.js';
+import Prediction from '../models/Prediction.js';
 import redisCache from '../middleware/cache.js';
 
 const router = express.Router();

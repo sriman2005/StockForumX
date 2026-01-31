@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { getPortfolio, getTradeHistory, getWatchlist, getDiversification, getCurrentUser } from '../services/api';
+import { getPortfolio, getTradeHistory, getWatchlist, getDiversification } from '../services/api';
+import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
 import { FaWallet, FaChartPie, FaClockRotateLeft, FaArrowTrendUp, FaArrowTrendDown, FaStar, FaShieldHalved } from 'react-icons/fa6';
 import Loader from '../components/common/Loader';
@@ -7,6 +8,7 @@ import EmptyState from '../components/common/EmptyState';
 import './Portfolio.css';
 
 const Portfolio = () => {
+    const { user, loading: authLoading } = useAuth();
     const [portfolio, setPortfolio] = useState(null);
     const [history, setHistory] = useState([]);
     const [watchlist, setWatchlist] = useState([]);
@@ -15,14 +17,13 @@ const Portfolio = () => {
     const [activeTab, setActiveTab] = useState('holdings');
 
     useEffect(() => {
-        fetchPortfolioData();
-    }, []);
+        if (!authLoading && user) {
+            fetchPortfolioData(user._id);
+        }
+    }, [authLoading, user]);
 
-    const fetchPortfolioData = async () => {
+    const fetchPortfolioData = async (userId) => {
         try {
-            const userRes = await getCurrentUser();
-            const userId = userRes.data._id;
-
             const [portfolioRes, historyRes, watchlistRes, divRes] = await Promise.all([
                 getPortfolio(),
                 getTradeHistory(),

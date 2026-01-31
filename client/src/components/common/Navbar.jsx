@@ -47,13 +47,13 @@ const Navbar = () => {
                     {/* Render twice for infinite scroll */}
                     {[...Array(2)].map((_, i) => (
                         <div key={i} className="ticker-content-group">
-                            <span className="ticker-status-badge" style={{ background: 'var(--color-primary)', color: 'white', borderColor: 'white' }}>
+                            <span className="ticker-status-badge">
                                 MARKET INDEX
                             </span>
                             {tickerStocks.length > 0 ? (
                                 tickerStocks.map(stock => (
                                     <Link key={stock.symbol} to={`/stock/${stock.symbol}`} className="ticker-pair">
-                                        {stock.symbol}
+                                        <span className="ticker-symbol">{stock.symbol}</span>
                                         <span className={stock.change >= 0 ? 'ticker-up' : 'ticker-down'}>
                                             ${stock.currentPrice.toFixed(2)} ({stock.change >= 0 ? '+' : ''}{stock.changePercent.toFixed(2)}%)
                                         </span>
@@ -62,7 +62,14 @@ const Navbar = () => {
                             ) : (
                                 <span className="ticker-status-badge">INITIALIZING LIVE FEED...</span>
                             )}
-                            <span className="ticker-status-badge">MARKET STATUS: <span className="status-live">LIVE</span></span>
+                            <div className="ticker-status-badge">
+                                <span>MARKET STATUS:</span>
+                                <span className="status-live-wrapper">
+                                    <span className="status-live-dot"></span>
+                                    <span className="status-live-ring"></span>
+                                    <span className="status-live-text">LIVE</span>
+                                </span>
+                            </div>
                         </div>
                     ))}
                 </div>
@@ -97,7 +104,9 @@ const Navbar = () => {
                     <div className="navbar-content">
                         <div className="navbar-links">
                             <Link to="/stocks" className="nav-link" onClick={() => setIsMenuOpen(false)}>Stocks</Link>
-                            <Link to="/feed" className="nav-link" onClick={() => setIsMenuOpen(false)}>Feed</Link>
+                            {isAuthenticated && (
+                                <Link to="/feed" className="nav-link" onClick={() => setIsMenuOpen(false)}>Feed</Link>
+                            )}
                             <Link to="/leaderboard" className="nav-link" onClick={() => setIsMenuOpen(false)}>Leaderboard</Link>
                             {isAuthenticated && (
                                 <Link to="/portfolio" className="nav-link portfolio-link" onClick={() => setIsMenuOpen(false)}>Portfolio</Link>
@@ -108,12 +117,12 @@ const Navbar = () => {
                             {isAuthenticated ? (
                                 <div className="user-section">
                                     <NotificationBell />
-                                    <Link to={`/profile/${user._id}`} className="user-profile-link" onClick={() => setIsMenuOpen(false)}>
+                                    <Link to={`/profile/${user?._id}`} className="user-profile-link" onClick={() => setIsMenuOpen(false)}>
                                         <div className="avatar-small">
-                                            {user.username.charAt(0).toUpperCase()}
+                                            {user?.username?.charAt(0)?.toUpperCase() || 'U'}
                                         </div>
                                         <span className="reputation-count" title="reputation">
-                                            {user.reputation.toFixed(0)}
+                                            {user?.reputation?.toFixed(0) || 0}
                                         </span>
                                     </Link>
                                     <button onClick={() => { logout(); setIsMenuOpen(false); }} className="btn-logout" title="Log out">

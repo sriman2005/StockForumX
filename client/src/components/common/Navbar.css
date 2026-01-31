@@ -113,40 +113,77 @@
 .ticker-status-badge {
     background: #000;
     color: var(--color-success);
-    padding: 2px 10px;
+    padding: 2px 12px;
     font-weight: 900;
     font-size: 0.7rem;
     border: 1px solid var(--color-success);
     border-radius: 2px;
     display: flex;
     align-items: center;
-    gap: 5px;
-    margin: 0 20px;
-    letter-spacing: 1px;
+    gap: 8px;
+    margin: 0 25px;
+    letter-spacing: 1.5px;
     text-transform: uppercase;
+    box-shadow: 0 0 10px rgba(0, 255, 102, 0.1);
 }
 
-.status-live {
+.status-live-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    position: relative;
+    padding-left: 2px;
+}
+
+.status-live-dot {
     width: 6px;
     height: 6px;
     background: var(--color-success);
     border-radius: 50%;
-    display: inline-block;
     box-shadow: 0 0 10px var(--color-success);
-    animation: blink 1.5s infinite;
+    position: relative;
+    z-index: 2;
 }
 
-@keyframes blink {
+.status-live-ring {
+    position: absolute;
+    left: 4.5px;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 6px;
+    height: 6px;
+    border: 1.5px solid var(--color-success);
+    border-radius: 50%;
+    animation: status-pulse 2.5s infinite;
+    z-index: 1;
+}
+
+.status-live-text {
+    animation: blink-text 2s infinite;
+    font-weight: 900;
+}
+
+@keyframes status-pulse {
+    0% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0.8;
+    }
+
+    100% {
+        transform: translate(-50%, -50%) scale(3.5);
+        opacity: 0;
+    }
+}
+
+@keyframes blink-text {
 
     0%,
     100% {
         opacity: 1;
-        transform: scale(1);
     }
 
     50% {
-        opacity: 0.4;
-        transform: scale(1.2);
+        opacity: 0.5;
     }
 }
 

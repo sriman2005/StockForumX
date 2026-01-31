@@ -2,6 +2,37 @@ import axios from 'axios';
 
 const API_BASE = '/api';
 
+// Add a response interceptor
+axios.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        if (error.response && error.response.status === 401) {
+            // Auto-logout on 401
+            localStorage.removeItem('token');
+            localStorage.removeItem('userInfo');
+            // Use window.location for a hard redirect to ensure state clear
+            if (window.location.pathname !== '/login') {
+                window.location.href = '/login';
+            }
+            // Return pending promise to halt chain and suppress error logging
+            return new Promise(() => { });
+        }
+        return Promise.reject(error);
+    }
+);
+
+// Add a request interceptor to attach token
+axios.interceptors.request.use(
+    (config) => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+    },
+    (error) => Promise.reject(error)
+);
+
 // Stocks
 export const getStocks = (params) => axios.get(`${API_BASE}/stocks`, { params });
 export const getStock = (symbol) => axios.get(`${API_BASE}/stocks/${symbol}`);

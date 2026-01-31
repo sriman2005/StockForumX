@@ -29,7 +29,7 @@ export const AuthProvider = ({ children }) => {
     const fetchUser = async () => {
         try {
             const { data } = await axios.get('/api/auth/me');
-            setUser(data);
+            setUser(data.data);
         } catch (error) {
             console.error('Error fetching user:', error);
             localStorage.removeItem('token');

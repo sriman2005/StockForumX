@@ -18,9 +18,16 @@ const redisClient = createClient({
 
 // Avoid log spamming if Redis isn't there
 redisClient.on('error', (err) => {
+    // Only log if we thought it was available, then mark as unavailable
     if (isRedisAvailable) {
-        logger.error('Redis Client Error', err);
+        logger.error('Redis Client Error: Connection lost. Disabling cache.', err);
+        isRedisAvailable = false;
     }
+});
+
+redisClient.on('connect', () => {
+    logger.info('Redis Client Reconnected');
+    isRedisAvailable = true;
 });
 
 try {
@@ -29,18 +36,21 @@ try {
     logger.info('Redis Connected Successfully');
 } catch (error) {
     logger.warn('⚠️ Redis not found. Caching will be disabled for this session.');
+    isRedisAvailable = false;
 }
 
-const redisCacheInstance = isRedisAvailable ? cache({
+const redisCacheInstance = cache({
     client: redisClient,
     prefix: 'sf_cache',
     expire: 300
-}) : null;
+});
 
 // Bypass middleware if Redis is down
 const redisCache = {
     route: (options) => {
-        if (!isRedisAvailable) return (req, res, next) => next();
+        if (!isRedisAvailable) {
+            return (req, res, next) => next();
+        }
         return redisCacheInstance.route(options);
     }
 };

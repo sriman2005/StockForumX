@@ -21,6 +21,7 @@ import userRoutes from './routes/users.js';
 import portfolioRoutes from './routes/portfolio.js';
 import socialRoutes from './routes/social.js';
 import alertRoutes from './routes/alerts.js';
+import analyticsRoutes from './routes/analytics.js';
 
 // Sockets
 import { setupChatHandlers } from './sockets/chat.js';
@@ -55,7 +56,7 @@ const io = new Server(httpServer, {
 // Rate limiting
 const limiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 100, // limit each IP to 100 requests per windowMs
+    max: process.env.NODE_ENV === 'development' ? 10000 : 2000,
     message: 'Too many requests from this IP, please try again later.',
     standardHeaders: true,
     legacyHeaders: false,
@@ -86,6 +87,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/portfolio', portfolioRoutes);
 app.use('/api/social', socialRoutes);
 app.use('/api/alerts', alertRoutes);
+app.use('/api/analytics', analyticsRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {

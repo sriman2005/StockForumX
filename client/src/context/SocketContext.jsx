@@ -17,13 +17,21 @@ export const SocketProvider = ({ children }) => {
     const [connected, setConnected] = useState(false);
 
     useEffect(() => {
-        const newSocket = io('http://localhost:5000', {
-            transports: ['websocket', 'polling'], // Enable polling fallback
+        // Use relative URL to let Vite proxy handle the connection
+        const newSocket = io({
+            transports: ['websocket', 'polling'],
             withCredentials: true,
             autoConnect: true,
             reconnection: true,
-            reconnectionAttempts: 5,
-            reconnectionDelay: 1000
+            reconnectionAttempts: Infinity, // Keep trying forever
+            reconnectionDelay: 1000,
+            reconnectionDelayMax: 5000,
+            timeout: 20000
+        });
+
+        // Handle connection errors gracefully to avoid console noise
+        newSocket.on('connect_error', (err) => {
+            console.warn('Socket connection error (retrying...):', err.message);
         });
 
         newSocket.on('notification', (notif) => {
