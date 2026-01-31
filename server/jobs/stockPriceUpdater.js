@@ -1,10 +1,13 @@
 import cron from 'node-cron';
 import Stock from '../models/Stock.js';
+import { createServiceLogger } from '../utils/logger.js';
+
+const logger = createServiceLogger('stock-price-updater');
 
 // Simulate stock price updates every 5 minutes (for demo purposes)
 export const startStockPriceUpdater = () => {
     cron.schedule('*/5 * * * *', async () => {
-        console.log('Updating stock prices...');
+        logger.info('Updating stock prices...');
 
         try {
             const stocks = await Stock.find();
@@ -28,11 +31,11 @@ export const startStockPriceUpdater = () => {
                 await stock.save();
             }
 
-            console.log(`Updated ${stocks.length} stock prices`);
+            logger.info(`Updated stock prices`, { count: stocks.length });
         } catch (error) {
-            console.error('Stock price updater error:', error);
+            logger.error('Stock price updater error', { error: error.message, stack: error.stack });
         }
     });
 
-    console.log('Stock price updater scheduled (every 5 minutes)');
+    logger.info('Stock price updater scheduled (every 5 minutes)');
 };

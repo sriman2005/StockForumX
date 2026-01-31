@@ -1,16 +1,19 @@
 import ChatMessage from '../models/ChatMessage.js';
+import { createServiceLogger } from '../utils/logger.js';
+
+const logger = createServiceLogger('socket-chat');
 
 export const setupChatHandlers = (io, socket) => {
     // Join stock room
     socket.on('join:stock', (stockId) => {
         socket.join(`stock:${stockId}`);
-        console.log(`User joined stock room: ${stockId}`);
+        logger.debug(`User joined stock room`, { socketId: socket.id, stockId });
     });
 
     // Leave stock room
     socket.on('leave:stock', (stockId) => {
         socket.leave(`stock:${stockId}`);
-        console.log(`User left stock room: ${stockId}`);
+        logger.debug(`User left stock room`, { socketId: socket.id, stockId });
     });
 
     // Send chat message
@@ -31,7 +34,7 @@ export const setupChatHandlers = (io, socket) => {
             // Broadcast to stock room
             io.to(`stock:${stockId}`).emit('chat:message', populatedMessage);
         } catch (error) {
-            console.error('Chat message error:', error);
+            logger.error('Chat message error', { error: error.message, socketId: socket.id });
             socket.emit('error', { message: 'Failed to send message' });
         }
     });
@@ -44,6 +47,6 @@ export const setupChatHandlers = (io, socket) => {
 
     // Disconnect
     socket.on('disconnect', () => {
-        console.log('User disconnected:', socket.id);
+        logger.debug('User disconnected', { socketId: socket.id });
     });
 };

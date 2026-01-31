@@ -1,8 +1,12 @@
+import { createServiceLogger } from '../utils/logger.js';
+
+const logger = createServiceLogger('socket-updates');
+
 export const setupUpdateHandlers = (io, socket) => {
     // Join global updates room
     socket.on('join:updates', () => {
         socket.join('global:updates');
-        console.log('User joined global updates');
+        logger.debug('User joined global updates', { socketId: socket.id });
     });
 
     // Leave global updates room

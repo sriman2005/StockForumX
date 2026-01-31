@@ -6,10 +6,10 @@ import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
 import compression from 'compression';
 import dotenv from 'dotenv';
-import morgan from 'morgan';
 import connectDB from './config/db.js';
 import validateEnv from './config/validateEnv.js';
-import Logger from './utils/logger.js';
+import Logger, { createServiceLogger } from './utils/logger.js';
+import requestLogger from './middleware/requestLogger.js';
 import { errorHandler } from './middleware/errorMiddleware.js';
 
 // Routes
@@ -69,7 +69,7 @@ app.use((req, res, next) => {
 });
 app.use(helmet());
 app.use(compression());
-app.use(morgan('combined', { stream: { write: (message) => Logger.info(message.trim()) } }));
+app.use(requestLogger);
 app.use(cors({
     origin: process.env.CLIENT_URL || 'http://localhost:5173',
     credentials: true
@@ -97,9 +97,11 @@ app.get('/api/health', (req, res) => {
 // Global Error Handler
 app.use(errorHandler);
 
+const socketLogger = createServiceLogger('socket');
+
 // Socket.io connection
 io.on('connection', (socket) => {
-    console.log('New client connected:', socket.id);
+    socketLogger.debug('New client connected', { socketId: socket.id });
 
     setupChatHandlers(io, socket);
     setupUpdateHandlers(io, socket);

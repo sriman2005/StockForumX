@@ -5,6 +5,7 @@ import Stock from '../models/Stock.js';
 import Question from '../models/Question.js';
 import Prediction from '../models/Prediction.js';
 import redisCache from '../middleware/cache.js';
+import Logger from '../utils/logger.js';
 
 const router = express.Router();
 
@@ -72,7 +73,7 @@ router.get('/', redisCache.route({ expire: 300 }), async (req, res) => {
             data: stocks
         });
     } catch (error) {
-        console.error('Error fetching stocks:', error);
+        Logger.error('Error fetching stocks', { error: error.message });
         res.status(500).json({ message: 'Error fetching stocks' });
     }
 });
@@ -104,7 +105,7 @@ router.get('/:symbol', async (req, res) => {
         try {
             quote = await yahooFinance.quote(symbol);
         } catch (yahooError) {
-            console.warn(`Yahoo Finance quote failed for ${symbol}:`, yahooError.message);
+            Logger.warn(`Yahoo Finance quote failed for ${symbol}`, { error: yahooError.message });
         }
 
         let profile = {};
@@ -121,7 +122,7 @@ router.get('/:symbol', async (req, res) => {
                 };
             }
         } catch (e) {
-            console.warn(`Yahoo Finance profile failed for ${symbol}:`, e.message);
+            Logger.warn(`Yahoo Finance profile failed for ${symbol}`, { error: e.message });
         }
 
         // 2. If valid quote, Upsert into Database
@@ -167,7 +168,7 @@ router.get('/:symbol', async (req, res) => {
 
         // 3. If stock still doesn't exist (neither in DB nor valid in Yahoo), use Mock Fallback
         if (!stock) {
-            console.log(`Generating mock data for ${symbol}`);
+            Logger.debug(`Generating mock data for ${symbol}`);
             const basePrice = Math.random() * 200 + 50;
             stock = await Stock.create({
                 symbol,
@@ -197,7 +198,7 @@ router.get('/:symbol', async (req, res) => {
         });
 
     } catch (error) {
-        console.error('Stock Lookup Error:', error);
+        Logger.error('Stock Lookup Error', { error: error.message, stack: error.stack });
         res.status(500).json({ message: error.message });
     }
 });
@@ -245,7 +246,7 @@ router.get('/:symbol/history', async (req, res) => {
             const queryOptions = { period1: '1mo', interval: '1d' };
             chartData = await yahooFinance.chart(symbol, queryOptions);
         } catch (err) {
-            console.warn(`Yahoo Chart failed for ${symbol}:`, err.message);
+            Logger.warn(`Yahoo Chart failed for ${symbol}`, { error: err.message });
             // Fallback to mock data below
         }
 
@@ -307,7 +308,7 @@ router.get('/:symbol/history', async (req, res) => {
         res.json(dataPoints);
 
     } catch (error) {
-        console.error("History Route Error:", error);
+        Logger.error('History Route Error', { error: error.message });
         res.status(500).json({ message: error.message });
     }
 });

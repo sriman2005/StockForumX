@@ -5,6 +5,7 @@ import Question from '../models/Question.js';
 import Answer from '../models/Answer.js';
 import Stock from '../models/Stock.js';
 import { findSimilarQuestions } from '../utils/similarity.js';
+import Logger from '../utils/logger.js';
 
 const router = express.Router();
 
@@ -18,7 +19,7 @@ router.get('/', async (req, res) => {
     try {
         const { userId, stockId, stockSymbol, tag, sort = 'recent', search } = req.query;
 
-        console.log('Questions API called with:', { userId, stockId, stockSymbol, tag, sort, search });
+        Logger.debug('Questions API called', { userId, stockId, stockSymbol, tag, sort, search });
 
         // Build Match Stage
         const matchStage = {};
@@ -57,7 +58,7 @@ router.get('/', async (req, res) => {
         // Handle "unanswered" filter
         if (sort === 'unanswered') matchStage.answerCount = 0;
 
-        console.log('Aggregation Match:', JSON.stringify(matchStage));
+        Logger.debug('Aggregation Match', { matchStage });
 
         const questions = await Question.aggregate([
             // 1. Filter first (Index utilization)
@@ -117,11 +118,11 @@ router.get('/', async (req, res) => {
             }
         ]);
 
-        console.log('Questions found:', questions.length);
+        Logger.debug('Questions found', { count: questions.length });
 
         res.json(questions);
     } catch (error) {
-        console.error('Questions API error:', error);
+        Logger.error('Questions API error', { error: error.message });
         res.status(500).json({ message: 'Error fetching questions' });
     }
 });

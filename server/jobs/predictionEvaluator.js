@@ -4,11 +4,14 @@ import Stock from '../models/Stock.js';
 import User from '../models/User.js';
 import { updateUserReputation } from '../utils/reputation.js';
 import { io } from '../index.js';
+import { createServiceLogger } from '../utils/logger.js';
+
+const logger = createServiceLogger('prediction-evaluator');
 
 // Run every 15 minutes
 export const startPredictionEvaluator = () => {
     cron.schedule('*/15 * * * *', async () => {
-        console.log('Running prediction evaluator...');
+        logger.info('Running prediction evaluator...');
 
         try {
             // Find predictions that need evaluation
@@ -18,7 +21,7 @@ export const startPredictionEvaluator = () => {
                 targetDate: { $lte: now }
             }).populate('stockId userId');
 
-            console.log(`Found ${predictions.length} predictions to evaluate`);
+            logger.info(`Found ${predictions.length} predictions to evaluate`, { count: predictions.length });
 
             for (const prediction of predictions) {
                 const stock = prediction.stockId;
@@ -58,7 +61,7 @@ export const startPredictionEvaluator = () => {
 
                     // Update reputation
                     await updateUserReputation(User, user._id);
-                    console.log(`Updated reputation for user ${user.username}`);
+                    logger.debug(`Updated reputation for user`, { username: user.username, userId: user._id });
 
                     // Emit real-time notification
                     if (io) {
@@ -74,11 +77,11 @@ export const startPredictionEvaluator = () => {
                 }
             }
 
-            console.log('Prediction evaluation complete');
+            logger.info('Prediction evaluation complete');
         } catch (error) {
-            console.error('Prediction evaluator error:', error);
+            logger.error('Prediction evaluator error', { error: error.message, stack: error.stack });
         }
     });
 
-    console.log('Prediction evaluator scheduled (every 15 minutes)');
+    logger.info('Prediction evaluator scheduled (every 15 minutes)');
 };

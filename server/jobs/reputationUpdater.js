@@ -1,11 +1,14 @@
 import cron from 'node-cron';
 import User from '../models/User.js';
 import ReputationSnapshot from '../models/ReputationSnapshot.js';
+import { createServiceLogger } from '../utils/logger.js';
+
+const logger = createServiceLogger('reputation-updater');
 
 // Run daily at midnight
 export const startReputationUpdater = () => {
     cron.schedule('0 0 * * *', async () => {
-        console.log('Creating reputation snapshots...');
+        logger.info('Creating reputation snapshots...');
 
         try {
             const users = await User.find().select('_id reputation totalPredictions accuratePredictions');
@@ -22,11 +25,11 @@ export const startReputationUpdater = () => {
             }));
 
             await ReputationSnapshot.insertMany(snapshots);
-            console.log(`Created ${snapshots.length} reputation snapshots`);
+            logger.info(`Created reputation snapshots`, { count: snapshots.length });
         } catch (error) {
-            console.error('Reputation updater error:', error);
+            logger.error('Reputation updater error', { error: error.message, stack: error.stack });
         }
     });
 
-    console.log('Reputation updater scheduled (daily at midnight)');
+    logger.info('Reputation updater scheduled (daily at midnight)');
 };
