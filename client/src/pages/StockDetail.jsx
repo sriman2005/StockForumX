@@ -253,6 +253,32 @@ const StockDetail = () => {
                                 </div>
                             </div>
                         </div>
+                        <div className="sidebar-widget brute-frame">
+                            <h3>Community Sentiment</h3>
+                            <div className="widget-content">
+                                <div style={{ marginBottom: '15px' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontWeight: 'bold' }}>
+                                        <span>{stock.sentimentLabel || 'Neutral'}</span>
+                                        <span>{Math.round(stock.sentimentScore || 50)}%</span>
+                                    </div>
+                                    <div className="sentiment-bar-bg" style={{ height: '10px', background: 'rgba(255,255,255,0.1)', borderRadius: '5px', overflow: 'hidden' }}>
+                                        <div
+                                            className="sentiment-bar-fill"
+                                            style={{
+                                                height: '100%',
+                                                width: `${stock.sentimentScore || 50}%`,
+                                                background: (stock.sentimentScore || 50) > 60 ? 'var(--accent-success)' : (stock.sentimentScore || 50) < 40 ? 'var(--accent-danger)' : 'var(--accent-warning)',
+                                                boxShadow: `0 0 15px ${(stock.sentimentScore || 50) > 60 ? 'var(--accent-success)' : (stock.sentimentScore || 50) < 40 ? 'var(--accent-danger)' : 'var(--accent-warning)'}`
+                                            }}
+                                        ></div>
+                                    </div>
+                                </div>
+                                <p style={{ fontSize: '0.8rem', opacity: 0.7, fontStyle: 'italic' }}>
+                                    Based on real-time analysis of community questions and answers.
+                                </p>
+                            </div>
+                        </div>
+
                         <div className="sidebar-widget">
                             <h3>Stats</h3>
                             <div className="widget-content">

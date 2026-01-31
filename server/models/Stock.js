@@ -75,6 +75,17 @@ const stockSchema = new mongoose.Schema({
     website: {
         type: String,
         default: ''
+    },
+    sentimentScore: {
+        type: Number,
+        default: 50, // 0 - 100
+        min: 0,
+        max: 100
+    },
+    sentimentLabel: {
+        type: String,
+        enum: ['Bearish', 'Somewhat Bearish', 'Neutral', 'Somewhat Bullish', 'Bullish'],
+        default: 'Neutral'
     }
 }, {
     timestamps: true

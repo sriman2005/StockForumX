@@ -109,6 +109,12 @@ const StockList = () => {
                                         <p className="stock-name">{stock.name || 'Unknown'}</p>
                                     </div>
                                     <span className="badge badge-info">{stock.sector || 'Other'}</span>
+                                    {stock.sentimentLabel && (
+                                        <span className={`badge ${stock.sentimentScore > 60 ? 'badge-success' : stock.sentimentScore < 40 ? 'badge-danger' : 'badge-warning'}`} style={{ marginLeft: '8px' }}>
+                                            {stock.sentimentScore > 60 ? '🚀 ' : stock.sentimentScore < 40 ? '📉 ' : '😐 '}
+                                            {stock.sentimentLabel}
+                                        </span>
+                                    )}
                                 </div>
 
                                 <div className="stock-price">

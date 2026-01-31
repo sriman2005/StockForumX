@@ -108,6 +108,20 @@ services:
     networks:
       - stockforumx-network
 
+  sentiment-service:
+    build:
+      context: ./services/sentiment-service
+      dockerfile: Dockerfile
+    container_name: stockforumx-sentiment
+    restart: unless-stopped
+    environment:
+      - MONGODB_URI=mongodb://mongodb:27017/stockforumx
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - stockforumx-network
+
 networks:
   stockforumx-network:
     driver: bridge
