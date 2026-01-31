@@ -13,6 +13,7 @@ Welcome to the **StockForumX** documentation. This guide will help you understan
 
 ### Architecture
 - **[System Architecture](./architecture/ARCHITECTURE.md)** - High-level overview of the system design.
+- **[Microservices](./services/README.md)** - Guide to the Go-based background services.
 - **[Database Schema](./architecture/DATABASE.md)** - Detailed data models and relationships.
 - **[Authentication System](./architecture/AUTHENTICATION.md)** - Security and user session management.
 - **[Real-time Features](./architecture/REALTIME.md)** - How WebSockets power the live updates.
