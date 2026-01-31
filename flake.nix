@@ -1,5 +1,5 @@
 {
-  description: "StockForumX Development Environment";
+  description = "StockForumX Development Environment";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
