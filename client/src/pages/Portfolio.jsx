@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { getPortfolio, getTradeHistory, getWatchlist } from '../services/api';
+import { getPortfolio, getTradeHistory, getWatchlist, getDiversification, getCurrentUser } from '../services/api';
 import { Link } from 'react-router-dom';
-import { FaWallet, FaChartPie, FaClockRotateLeft, FaArrowTrendUp, FaArrowTrendDown, FaStar } from 'react-icons/fa6';
+import { FaWallet, FaChartPie, FaClockRotateLeft, FaArrowTrendUp, FaArrowTrendDown, FaStar, FaShieldHalved } from 'react-icons/fa6';
 import Loader from '../components/common/Loader';
 import EmptyState from '../components/common/EmptyState';
 import './Portfolio.css';
@@ -10,6 +10,7 @@ const Portfolio = () => {
     const [portfolio, setPortfolio] = useState(null);
     const [history, setHistory] = useState([]);
     const [watchlist, setWatchlist] = useState([]);
+    const [diversification, setDiversification] = useState([]);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState('holdings');
 
@@ -19,14 +20,19 @@ const Portfolio = () => {
 
     const fetchPortfolioData = async () => {
         try {
-            const [portfolioRes, historyRes, watchlistRes] = await Promise.all([
+            const userRes = await getCurrentUser();
+            const userId = userRes.data._id;
+
+            const [portfolioRes, historyRes, watchlistRes, divRes] = await Promise.all([
                 getPortfolio(),
                 getTradeHistory(),
-                getWatchlist()
+                getWatchlist(),
+                getDiversification(userId)
             ]);
             setPortfolio(portfolioRes.data);
             setHistory(historyRes.data);
             setWatchlist(watchlistRes.data);
+            setDiversification(divRes.data || []);
         } catch (error) {
             console.error('Failed to load portfolio:', error);
         } finally {
@@ -40,19 +46,54 @@ const Portfolio = () => {
         <div className="portfolio-page fade-in">
             <div className="container">
                 {/* Portfolio Header / Net Worth */}
-                <div className="portfolio-header-card brute-frame">
-                    <div className="net-worth-section">
-                        <span className="label">ESTIMATED NET WORTH</span>
-                        <h1 className="value">${portfolio?.totalValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</h1>
-                        <div className="header-stats">
-                            <div className="header-stat">
-                                <span className="stat-label">CASH BALANCE</span>
-                                <span className="stat-value">${portfolio?.balance.toLocaleString()}</span>
+                <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 2fr) minmax(0, 1fr)', gap: '20px', marginBottom: '20px' }}>
+                    <div className="portfolio-header-card brute-frame">
+                        <div className="net-worth-section">
+                            <span className="label">ESTIMATED NET WORTH</span>
+                            <h1 className="value">${portfolio?.totalValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</h1>
+                            <div className="header-stats">
+                                <div className="header-stat">
+                                    <span className="stat-label">CASH BALANCE</span>
+                                    <span className="stat-value">${portfolio?.balance.toLocaleString()}</span>
+                                </div>
+                                <div className="header-stat">
+                                    <span className="stat-label">HOLDINGS VALUE</span>
+                                    <span className="stat-value">${portfolio?.holdingsValue.toLocaleString()}</span>
+                                </div>
                             </div>
-                            <div className="header-stat">
-                                <span className="stat-label">HOLDINGS VALUE</span>
-                                <span className="stat-value">${portfolio?.holdingsValue.toLocaleString()}</span>
-                            </div>
+                        </div>
+                    </div>
+
+                    {/* Diversification Card (Powered by Analytics Service) */}
+                    <div className="diversification-card brute-frame" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '20px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '15px' }}>
+                            <FaShieldHalved style={{ color: 'var(--accent-info)' }} />
+                            <span style={{ fontWeight: 'bold', letterSpacing: '1px' }}>DIVERSIFICATION</span>
+                        </div>
+                        <div className="diversification-list" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                            {diversification.length > 0 ? (
+                                diversification.sort((a, b) => b.percentage - a.percentage).map(item => (
+                                    <div key={item.sector} className="div-item">
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', marginBottom: '4px' }}>
+                                            <span>{item.sector}</span>
+                                            <span style={{ fontWeight: 'bold' }}>{item.percentage.toFixed(1)}%</span>
+                                        </div>
+                                        <div className="progress-bg" style={{ height: '6px', background: 'rgba(255,255,255,0.1)', borderRadius: '3px', overflow: 'hidden' }}>
+                                            <div
+                                                className="progress-fill"
+                                                style={{
+                                                    height: '100%',
+                                                    width: `${item.percentage}%`,
+                                                    background: 'var(--accent-info)',
+                                                    boxShadow: '0 0 10px var(--accent-info)'
+                                                }}
+                                            ></div>
+                                        </div>
+                                    </div>
+                                ))
+                            ) : (
+                                <p style={{ fontSize: '0.8rem', opacity: 0.6 }}>No data available. Buy stocks to see diversification.</p>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -82,7 +123,7 @@ const Portfolio = () => {
                 {/* Tab Content */}
                 <div className="portfolio-content">
                     {activeTab === 'holdings' ? (
-                        <div className="holdings-grid">
+                        <div className="holdings-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
                             {portfolio?.holdings.length === 0 ? (
                                 <EmptyState
                                     title="EMPTY PORTFOLIO"

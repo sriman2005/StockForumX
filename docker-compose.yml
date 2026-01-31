@@ -93,6 +93,21 @@ services:
     networks:
       - stockforumx-network
 
+  analytics-service:
+    build:
+      context: ./services/analytics-service
+      dockerfile: Dockerfile
+    container_name: stockforumx-analytics
+    restart: unless-stopped
+    environment:
+      - MONGODB_URI=mongodb://mongodb:27017/stockforumx
+      - PORT=5001
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - stockforumx-network
+
 networks:
   stockforumx-network:
     driver: bridge

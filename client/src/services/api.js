@@ -47,6 +47,7 @@ export const executeTrade = (tradeData) => axios.post(`${API_BASE}/portfolio/tra
 export const getTradeHistory = () => axios.get(`${API_BASE}/portfolio/history`);
 export const getWatchlist = () => axios.get(`${API_BASE}/portfolio/watchlist`);
 export const toggleWatchlist = (stockId) => axios.post(`${API_BASE}/portfolio/watchlist/${stockId}`);
+export const getDiversification = (userId) => axios.get(`${API_BASE}/analytics/diversification/${userId}`);
 
 // Auth
 // Auth
