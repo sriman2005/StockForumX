@@ -4,6 +4,14 @@
     "description": "Real-time stock discussion and prediction platform.",
     "start_url": "/",
     "display": "standalone",
+    "orientation": "portrait",
     "background_color": "#0f172a",
-    "theme_color": "#3b82f6"
+    "theme_color": "#3b82f6",
+    "icons": [
+        {
+            "src": "favicon.svg",
+            "sizes": "any",
+            "type": "image/svg+xml"
+        }
+    ]
 }
