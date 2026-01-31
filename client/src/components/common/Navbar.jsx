@@ -42,10 +42,14 @@ const Navbar = () => {
     return (
         <nav className={`navbar ${isMenuOpen ? 'menu-open' : ''}`}>
             <div className="market-ticker">
+                <div className="ticker-scanline"></div>
                 <div className="ticker-scroll">
                     {/* Render twice for infinite scroll */}
                     {[...Array(2)].map((_, i) => (
                         <div key={i} className="ticker-content-group">
+                            <span className="ticker-status-badge" style={{ background: 'var(--color-primary)', color: 'white', borderColor: 'white' }}>
+                                MARKET INDEX
+                            </span>
                             {tickerStocks.length > 0 ? (
                                 tickerStocks.map(stock => (
                                     <Link key={stock.symbol} to={`/stock/${stock.symbol}`} className="ticker-pair">

@@ -35,8 +35,13 @@
     border-bottom: 2px solid var(--border-color);
     position: relative;
     /* Edge fading mask */
-    mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
-    -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+    mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+    -webkit-mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+
+    /* Subtle background grid for ticker bar */
+    background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 20px 20px;
 }
 
 .ticker-scroll {
@@ -46,6 +51,9 @@
     width: max-content;
     animation: global-ticker 40s linear infinite;
     will-change: transform;
+    transform: translate3d(0, 0, 0);
+    /* Force GPU */
+    backface-visibility: hidden;
 }
 
 .ticker-scroll:hover {
@@ -60,18 +68,19 @@
 }
 
 .ticker-pair {
-    padding: 0 35px;
+    padding: 0 40px;
     font-weight: 800;
     text-transform: uppercase;
     font-size: 0.8rem;
-    letter-spacing: 1px;
+    letter-spacing: 1.5px;
     display: flex;
-    gap: 12px;
+    gap: 15px;
     align-items: center;
-    color: #cbd5e1;
+    color: #94a3b8;
+    /* Subtler gray for symbols */
     text-decoration: none;
     transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
     height: 25px;
 }
 
@@ -87,15 +96,18 @@
 }
 
 .ticker-up {
-    color: #4ade80;
-    text-shadow: 0 0 8px rgba(74, 222, 128, 0.4);
+    color: #00ff66;
+    text-shadow: 0 0 10px rgba(0, 255, 102, 0.3);
     font-weight: 900;
+    font-family: 'Space Mono', monospace;
+    /* Steady alignment for numbers */
 }
 
 .ticker-down {
-    color: #f87171;
-    text-shadow: 0 0 8px rgba(248, 113, 113, 0.4);
+    color: #ff003d;
+    text-shadow: 0 0 10px rgba(255, 0, 61, 0.3);
     font-weight: 900;
+    font-family: 'Space Mono', monospace;
 }
 
 .ticker-status-badge {
@@ -140,12 +152,27 @@
 
 @keyframes global-ticker {
     0% {
-        transform: translateX(0);
+        transform: translate3d(0, 0, 0);
     }
 
     100% {
-        transform: translateX(-50%);
+        transform: translate3d(-50%, 0, 0);
     }
+}
+
+.ticker-scanline {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom,
+            rgba(255, 255, 255, 0) 50%,
+            rgba(0, 0, 0, 0.1) 50%);
+    background-size: 100% 4px;
+    z-index: 10;
+    pointer-events: none;
+    opacity: 0.3;
 }
 
 /* Brand - Tactile Impact */
