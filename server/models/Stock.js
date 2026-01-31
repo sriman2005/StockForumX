@@ -105,6 +105,8 @@ stockSchema.index({ symbol: 'text', name: 'text' });
 stockSchema.index({ currentPrice: 1 });
 stockSchema.index({ sector: 1 });
 stockSchema.index({ sentimentScore: -1 });
+stockSchema.index({ volume: -1 });
+stockSchema.index({ changePercent: -1 });
 
 const Stock = mongoose.model('Stock', stockSchema);
 

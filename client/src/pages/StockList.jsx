@@ -12,6 +12,7 @@ const StockList = () => {
     const [stocks, setStocks] = useState([]);
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState('all');
+    const [sortBy, setSortBy] = useState('symbol');
     const [searchQuery, setSearchQuery] = useState('');
     const [sectors, setSectors] = useState(['all']);
     const [page, setPage] = useState(1);
@@ -37,7 +38,7 @@ const StockList = () => {
             fetchStocks(1);
         }, 300);
         return () => clearTimeout(timeoutId);
-    }, [searchQuery, filter]);
+    }, [searchQuery, filter, sortBy]);
 
     const fetchStocks = async (pageNum = page) => {
         setLoading(true);
@@ -46,7 +47,8 @@ const StockList = () => {
                 page: pageNum,
                 limit: 12,
                 search: searchQuery,
-                sector: filter
+                sector: filter,
+                sortBy: sortBy
             };
             const { data: res } = await getStocks(params);
             setStocks(res.data || []);
@@ -76,11 +78,29 @@ const StockList = () => {
                 </div>
 
                 <div style={{ marginBottom: '20px' }}>
-                    <SearchBar
-                        value={searchQuery}
-                        onChange={setSearchQuery}
-                        placeholder="Search stocks by symbol or name..."
-                    />
+                    <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
+                        <div style={{ flex: 1 }}>
+                            <SearchBar
+                                value={searchQuery}
+                                onChange={setSearchQuery}
+                                placeholder="Search stocks by symbol or name..."
+                            />
+                        </div>
+                        <div className="filter-section" style={{ margin: 0 }}>
+                            <select
+                                className="filter-btn"
+                                value={sortBy}
+                                onChange={(e) => setSortBy(e.target.value)}
+                                style={{ padding: '12px 20px', cursor: 'pointer', appearance: 'none', background: 'white' }}
+                            >
+                                <option value="symbol">A-Z</option>
+                                <option value="trending">🔥 Trending</option>
+                                <option value="bullish">🎯 Bullish</option>
+                                <option value="gainers">📈 Top Gainers</option>
+                                <option value="losers">📉 Top Losers</option>
+                            </select>
+                        </div>
+                    </div>
 
                     <div className="filter-section" style={{ marginTop: '20px', marginBottom: '0' }}>
                         <div className="filter-buttons">

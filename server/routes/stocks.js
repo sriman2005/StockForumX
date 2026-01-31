@@ -14,7 +14,7 @@ router.get('/', redisCache.route({ expire: 300 }), async (req, res) => {
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 12; // 12 stocks per page
         const skip = (page - 1) * limit;
-        const { search, sector } = req.query;
+        const { search, sector, sortBy } = req.query;
 
         let query = {};
 
@@ -30,10 +30,26 @@ router.get('/', redisCache.route({ expire: 300 }), async (req, res) => {
             query.sector = sector;
         }
 
-        // 2. Fetch Data and Total Count
+        // 2. Sorting Logic
+        let sortQuery = { symbol: 1 }; // Default
+        if (sortBy === 'trending') {
+            sortQuery = { sentimentScore: -1, volume: -1 };
+        } else if (sortBy === 'bullish') {
+            sortQuery = { sentimentScore: -1 };
+        } else if (sortBy === 'gainers') {
+            sortQuery = { changePercent: -1 };
+        } else if (sortBy === 'losers') {
+            sortQuery = { changePercent: 1 };
+        } else if (sortBy === 'price-high') {
+            sortQuery = { currentPrice: -1 };
+        } else if (sortBy === 'price-low') {
+            sortQuery = { currentPrice: 1 };
+        }
+
+        // 3. Fetch Data and Total Count
         const total = await Stock.countDocuments(query);
         const stocks = await Stock.find(query)
-            .sort({ symbol: 1 })
+            .sort(sortQuery)
             .skip(skip)
             .limit(limit)
             .lean();
