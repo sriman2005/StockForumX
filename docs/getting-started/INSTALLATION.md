@@ -1,13 +1,16 @@
 # Installation Guide
 
+[← Back to Documentation Index](../README.md)
+
 ## Prerequisites
 
-Before you begin, ensure you have the following installed:
+> [!IMPORTANT]
+> Before you begin, ensure you have the following installed on your system.
 
-- Node.js (v18 or higher)
-- MongoDB (v6 or higher)
-- npm or yarn
-- Git
+- **Node.js**: v18 or higher
+- **MongoDB**: v6 or higher
+- **npm** or **yarn**
+- **Git**
 
 ## Step 1: Clone the Repository
 
@@ -24,7 +27,7 @@ The project uses npm workspaces for managing client and server dependencies.
 npm run install:all
 ```
 
-Or install manually:
+Alternatively, you can install them manually:
 
 ```bash
 npm install
@@ -36,7 +39,7 @@ cd ../server && npm install
 
 ### Local MongoDB
 
-Start MongoDB service:
+Start the MongoDB service.
 
 **Windows:**
 ```bash
@@ -48,28 +51,28 @@ net start MongoDB
 sudo systemctl start mongod
 ```
 
-Verify MongoDB is running:
+Verify that MongoDB is running:
 ```bash
 mongosh
 ```
 
 ### MongoDB Atlas (Cloud)
 
-1. Create account at [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
-2. Create new cluster
-3. Get connection string
-4. Use in `.env` file
+1.  Create an account at [MongoDB Atlas](https://www.mongodb.com/cloud/atlas).
+2.  Create a new cluster.
+3.  Get connection string.
+4.  Use this string in your `.env` file.
 
 ## Step 4: Configure Environment Variables
 
-Navigate to server directory and copy example file:
+Navigate to the server directory and copy the example file:
 
 ```bash
 cd server
 cp .env.example .env
 ```
 
-Edit `.env` with your configuration:
+Edit the `.env` file with your configuration:
 
 ```env
 PORT=5000
@@ -86,35 +89,36 @@ EMAIL_PASSWORD=your-app-password
 EMAIL_FROM=StockForumX <noreply@stockforumx.com>
 ```
 
-**Important Notes:**
-- Use strong, random JWT_SECRET in production
-- EMAIL_* required for email verification and password reset
-- For Gmail, use [App Password](https://support.google.com/accounts/answer/185833)
+> [!WARNING]
+> - Use a strong, random `JWT_SECRET` in production.
+> - `EMAIL_*` variables are required for email verification and password reset functionality.
+> - For Gmail, use an [App Password](https://support.google.com/accounts/answer/185833).
 
 ## Step 5: Seed the Database (Optional)
 
-Populate database with sample data:
+> [!TIP]
+> You can populate the database with sample data to quickly test the application.
 
 ```bash
 cd server
 npm run seed
 ```
 
-Creates sample stocks, test users, questions, and predictions.
+This commands creates sample stocks, test users, questions, and predictions.
 
 ## Step 6: Start the Application
 
 ### Run Both Client and Server
 
-From root directory:
+From the root directory:
 
 ```bash
 npm run dev
 ```
 
-Starts:
-- Backend: http://localhost:5000
-- Frontend: http://localhost:5173
+This starts:
+- **Backend**: [http://localhost:5000](http://localhost:5000)
+- **Frontend**: [http://localhost:5173](http://localhost:5173)
 
 ### Run Separately
 
@@ -130,10 +134,11 @@ npm run dev:client
 
 ## Step 7: Verify Installation
 
-1. Open browser: http://localhost:5173
-2. Check backend health: http://localhost:5000/api/health
+1.  Open your browser to [http://localhost:5173](http://localhost:5173).
+2.  Check backend health at [http://localhost:5000/api/health](http://localhost:5000/api/health).
 
-Expected response:
+**Expected Response:**
+
 ```json
 {
   "status": "ok",
@@ -148,47 +153,50 @@ Expected response:
 **Error:** `MongooseServerSelectionError`
 
 **Solutions:**
-- Ensure MongoDB is running
-- Check MongoDB URI in `.env`
-- For Atlas, ensure IP is whitelisted
+- Ensure MongoDB is running.
+- Check the `MONGODB_URI` in your `.env` file.
+- For Atlas, ensure your IP is whitelisted.
 
 ### Port Already in Use
 
 **Error:** `EADDRINUSE: address already in use`
 
 **Solutions:**
-- Change PORT in `server/.env`
-- Kill process using port:
+- Change `PORT` in `server/.env`.
+- Kill the process using the port:
+
+  **Windows:**
   ```bash
-  # Windows
   netstat -ano | findstr :5000
   taskkill /PID <PID> /F
+  ```
   
-  # macOS/Linux
+  **macOS/Linux:**
+  ```bash
   lsof -ti:5000 | xargs kill -9
   ```
 
 ### Dependencies Installation Failed
 
 **Solutions:**
-- Clear npm cache: `npm cache clean --force`
-- Delete `node_modules` and reinstall
-- Use Node.js v18 or higher
-- Try with `--legacy-peer-deps` flag
+- Clear npm cache: `npm cache clean --force`.
+- Delete `node_modules` and reinstall.
+- Ensure you are using Node.js v18 or higher.
+- Try with the `--legacy-peer-deps` flag.
 
 ### Email Features Not Working
 
 **Solutions:**
-- Verify EMAIL_* variables in `.env`
-- For Gmail, enable 2FA and use App Password
-- Check firewall/antivirus blocking SMTP
+- Verify `EMAIL_*` variables in `.env`.
+- For Gmail, enable 2FA and use an App Password.
+- Check firewall or antivirus software blocking SMTP.
 
 ## Next Steps
 
-- Read [Quick Start Guide](./QUICK_START.md) for basic features
-- Check [Development Guide](../guides/DEVELOPMENT.md) for workflow
-- See [API Documentation](../api/API.md) for endpoint details
+- Read the [Quick Start Guide](./QUICK_START.md) for basic features.
+- Check the [Development Guide](../guides/DEVELOPMENT.md) for workflow information.
+- See the [API Documentation](../api/API.md) for endpoint details.
 
 ## Production Deployment
 
-For production deployment, see [Deployment Guide](../deployment/DEPLOYMENT.md).
+For production deployment details, see the [Deployment Guide](../deployment/DEPLOYMENT.md).

@@ -1,76 +1,58 @@
 # Quick Start Guide
 
+[← Back to Documentation Index](../README.md)
+
 Get StockForumX running in 5 minutes.
 
 ## Prerequisites
 
-- Node.js v18+
-- MongoDB running locally
+- **Node.js** v18+
+- **MongoDB** running locally
 
 ## Installation
 
 ```bash
-# 1. Clone repository
+# 1. Clone
 git clone <your-repo-url>
 cd StockForumX
 
-# 2. Install dependencies
+# 2. Install
 npm run install:all
 
-# 3. Configure environment
+# 3. Configure
 cd server
 cp .env.example .env
-# Edit .env with your MongoDB URI and JWT secret
 
-# 4. Seed database
+# 4. Seed (Optional)
 npm run seed
 
-# 5. Start application
+# 5. Start
 cd ..
 npm run dev
 ```
 
+> [!NOTE]
+> Ensure MongoDB is running before starting the application.
+
 ## Access Application
 
-- Frontend: http://localhost:5173
-- Backend: http://localhost:5000
-- API Health: http://localhost:5000/api/health
+- **Frontend**: [http://localhost:5173](http://localhost:5173)
+- **Backend**: [http://localhost:5000](http://localhost:5000)
 
 ## Test Account
 
-After seeding, login with:
+If you ran the seed command, you can login with:
 
-**Email**: `test@example.com`  
-**Password**: `password123`
+- **Email**: `test@example.com`
+- **Password**: `password123`
 
 ## Quick Tour
 
-### Browse Stocks
-
-Navigate to Stocks to see available stocks with live prices.
-
-### Ask Questions
-
-Click on stock → Ask Question → Fill form → Submit
-
-### Make Predictions
-
-Stock detail page → Predictions tab → Create prediction
-
-### View Leaderboard
-
-Navigate to Leaderboard to see top users by reputation
-
-### Real-time Chat
-
-Stock detail page → Chat tab → Send messages
-
-## Next Steps
-
-- [Architecture Overview](../architecture/ARCHITECTURE.md) - Understand the system
-- [API Documentation](../api/API.md) - Endpoint details
-- [Development Guide](../guides/DEVELOPMENT.md) - Development workflow
+1.  **Browse Stocks**: View live prices.
+2.  **Ask Questions**: Engage with the community.
+3.  **Make Predictions**: Test your market knowledge.
+4.  **Real-time Chat**: Discuss stocks live.
 
 ## Need Help?
 
-Check [Troubleshooting Guide](../support/TROUBLESHOOTING.md) for common issues.
+Check the [Troubleshooting Guide](../support/TROUBLESHOOTING.md) or open an issue on GitHub.

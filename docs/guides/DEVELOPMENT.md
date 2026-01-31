@@ -1,512 +1,166 @@
 # Development Guide
 
+[← Back to Documentation Index](../README.md)
+
 ## Getting Started
 
 ### Prerequisites
-- Node.js v18+
-- MongoDB v6+
-- Git
-- Code editor (VS Code recommended)
+
+> [!IMPORTANT]
+> Ensure you have the following installed before starting development.
+
+- **Node.js**: v18+
+- **MongoDB**: v6+
+- **Git**
 
 ### Initial Setup
 
-1. **Clone and Install:**
-```bash
-git clone <repo-url>
-cd StockForumX
-npm run install:all
-```
+1.  **Clone and Install:**
+    ```bash
+    git clone <repo-url>
+    cd StockForumX
+    npm run install:all
+    ```
 
-2. **Configure Environment:**
-```bash
-cd server
-cp .env.example .env
-# Edit .env with your settings
-```
+2.  **Configure Environment:**
+    ```bash
+    cd server
+    cp .env.example .env
+    ```
 
-3. **Seed Database:**
-```bash
-npm run seed
-```
+3.  **Seed Database:**
+    ```bash
+    npm run seed
+    ```
 
-4. **Start Development:**
-```bash
-cd ..
-npm run dev
-```
+4.  **Start Development:**
+    ```bash
+    cd ..
+    npm run dev
+    ```
 
 ## Project Structure
 
 ### Frontend (`client/`)
 
-```
-client/
-├── src/
-│   ├── components/          # Reusable components
-│   │   ├── common/         # Shared (Navbar, Loader, etc.)
-│   │   ├── predictions/    # Prediction-related
-│   │   ├── questions/      # Q&A-related
-│   │   ├── profile/        # Profile-related
-│   │   └── search/         # Search-related
-│   ├── pages/              # Route pages
-│   ├── context/            # React Context
-│   │   ├── AuthContext.jsx
-│   │   └── SocketContext.jsx
-│   ├── services/           # API calls
-│   │   └── api.js
-│   ├── App.jsx             # Root component
-│   ├── main.jsx            # Entry point
-│   └── index.css           # Global styles
-└── package.json
-```
+The React application structure:
+
+- `src/components/`: Reusable UI components.
+- `src/pages/`: Main application routes.
+- `src/context/`: React Context providers (Auth, Socket).
+- `src/services/`: API integration layer.
 
 ### Backend (`server/`)
 
-```
-server/
-├── config/                 # Configuration
-│   ├── db.js              # MongoDB connection
-│   └── validateEnv.js     # Env validation
-├── models/                # Mongoose schemas
-│   ├── User.js
-│   ├── Stock.js
-│   ├── Question.js
-│   ├── Answer.js
-│   ├── Prediction.js
-│   ├── ChatMessage.js
-│   └── ReputationSnapshot.js
-├── routes/                # Express routes
-│   ├── auth.js
-│   ├── stocks.js
-│   ├── questions.js
-│   ├── predictions.js
-│   └── users.js
-├── sockets/               # Socket.io handlers
-│   ├── chat.js
-│   └── updates.js
-├── jobs/                  # Cron jobs
-│   ├── predictionEvaluator.js
-│   ├── reputationUpdater.js
-│   └── stockPriceUpdater.js
-├── middleware/            # Custom middleware
-│   └── auth.js
-├── utils/                 # Utilities
-│   ├── email.js
-│   ├── reputation.js
-│   ├── similarity.js
-│   └── seeders.js
-├── index.js               # Entry point
-└── package.json
-```
+The Express application structure:
+
+- `models/`: Mongoose schemas.
+- `routes/`: API endpoint definitions.
+- `controllers/`: Logic for routes (if separated).
+- `sockets/`: Real-time event handlers.
+- `jobs/`: Background cron jobs.
 
 ## Development Workflow
 
 ### 1. Feature Development
 
 **Branch Strategy:**
+
 ```bash
 git checkout -b feature/your-feature-name
 ```
 
-**Development Cycle:**
-1. Create/modify components
-2. Test locally
-3. Commit changes
-4. Push and create PR
+**Cycle:**
+1. Create/modify components.
+2. Test locally.
+3. Commit changes.
+4. Push and create PR.
 
 ### 2. Adding a New Feature
 
 #### Example: Add "Watchlist" Feature
 
-**Step 1: Backend Model**
+**Step 1: Backend Model** (`server/models/Watchlist.js`)
+
 ```javascript
-// server/models/Watchlist.js
 import mongoose from 'mongoose';
 
 const watchlistSchema = new mongoose.Schema({
-    userId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true
-    },
-    stocks: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Stock'
-    }]
-}, { timestamps: true });
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    stocks: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Stock' }]
+});
 
 export default mongoose.model('Watchlist', watchlistSchema);
 ```
 
-**Step 2: Backend Route**
-```javascript
-// server/routes/watchlist.js
-import express from 'express';
-import { auth } from '../middleware/auth.js';
-import Watchlist from '../models/Watchlist.js';
-
-const router = express.Router();
-
-router.get('/', auth, async (req, res) => {
-    const watchlist = await Watchlist.findOne({ userId: req.user.id })
-        .populate('stocks');
-    res.json({ watchlist });
-});
-
-router.post('/add/:stockId', auth, async (req, res) => {
-    let watchlist = await Watchlist.findOne({ userId: req.user.id });
-    
-    if (!watchlist) {
-        watchlist = new Watchlist({ userId: req.user.id, stocks: [] });
-    }
-    
-    if (!watchlist.stocks.includes(req.params.stockId)) {
-        watchlist.stocks.push(req.params.stockId);
-        await watchlist.save();
-    }
-    
-    res.json({ watchlist });
-});
-
-export default router;
-```
-
-**Step 3: Register Route**
-```javascript
-// server/index.js
-import watchlistRoutes from './routes/watchlist.js';
-app.use('/api/watchlist', watchlistRoutes);
-```
-
-**Step 4: Frontend API Service**
-```javascript
-// client/src/services/api.js
-export const getWatchlist = () => axios.get('/api/watchlist');
-export const addToWatchlist = (stockId) => 
-    axios.post(`/api/watchlist/add/${stockId}`);
-```
-
-**Step 5: Frontend Component**
-```javascript
-// client/src/components/watchlist/WatchlistButton.jsx
-import { useState } from 'react';
-import { addToWatchlist } from '../../services/api';
-import toast from 'react-hot-toast';
-
-function WatchlistButton({ stockId }) {
-    const [loading, setLoading] = useState(false);
-
-    const handleAdd = async () => {
-        setLoading(true);
-        try {
-            await addToWatchlist(stockId);
-            toast.success('Added to watchlist!');
-        } catch (error) {
-            toast.error('Failed to add');
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    return (
-        <button onClick={handleAdd} disabled={loading}>
-            {loading ? 'Adding...' : 'Add to Watchlist'}
-        </button>
-    );
-}
-```
+**Step 2: Backend Route** (`server/routes/watchlist.js`)
+**Step 3: Frontend Service** (`client/src/services/api.js`)
+**Step 4: Frontend Component** (`client/src/components/Watchlist.jsx`)
 
 ### 3. Code Style
 
+> [!NOTE]
+> Adhering to code style ensures consistency across the codebase.
+
 #### JavaScript/React
 
-**Naming Conventions:**
-- Components: `PascalCase` (e.g., `UserProfile.jsx`)
-- Functions: `camelCase` (e.g., `getUserData`)
-- Constants: `UPPER_SNAKE_CASE` (e.g., `API_BASE_URL`)
-- Files: Match component name
-
-**Import Order:**
-```javascript
-// 1. External libraries
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-
-// 2. Internal utilities/services
-import { formatDate } from '../utils/helpers';
-import { getStocks } from '../services/api';
-
-// 3. Components
-import Navbar from '../components/common/Navbar';
-
-// 4. Styles
-import './Home.css';
-```
+- **Components**: `PascalCase` (e.g., `UserProfile.jsx`)
+- **Functions**: `camelCase` (e.g., `getUserData`)
+- **Constants**: `UPPER_SNAKE_CASE` (e.g., `API_BASE_URL`)
 
 **Component Structure:**
+
 ```javascript
-function MyComponent({ prop1, prop2 }) {
+function MyComponent({ prop1 }) {
     // 1. Hooks
     const [state, setState] = useState(null);
     
     // 2. Effects
-    useEffect(() => {
-        // ...
-    }, []);
+    useEffect(() => { ... }, []);
     
-    // 3. Event handlers
-    const handleClick = () => {
-        // ...
-    };
-    
-    // 4. Render helpers
-    const renderItem = (item) => {
-        // ...
-    };
-    
-    // 5. Return JSX
-    return (
-        <div>
-            {/* ... */}
-        </div>
-    );
+    // 3. Render
+    return <div>...</div>;
 }
-
-export default MyComponent;
-```
-
-#### Backend
-
-**Route Structure:**
-```javascript
-// GET /api/resource
-router.get('/', async (req, res) => {
-    try {
-        const data = await Model.find();
-        res.json({ data });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-});
-
-// POST /api/resource
-router.post('/', auth, validate, async (req, res) => {
-    try {
-        const item = await Model.create(req.body);
-        res.status(201).json({ item });
-    } catch (error) {
-        res.status(400).json({ error: error.message });
-    }
-});
 ```
 
 ### 4. Testing
 
-#### Manual Testing Checklist
-
-- [ ] Feature works as expected
-- [ ] Error handling works
-- [ ] Loading states display correctly
-- [ ] Responsive on mobile
-- [ ] No console errors
-- [ ] Network requests succeed
-
-#### API Testing with cURL
-
-```bash
-# Register user
-curl -X POST http://localhost:5000/api/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{"username":"test","email":"test@test.com","password":"test123"}'
-
-# Login
-curl -X POST http://localhost:5000/api/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"email":"test@test.com","password":"test123"}'
-
-# Get stocks (with auth)
-curl http://localhost:5000/api/stocks \
-  -H "Authorization: Bearer YOUR_TOKEN"
-```
+**Manual Checklist:**
+- [ ] Feature works as expected.
+- [ ] Error handling is robust.
+- [ ] Responsive design checks out.
+- [ ] No console errors.
 
 ### 5. Debugging
 
-#### Frontend Debugging
-
-**React DevTools:**
-- Install React DevTools extension
-- Inspect component props/state
-- Track re-renders
+> [!TIP]
+> Use **React DevTools** for frontend state inspection and **PM2 logs** for backend monitoring.
 
 **Console Logging:**
+
 ```javascript
 console.log('User data:', user);
-console.table(stocks); // For arrays
 console.error('Error:', error);
 ```
-
-**Network Tab:**
-- Check API requests
-- Verify request/response data
-- Check status codes
-
-#### Backend Debugging
-
-**Console Logging:**
-```javascript
-console.log('Request body:', req.body);
-console.log('User:', req.user);
-console.error('Error:', error);
-```
-
-**MongoDB Queries:**
-```javascript
-// Log query
-const users = await User.find().explain('executionStats');
-console.log(users);
-```
-
-**Nodemon:**
-Auto-restarts on file changes (already configured)
 
 ### 6. Common Tasks
 
-#### Add New Route
+**Add New Route:**
+1. Create route file in `server/routes/`.
+2. Registers it in `server/index.js`.
 
-1. Create route file in `server/routes/`
-2. Import and register in `server/index.js`
-3. Add API function in `client/src/services/api.js`
-
-#### Add New Page
-
-1. Create page in `client/src/pages/`
-2. Add route in `client/src/App.jsx`
-3. Add navigation link in `Navbar.jsx`
-
-#### Add New Model
-
-1. Create model in `server/models/`
-2. Add indexes if needed
-3. Update seeder if needed
-
-#### Update Database Schema
-
-1. Modify model
-2. Create migration script if needed
-3. Run migration on existing data
+**Add New Page:**
+1. Create page in `client/src/pages/`.
+2. Add route in `client/src/App.jsx`.
 
 ### 7. Performance Tips
 
-#### Frontend
-
-- Use `React.memo` for expensive components
-- Implement pagination for large lists
-- Lazy load images
-- Debounce search inputs
-- Use `useMemo` and `useCallback`
-
-#### Backend
-
-- Add database indexes
-- Use `.select()` to fetch only needed fields
-- Use `.lean()` for read-only queries
-- Implement caching (Redis)
-- Use aggregation pipelines
-
-### 8. Git Workflow
-
-```bash
-# Start new feature
-git checkout -b feature/my-feature
-
-# Make changes and commit
-git add .
-git commit -m "feat: add watchlist feature"
-
-# Push to remote
-git push origin feature/my-feature
-
-# Create Pull Request on GitHub
-
-# After merge, update main
-git checkout main
-git pull origin main
-```
-
-**Commit Message Format:**
-- `feat:` New feature
-- `fix:` Bug fix
-- `docs:` Documentation
-- `style:` Formatting
-- `refactor:` Code restructuring
-- `test:` Tests
-- `chore:` Maintenance
-
-### 9. Environment Variables
-
-**Development:**
-```env
-NODE_ENV=development
-PORT=5000
-MONGODB_URI=mongodb://localhost:27017/stockforumx
-JWT_SECRET=dev_secret_key
-CLIENT_URL=http://localhost:5173
-```
-
-**Production:**
-```env
-NODE_ENV=production
-PORT=5000
-MONGODB_URI=mongodb+srv://user:pass@cluster.mongodb.net/stockforumx
-JWT_SECRET=super_secure_random_string
-CLIENT_URL=https://yourapp.com
-```
-
-### 10. Useful Commands
-
-```bash
-# Install dependencies
-npm run install:all
-
-# Start development
-npm run dev
-
-# Start only server
-npm run dev:server
-
-# Start only client
-npm run dev:client
-
-# Seed database
-cd server && npm run seed
-
-# Clear MongoDB
-mongosh
-> use stockforumx
-> db.dropDatabase()
-```
+- **Frontend**: Use `React.memo`, lazy loading, and debouncing.
+- **Backend**: Add database indexes, use `.select()`, and implement caching.
 
 ## CI/CD Workflow
 
-StockForumX uses GitHub Actions for continuous integration and delivery.
+StockForumX uses **GitHub Actions**:
 
-### Automated Checks (CI)
-Every pull request and push to the `main` branch triggers the **CI** workflow which:
-- Validates the backend code.
-- Builds the frontend to ensure no regressions.
-
-### Automated Deployment (CD)
-When code is pushed to `main` or a new version tag (e.g., `v1.0.0`) is created:
-1. The **Docker Publish** workflow triggers.
-2. It builds production Docker images for both the frontend and backend.
-3. It pushes these images to the GitHub Container Registry (GHCR).
-
-You can monitor these processes in the **Actions** tab of the GitHub repository.
-
-## resources
-
-- [React Docs](https://react.dev/)
-- [Express Docs](https://expressjs.com/)
-- [MongoDB Docs](https://docs.mongodb.com/)
-- [Mongoose Docs](https://mongoosejs.com/)
-- [Socket.io Docs](https://socket.io/docs/)
+- **CI**: Validates code and builds frontend on every push.
+- **CD**: Builds and publishes Docker images on tagging/release.

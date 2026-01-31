@@ -1,35 +1,42 @@
 # API Documentation
 
+[← Back to Documentation Index](../README.md)
+
 ## Base URL
 
-```
+```text
 http://localhost:5000/api
 ```
 
 ## Authentication
 
-Most endpoints require JWT authentication. Include the token in the Authorization header:
+Most endpoints require JWT authentication. Include the token in the **Authorization** header:
 
-```
+```http
 Authorization: Bearer <your_jwt_token>
 ```
 
+> [!IMPORTANT]
+> Keep your JWT token secure. Do not expose it in client-side code repositories.
+
 ## Response Format
 
-All API responses follow this structure:
+All API responses follow a consistent structure.
 
-**Success:**
+**Success Response:**
+
 ```json
 {
   "data": { ... },
-  "message": "Success message"
+  "message": "Operation successful"
 }
 ```
 
-**Error:**
+**Error Response:**
+
 ```json
 {
-  "error": "Error message",
+  "error": "Error message description",
   "details": [ ... ]
 }
 ```
@@ -39,26 +46,29 @@ All API responses follow this structure:
 ## Authentication Endpoints
 
 ### Register User
-```http
-POST /auth/register
-```
 
-**Body:**
+Create a new user account.
+
+`POST /auth/register`
+
+**Request Body:**
+
 ```json
 {
   "username": "johndoe",
   "fullName": "John Doe",
   "email": "john@example.com",
-  "password": "password123"
+  "password": "strongpassword123"
 }
 ```
 
 **Response:**
+
 ```json
 {
   "message": "Registration successful. Please verify your email.",
   "user": {
-    "id": "...",
+    "id": "60d0fe4f5311236168a109ca",
     "username": "johndoe",
     "email": "john@example.com",
     "isVerified": false
@@ -67,11 +77,13 @@ POST /auth/register
 ```
 
 ### Verify Email
-```http
-POST /auth/verify-email
-```
 
-**Body:**
+Verify a user's email address using the OTP sent.
+
+`POST /auth/verify-email`
+
+**Request Body:**
+
 ```json
 {
   "email": "john@example.com",
@@ -80,24 +92,27 @@ POST /auth/verify-email
 ```
 
 ### Login
-```http
-POST /auth/login
-```
 
-**Body:**
+Authenticate a user and receive a JWT.
+
+`POST /auth/login`
+
+**Request Body:**
+
 ```json
 {
   "email": "john@example.com",
-  "password": "password123"
+  "password": "strongpassword123"
 }
 ```
 
 **Response:**
+
 ```json
 {
   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
   "user": {
-    "id": "...",
+    "id": "60d0fe4f5311236168a109ca",
     "username": "johndoe",
     "email": "john@example.com",
     "reputation": 0
@@ -106,17 +121,22 @@ POST /auth/login
 ```
 
 ### Get Current User
-```http
-GET /auth/me
-```
-(Requires Authentication)
+
+Retrieve the currently authenticated user's details.
+
+`GET /auth/me`
+
+> [!NOTE]
+> Requires Authentication.
 
 ### Login with OTP (Init)
-```http
-POST /auth/login-otp-init
-```
+
+Initiate a passwordless login flow.
+
+`POST /auth/login-otp-init`
 
 **Body:**
+
 ```json
 {
   "email": "john@example.com"
@@ -124,11 +144,13 @@ POST /auth/login-otp-init
 ```
 
 ### Login with OTP (Verify)
-```http
-POST /auth/login-otp-verify
-```
+
+Complete the passwordless login.
+
+`POST /auth/login-otp-verify`
 
 **Body:**
+
 ```json
 {
   "email": "john@example.com",
@@ -137,11 +159,13 @@ POST /auth/login-otp-verify
 ```
 
 ### Forgot Password
-```http
-POST /auth/forgot-password
-```
+
+Request a password reset OTP.
+
+`POST /auth/forgot-password`
 
 **Body:**
+
 ```json
 {
   "email": "john@example.com"
@@ -149,11 +173,13 @@ POST /auth/forgot-password
 ```
 
 ### Reset Password
-```http
-POST /auth/reset-password
-```
+
+Set a new password using the OTP.
+
+`POST /auth/reset-password`
 
 **Body:**
+
 ```json
 {
   "email": "john@example.com",
@@ -167,15 +193,17 @@ POST /auth/reset-password
 ## Stock Endpoints
 
 ### Get All Stocks
-```http
-GET /stocks
-```
+
+Retrieve a list of available stocks.
+
+`GET /stocks`
 
 **Query Parameters:**
-- `sector` (optional): Filter by sector
-- `search` (optional): Search by name or symbol
+- `sector` (optional): Filter by sector (e.g., "Technology").
+- `search` (optional): Search by name or symbol.
 
 **Response:**
+
 ```json
 {
   "stocks": [
@@ -192,11 +220,13 @@ GET /stocks
 ```
 
 ### Get Stock Details
-```http
-GET /stocks/:symbol
-```
+
+Retrieve detailed information for a specific stock.
+
+`GET /stocks/:symbol`
 
 **Response:**
+
 ```json
 {
   "stock": {
@@ -209,48 +239,50 @@ GET /stocks/:symbol
     "marketCap": 2500000000000,
     "high24h": 151.00,
     "low24h": 148.50,
-    "description": "..."
+    "description": "Apple Inc. designs, manufactures, and markets smartphones..."
   }
 }
 ```
 
 ### Get Trending Questions for Stock
-```http
-GET /stocks/:symbol/trending
-```
+
+`GET /stocks/:symbol/trending`
 
 **Query Parameters:**
-- `limit` (optional, default: 5): Number of questions
+- `limit` (optional, default: 5): Number of questions to retrieve.
 
 ---
 
 ## Question Endpoints
 
 ### Get Questions
-```http
-GET /questions
-```
+
+Retrieve a list of questions based on filters.
+
+`GET /questions`
 
 **Query Parameters:**
-- `stockId` (optional): Filter by stock
-- `userId` (optional): Filter by user
-- `tag` (optional): Filter by tag
-- `sort` (optional): `recent`, `popular`, `unanswered`
-- `limit` (optional, default: 20)
-- `page` (optional, default: 1)
+- `stockId` (optional): Filter by stock ID.
+- `userId` (optional): Filter by user ID.
+- `tag` (optional): Filter by specific tag.
+- `sort` (optional): Sort order (`recent`, `popular`, `unanswered`).
+- `limit` (optional, default: 20).
+- `page` (optional, default: 1).
 
 ### Get Question Details
-```http
-GET /questions/:id
-```
+
+Retrieve a single question and its answers.
+
+`GET /questions/:id`
 
 **Response:**
+
 ```json
 {
   "question": {
     "id": "...",
-    "title": "Is AAPL a good buy?",
-    "content": "...",
+    "title": "Is AAPL a good buy right now?",
+    "content": "Given the recent earnings report...",
     "stockId": { ... },
     "userId": { ... },
     "tags": ["analysis", "long-term"],
@@ -263,12 +295,16 @@ GET /questions/:id
 ```
 
 ### Create Question
-```http
-POST /questions
-```
-(Requires Authentication)
+
+Post a new question.
+
+`POST /questions`
+
+> [!NOTE]
+> Requires Authentication.
 
 **Body:**
+
 ```json
 {
   "stockId": "...",
@@ -279,12 +315,16 @@ POST /questions
 ```
 
 ### Create Answer
-```http
-POST /questions/:id/answers
-```
-(Requires Authentication)
+
+Answer a specific question.
+
+`POST /questions/:id/answers`
+
+> [!NOTE]
+> Requires Authentication.
 
 **Body:**
+
 ```json
 {
   "content": "Yes, AAPL is a solid long-term investment because..."
@@ -292,58 +332,70 @@ POST /questions/:id/answers
 ```
 
 ### Upvote Question
-```http
-PUT /questions/:id/upvote
-```
-(Requires Authentication)
+
+`PUT /questions/:id/upvote`
+
+> [!NOTE]
+> Requires Authentication.
 
 ### Downvote Question
-```http
-PUT /questions/:id/downvote
-```
-(Requires Authentication)
+
+`PUT /questions/:id/downvote`
+
+> [!NOTE]
+> Requires Authentication.
 
 ### Upvote Answer
-```http
-PUT /questions/answers/:answerId/upvote
-```
-(Requires Authentication)
+
+`PUT /questions/answers/:answerId/upvote`
+
+> [!NOTE]
+> Requires Authentication.
 
 ### Downvote Answer
-```http
-PUT /questions/answers/:answerId/downvote
-```
-(Requires Authentication)
+
+`PUT /questions/answers/:answerId/downvote`
+
+> [!NOTE]
+> Requires Authentication.
 
 ### Accept Answer
-```http
-PUT /questions/:questionId/answers/:answerId/accept
-```
-🔒 **Requires Authentication** (Question author only)
+
+Mark an answer as accepted.
+
+`PUT /questions/:questionId/answers/:answerId/accept`
+
+> [!NOTE]
+> Requires Authentication. Only the question author can perform this action.
 
 ---
 
 ## Prediction Endpoints
 
 ### Get Predictions
-```http
-GET /predictions
-```
+
+Retrieve recent market predictions.
+
+`GET /predictions`
 
 **Query Parameters:**
-- `stockId` (optional): Filter by stock
-- `userId` (optional): Filter by user
-- `timeframe` (optional): `1h`, `1d`, `1w`, `1m`
-- `evaluated` (optional): `true`, `false`
-- `limit` (optional, default: 20)
+- `stockId` (optional): Filter by stock.
+- `userId` (optional): Filter by user.
+- `timeframe` (optional): `1h`, `1d`, `1w`, `1m`.
+- `evaluated` (optional): `true`, `false`.
+- `limit` (optional, default: 20).
 
 ### Create Prediction
-```http
-POST /predictions
-```
-(Requires Authentication)
+
+Submit a new prediction.
+
+`POST /predictions`
+
+> [!NOTE]
+> Requires Authentication.
 
 **Body (Price Prediction):**
+
 ```json
 {
   "stockId": "...",
@@ -355,6 +407,7 @@ POST /predictions
 ```
 
 **Body (Direction Prediction):**
+
 ```json
 {
   "stockId": "...",
@@ -366,17 +419,18 @@ POST /predictions
 ```
 
 ### Get User Predictions
-```http
-GET /predictions/user/:userId
-```
+
+`GET /predictions/user/:userId`
 
 ### Get Prediction Stats
-```http
-GET /predictions/stats
-```
-(Requires Authentication)
+
+`GET /predictions/stats`
+
+> [!NOTE]
+> Requires Authentication.
 
 **Response:**
+
 ```json
 {
   "stats": {
@@ -396,14 +450,16 @@ GET /predictions/stats
 ## User Endpoints
 
 ### Get Leaderboard
-```http
-GET /users/leaderboard
-```
+
+Retrieve top-ranked users.
+
+`GET /users/leaderboard`
 
 **Query Parameters:**
-- `limit` (optional, default: 10)
+- `limit` (optional, default: 10).
 
 **Response:**
+
 ```json
 {
   "leaderboard": [
@@ -418,11 +474,11 @@ GET /users/leaderboard
 ```
 
 ### Get User Profile
-```http
-GET /users/:userId
-```
+
+`GET /users/:userId`
 
 **Response:**
+
 ```json
 {
   "user": {
@@ -440,39 +496,20 @@ GET /users/:userId
 ```
 
 ### Get User Stats
-```http
-GET /users/:userId/stats
-```
 
-**Response:**
-```json
-{
-  "stats": {
-    "predictions": {
-      "total": 100,
-      "accurate": 75,
-      "accuracy": 75.5
-    },
-    "questions": {
-      "asked": 20,
-      "answered": 35
-    },
-    "reputation": {
-      "current": 250.5,
-      "tier": "Expert",
-      "history": [ ... ]
-    }
-  }
-}
-```
+`GET /users/:userId/stats`
 
 ### Update Profile
-```http
-PUT /users/profile
-```
-(Requires Authentication)
+
+Update user profile information.
+
+`PUT /users/profile`
+
+> [!NOTE]
+> Requires Authentication.
 
 **Body:**
+
 ```json
 {
   "fullName": "John Doe",
@@ -488,11 +525,11 @@ PUT /users/profile
 ## Health Check
 
 ### Check API Health
-```http
-GET /health
-```
+
+`GET /health`
 
 **Response:**
+
 ```json
 {
   "status": "ok",
@@ -504,8 +541,13 @@ GET /health
 
 ## Rate Limiting
 
-- **Limit**: 100 requests per 15 minutes per IP
-- **Response** (when exceeded):
+> [!WARNING]
+> To ensure fair usage, the API enforces rate limits.
+
+- **Limit**: 100 requests per 15 minutes per IP.
+
+**Response (when exceeded):**
+
 ```json
 {
   "error": "Too many requests from this IP, please try again later."

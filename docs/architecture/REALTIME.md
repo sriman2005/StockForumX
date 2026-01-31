@@ -1,5 +1,7 @@
 # Real-Time Features
 
+[← Back to Documentation Index](../README.md)
+
 StockForumX uses **Socket.io** for real-time, bidirectional communication between clients and the server.
 
 ## Architecture
@@ -7,15 +9,13 @@ StockForumX uses **Socket.io** for real-time, bidirectional communication betwee
 ```mermaid
 graph LR
     subgraph Client
-        C1[User A Browser]
-        C2[User B Browser]
-        C3[User C Browser]
+        C1[User A]
+        C2[User B]
     end
     
     subgraph Server
         WS[WebSocket Server]
-        H1[Chat Handler]
-        H2[Update Handler]
+        H1[Handers]
     end
     
     subgraph Database
@@ -24,452 +24,91 @@ graph LR
     
     C1 <-->|Socket.io| WS
     C2 <-->|Socket.io| WS
-    C3 <-->|Socket.io| WS
     WS --> H1
-    WS --> H2
     H1 --> DB
-    H2 --> DB
 ```
 
 ## Connection Setup
 
-### Server-Side (index.js)
+### Server-Side
 
 ```javascript
-import { Server } from 'socket.io';
-import { createServer } from 'http';
-
-const httpServer = createServer(app);
 const io = new Server(httpServer, {
     cors: {
-        origin: process.env.CLIENT_URL || 'http://localhost:5173',
+        origin: process.env.CLIENT_URL,
         methods: ['GET', 'POST']
     }
 });
-
-io.on('connection', (socket) => {
-    console.log('New client connected:', socket.id);
-    
-    setupChatHandlers(io, socket);
-    setupUpdateHandlers(io, socket);
-});
 ```
 
-### Client-Side (SocketContext.jsx)
+### Client-Side
 
 ```javascript
-import { io } from 'socket.io-client';
-
 const socket = io('http://localhost:5000', {
     autoConnect: false
 });
-
-// Connect when authenticated
 socket.connect();
 ```
 
 ## Room-Based Architecture
 
-### Stock Rooms
-
-Each stock has its own room for isolated communication:
-
 **Room Format:** `stock:{stockId}`
 
-**Benefits:**
-- Reduces unnecessary broadcasts
-- Users only receive updates for stocks they're viewing
-- Better scalability
+Each stock has its own room. This isolates communication so users only receive updates for the stocks they are currently viewing.
 
-## Events
+> [!TIP]
+> Room-based architecture significantly reduces bandwidth usage by avoiding global broadcasts.
+
+## Events Reference
 
 ### Chat Events
 
-#### 1. Join Stock Room
-**Client → Server**
-```javascript
-socket.emit('join:stock', stockId);
-```
-
-**Purpose:** Subscribe to updates for a specific stock
-
----
-
-#### 2. Leave Stock Room
-**Client → Server**
-```javascript
-socket.emit('leave:stock', stockId);
-```
-
-**Purpose:** Unsubscribe from stock updates
-
----
-
-#### 3. Send Chat Message
-**Client → Server**
-```javascript
-socket.emit('chat:message', {
-    stockId: '...',
-    userId: '...',
-    message: 'Great analysis!'
-});
-```
-
-**Server → Clients (in room)**
-```javascript
-socket.on('chat:message', (data) => {
-    // data contains populated message with user info
-    console.log(data.userId.username, ':', data.message);
-});
-```
-
-**Flow:**
-1. Client sends message
-2. Server saves to database
-3. Server populates user data
-4. Server broadcasts to all clients in stock room
-
----
-
-#### 4. Typing Indicator
-**Client → Server**
-```javascript
-socket.emit('chat:typing', {
-    stockId: '...',
-    username: 'johndoe'
-});
-```
-
-**Server → Other Clients (in room)**
-```javascript
-socket.on('chat:typing', (data) => {
-    console.log(`${data.username} is typing...`);
-});
-```
-
----
+| Event | Direction | Description |
+|-------|-----------|-------------|
+| `join:stock` | Client → Server | Join a stock's room. |
+| `leave:stock` | Client → Server | Leave a stock's room. |
+| `chat:message` | Client → Server | Send a new message. |
+| `chat:typing` | Client → Server | Emit typing status. |
 
 ### Update Events
 
-#### 1. New Question
-**Server → Clients**
-```javascript
-socket.on('question:new', (question) => {
-    // New question posted for this stock
-    console.log('New question:', question.title);
-});
-```
+| Event | Direction | Description |
+|-------|-----------|-------------|
+| `question:new` | Server → Client | New question posted. |
+| `answer:new` | Server → Client | New answer posted. |
+| `prediction:new` | Server → Client | New prediction made. |
+| `stock:update` | Server → Client | Stock price changed. |
 
----
+## Implementation Example
 
-#### 2. New Answer
-**Server → Clients**
-```javascript
-socket.on('answer:new', (answer) => {
-    // New answer posted
-    console.log('New answer to question:', answer.questionId);
-});
-```
-
----
-
-#### 3. New Prediction
-**Server → Clients**
-```javascript
-socket.on('prediction:new', (prediction) => {
-    // New prediction made
-    console.log('New prediction:', prediction);
-});
-```
-
----
-
-#### 4. Stock Price Update
-**Server → Clients**
-```javascript
-socket.on('stock:update', (stock) => {
-    // Stock price changed
-    console.log(`${stock.symbol}: $${stock.currentPrice}`);
-});
-```
-
-**Triggered by:** Background job (every 5 minutes)
-
----
-
-## Implementation Examples
-
-### Client-Side: Chat Component
+### Client-Side Chat Component
 
 ```javascript
-import { useSocket } from '../context/SocketContext';
-import { useState, useEffect } from 'react';
+useEffect(() => {
+    socket.emit('join:stock', stockId);
 
-function Chat({ stockId }) {
-    const socket = useSocket();
-    const [messages, setMessages] = useState([]);
-    const [input, setInput] = useState('');
+    socket.on('chat:message', (message) => {
+        setMessages(prev => [...prev, message]);
+    });
 
-    useEffect(() => {
-        // Join room
-        socket.emit('join:stock', stockId);
-
-        // Listen for messages
-        socket.on('chat:message', (message) => {
-            setMessages(prev => [...prev, message]);
-        });
-
-        // Cleanup
-        return () => {
-            socket.emit('leave:stock', stockId);
-            socket.off('chat:message');
-        };
-    }, [stockId]);
-
-    const sendMessage = () => {
-        socket.emit('chat:message', {
-            stockId,
-            userId: currentUser.id,
-            message: input
-        });
-        setInput('');
+    return () => {
+        socket.emit('leave:stock', stockId);
+        socket.off('chat:message');
     };
-
-    return (
-        <div>
-            {messages.map(msg => (
-                <div key={msg._id}>
-                    <strong>{msg.userId.username}:</strong> {msg.message}
-                </div>
-            ))}
-            <input 
-                value={input} 
-                onChange={(e) => setInput(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
-            />
-        </div>
-    );
-}
-```
-
-### Server-Side: Broadcasting Updates
-
-```javascript
-// In routes/questions.js
-router.post('/', auth, async (req, res) => {
-    const question = await Question.create(req.body);
-    
-    // Broadcast to all clients in stock room
-    const io = req.app.get('io');
-    io.to(`stock:${question.stockId}`).emit('question:new', question);
-    
-    res.status(201).json({ question });
-});
-```
-
-### Server-Side: Background Job Broadcasting
-
-```javascript
-// In jobs/stockPriceUpdater.js
-import { io } from '../index.js';
-
-cron.schedule('*/5 * * * *', async () => {
-    const stocks = await Stock.find();
-    
-    for (const stock of stocks) {
-        // Update price
-        stock.currentPrice = calculateNewPrice(stock);
-        await stock.save();
-        
-        // Broadcast to all clients watching this stock
-        io.to(`stock:${stock._id}`).emit('stock:update', stock);
-    }
-});
-```
-
-## Error Handling
-
-### Client-Side
-
-```javascript
-socket.on('error', (error) => {
-    console.error('Socket error:', error.message);
-    toast.error(error.message);
-});
-
-socket.on('connect_error', (error) => {
-    console.error('Connection error:', error);
-});
-```
-
-### Server-Side
-
-```javascript
-socket.on('chat:message', async (data) => {
-    try {
-        // Process message
-    } catch (error) {
-        console.error('Chat message error:', error);
-        socket.emit('error', { message: 'Failed to send message' });
-    }
-});
+}, [stockId]);
 ```
 
 ## Performance Considerations
 
-### 1. Room-Based Broadcasting
-**Good:** Broadcast only to relevant clients
-```javascript
-io.to(`stock:${stockId}`).emit('update', data);
-```
-
-**Bad:** Broadcast to all clients
-```javascript
-io.emit('update', data); // Sends to everyone!
-```
-
-### 2. Throttling/Debouncing
-
-For typing indicators:
-```javascript
-const debouncedTyping = debounce(() => {
-    socket.emit('chat:typing', { stockId, username });
-}, 300);
-```
-
-### 3. Connection Pooling
-
-Limit concurrent connections per user:
-```javascript
-const userConnections = new Map();
-
-io.on('connection', (socket) => {
-    const userId = socket.handshake.auth.userId;
-    
-    if (userConnections.get(userId) >= 3) {
-        socket.disconnect();
-        return;
-    }
-});
-```
-
-## Testing Real-Time Features
-
-### Manual Testing
-
-1. Open multiple browser windows
-2. Navigate to same stock page
-3. Send chat messages
-4. Verify all windows receive updates
-
-### Automated Testing
-
-```javascript
-import { io } from 'socket.io-client';
-
-describe('Chat Socket', () => {
-    let socket;
-
-    beforeEach((done) => {
-        socket = io('http://localhost:5000');
-        socket.on('connect', done);
-    });
-
-    afterEach(() => {
-        socket.close();
-    });
-
-    it('should receive chat messages', (done) => {
-        socket.emit('join:stock', 'test-stock-id');
-        
-        socket.on('chat:message', (message) => {
-            expect(message.message).toBe('Test message');
-            done();
-        });
-
-        socket.emit('chat:message', {
-            stockId: 'test-stock-id',
-            userId: 'test-user-id',
-            message: 'Test message'
-        });
-    });
-});
-```
+1.  **Room-Based Broadcasting**: Always use `io.to(room).emit()` instead of `io.emit()` whenever possible.
+2.  **Throttling**: Debounce high-frequency events like "typing" indicators.
+3.  **Connection Pooling**: Monitor the number of concurrent connections per user.
 
 ## Security Considerations
 
-### 1. Authentication
+> [!WARNING]
+> Always verify user identity before processing sensitive socket events.
 
-Verify user identity before processing events:
-```javascript
-socket.on('chat:message', async (data) => {
-    const user = await verifySocketAuth(socket);
-    if (!user) {
-        socket.emit('error', { message: 'Unauthorized' });
-        return;
-    }
-    // Process message
-});
-```
-
-### 2. Rate Limiting
-
-Prevent spam:
-```javascript
-const messageRateLimiter = new Map();
-
-socket.on('chat:message', (data) => {
-    const userId = data.userId;
-    const now = Date.now();
-    const userMessages = messageRateLimiter.get(userId) || [];
-    
-    // Allow max 5 messages per 10 seconds
-    const recentMessages = userMessages.filter(t => now - t < 10000);
-    if (recentMessages.length >= 5) {
-        socket.emit('error', { message: 'Too many messages' });
-        return;
-    }
-    
-    messageRateLimiter.set(userId, [...recentMessages, now]);
-    // Process message
-});
-```
-
-### 3. Input Validation
-
-Sanitize all inputs:
-```javascript
-import validator from 'validator';
-
-socket.on('chat:message', (data) => {
-    const message = validator.escape(data.message);
-    // Process sanitized message
-});
-```
-
-## Debugging
-
-### Enable Debug Logs
-
-**Client:**
-```javascript
-localStorage.debug = 'socket.io-client:socket';
-```
-
-**Server:**
-```bash
-DEBUG=socket.io:* node index.js
-```
-
-### Monitor Connections
-
-```javascript
-io.on('connection', (socket) => {
-    console.log('Connected:', socket.id);
-    console.log('Total connections:', io.engine.clientsCount);
-    
-    socket.on('disconnect', () => {
-        console.log('Disconnected:', socket.id);
-    });
-});
-```
+- **Authentication**: Usage of middleware to attach user context to the socket.
+- **Rate Limiting**: Custom implementation to prevent spamming `chat:message` events.
+- **Input Validation**: Sanitize all incoming messages before broadcasting.
