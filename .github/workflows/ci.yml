@@ -7,35 +7,59 @@ on:
     branches: [ main ]
 
 jobs:
-  ci:
-    name: Continuous Integration
+  backend:
+    name: Backend
     runs-on: ubuntu-latest
     
     steps:
     - uses: actions/checkout@v4
     
-    - name: Install Nix
-      uses: cachix/install-nix-action@v25
+    - name: Use Node.js
+      uses: actions/setup-node@v4
       with:
-        nix_path: nixpkgs=channel:nixos-unstable
+        node-version: '18.x'
+        cache: 'npm'
+        cache-dependency-path: server/package-lock.json
         
-    - name: Backend - Install Dependencies
-      run: nix develop --command bash -c "cd server && npm ci"
+    - name: Install Dependencies
+      run: cd server && npm ci
       
-    - name: Backend - Run Tests
-      run: nix develop --command bash -c "cd server && npm test"
+    - name: Run Tests
+      run: cd server && npm test
 
-    - name: Frontend - Install Dependencies
-      run: nix develop --command bash -c "cd client && npm ci"
-      
-    - name: Frontend - Build
-      run: nix develop --command bash -c "cd client && npm run build"
-
-    - name: Price Updater - Build
+  price-updater:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.21'
+        
+    - name: Build
       run: |
-        nix develop --command bash -c "
         cd services/price-updater
         go mod tidy
         go build -v ./...
-        "
+
+  frontend:
+    name: Frontend Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+          
+      - name: Install dependencies
+        run: cd client && npm ci
+        
+      - name: Build
+        run: cd client && npm run build
 
