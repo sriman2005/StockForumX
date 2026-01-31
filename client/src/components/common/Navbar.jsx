@@ -53,14 +53,12 @@ const Navbar = () => {
                                         <span className={stock.change >= 0 ? 'ticker-up' : 'ticker-down'}>
                                             ${stock.currentPrice.toFixed(2)} ({stock.change >= 0 ? '+' : ''}{stock.changePercent.toFixed(2)}%)
                                         </span>
-                                        <span className="ticker-separator">///</span>
                                     </Link>
                                 ))
                             ) : (
                                 <span className="ticker-status-badge">INITIALIZING LIVE FEED...</span>
                             )}
                             <span className="ticker-status-badge">MARKET STATUS: <span className="status-live">LIVE</span></span>
-                            <span className="ticker-separator">///</span>
                         </div>
                     ))}
                 </div>
