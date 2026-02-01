@@ -11,6 +11,7 @@ import validateEnv from './config/validateEnv.js';
 import Logger, { createServiceLogger } from './utils/logger.js';
 import requestLogger from './middleware/requestLogger.js';
 import { errorHandler } from './middleware/errorMiddleware.js';
+import { RATE_LIMIT, SERVER_CONFIG } from './config/constants.js';
 
 // Routes
 import authRoutes from './routes/auth.js';
@@ -48,15 +49,16 @@ const httpServer = createServer(app);
 // Initialize Socket.io
 const io = new Server(httpServer, {
     cors: {
-        origin: process.env.CLIENT_URL || 'http://localhost:5173',
+        origin: process.env.CLIENT_URL || SERVER_CONFIG.DEFAULT_CLIENT_URL,
         methods: ['GET', 'POST']
     }
 });
 
 // Rate limiting
+// Rate limiting
 const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: process.env.NODE_ENV === 'development' ? 10000 : 2000,
+    windowMs: RATE_LIMIT.WINDOW_MS,
+    max: process.env.NODE_ENV === 'development' ? RATE_LIMIT.MAX_REQUESTS_DEV : RATE_LIMIT.MAX_REQUESTS_PROD,
     message: 'Too many requests from this IP, please try again later.',
     standardHeaders: true,
     legacyHeaders: false,
@@ -71,7 +73,7 @@ app.use(helmet());
 app.use(compression());
 app.use(requestLogger);
 app.use(cors({
-    origin: process.env.CLIENT_URL || 'http://localhost:5173',
+    origin: process.env.CLIENT_URL || SERVER_CONFIG.DEFAULT_CLIENT_URL,
     credentials: true
 }));
 app.use(limiter); // Apply to all requests
@@ -113,7 +115,8 @@ startReputationUpdater();
 startStockPriceUpdater();
 
 // Start server
-const PORT = process.env.PORT || 5000;
+// Start server
+const PORT = process.env.PORT || SERVER_CONFIG.DEFAULT_PORT;
 httpServer.listen(PORT, () => {
     Logger.info(`
   ____________________________________________________

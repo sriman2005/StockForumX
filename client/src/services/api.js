@@ -1,9 +1,10 @@
 import axios from 'axios';
+import { APP_CONFIG } from '../config';
 
-const API_BASE = '/api';
+const API_BASE = APP_CONFIG.API_BASE_URL;
 
 // Set global timeout
-axios.defaults.timeout = 15000;
+axios.defaults.timeout = APP_CONFIG.API_TIMEOUT;
 
 // Add a response interceptor
 axios.interceptors.response.use(

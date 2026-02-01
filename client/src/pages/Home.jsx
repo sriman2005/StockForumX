@@ -9,6 +9,7 @@ import DiscussionFilters from '../components/search/DiscussionFilters';
 import toast from 'react-hot-toast';
 import { FaRegComments, FaArrowTrendUp, FaUsers, FaFire, FaBolt, FaTrophy, FaChartSimple } from 'react-icons/fa6';
 import EmptyState from '../components/common/EmptyState';
+import { UI_TEXT, LIMITS } from '../config';
 import './Home.css';
 
 
@@ -35,7 +36,7 @@ const Home = () => {
     const availableTags = useMemo(() => {
         return [...new Set(
             questions.flatMap(q => q?.tags || [])
-        )].filter(Boolean).slice(0, 10); // Limit to top 10 most common tags
+        )].filter(Boolean).slice(0, LIMITS.TOP_TAGS); // Limit to top tags
     }, [questions]);
 
     // Sync searchQuery with URL params when they change
@@ -66,7 +67,7 @@ const Home = () => {
 
             const results = await Promise.allSettled([
                 getQuestions(params),
-                getStocks({ limit: 5, sortBy: 'trending' }),
+                getStocks({ limit: LIMITS.TRENDING_STOCKS, sortBy: 'trending' }),
                 getUserCount()
             ]);
 
@@ -109,10 +110,10 @@ const Home = () => {
                     <div className="hero-content">
                         <div className="hero-text-wrapper">
                             <h1 className="hero-title">
-                                <span className="gradient-text">Stock Market</span> Discussion Hub
+                                <span className="gradient-text">{UI_TEXT.HERO_TITLE_PREFIX}</span> {UI_TEXT.HERO_TITLE_SUFFIX}
                             </h1>
                             <p className="hero-subtitle">
-                                Where investors discuss market trends, share insights, and learn together
+                                {UI_TEXT.HERO_SUBTITLE}
                             </p>
                         </div>
 
@@ -123,21 +124,21 @@ const Home = () => {
                                     <FaRegComments />
                                 </div>
                                 <div className="stat-value">{questions.length}+</div>
-                                <div className="stat-label">Questions</div>
+                                <div className="stat-label">{UI_TEXT.STATS_QUESTIONS}</div>
                             </div>
                             <div className="stat-card">
                                 <div className="stat-icon">
                                     <FaArrowTrendUp />
                                 </div>
                                 <div className="stat-value">{trendingStocks.length}</div>
-                                <div className="stat-label">Trending Stocks</div>
+                                <div className="stat-label">{UI_TEXT.STATS_TRENDING}</div>
                             </div>
                             <div className="stat-card">
                                 <div className="stat-icon">
                                     <FaUsers />
                                 </div>
                                 <div className="stat-value">{formatUserCount(userCount)}</div>
-                                <div className="stat-label">Active Users</div>
+                                <div className="stat-label">{UI_TEXT.STATS_USERS}</div>
                             </div>
                         </div>
                     </div>
@@ -162,7 +163,7 @@ const Home = () => {
                             <SearchBar
                                 value={searchQuery}
                                 onChange={setSearchQuery}
-                                placeholder="Search stocks (e.g., RELIANCE.NS, AAPL)..."
+                                placeholder={UI_TEXT.SEARCH_PLACEHOLDER}
                             />
                         </div>
 
@@ -178,16 +179,16 @@ const Home = () => {
 
                         {error && !loading ? (
                             <div className="feed-error-brute brute-frame">
-                                <h3>FEED UNAVAILABLE</h3>
-                                <p>We're having trouble reaching the exchange. Try refreshing the page.</p>
+                                <h3>{UI_TEXT.FEED_ERROR_TITLE}</h3>
+                                <p>{UI_TEXT.FEED_ERROR_MESSAGE}</p>
                                 <button className="btn btn-primary" onClick={fetchData}>
                                     RETRY CONNECTION
                                 </button>
                             </div>
                         ) : questions.length === 0 && !loading ? (
                             <EmptyState
-                                title="NO DISCUSSIONS"
-                                message="The forum is quiet... be the first to start a conversation!"
+                                title={UI_TEXT.EMPTY_STATE_TITLE}
+                                message={UI_TEXT.EMPTY_STATE_MESSAGE}
                                 action="Clear Filters"
                                 onAction={handleClearFilters}
                             />

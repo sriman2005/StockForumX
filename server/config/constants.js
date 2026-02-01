@@ -1,0 +1,19 @@
+export const AUTH_CONSTANTS = {
+    OTP_EXPIRY_24H: 24 * 60 * 60 * 1000,
+    OTP_EXPIRY_10M: 10 * 60 * 1000,
+    JWT_SECRET_MIN_LENGTH: 32,
+    USERNAME_MIN_LENGTH: 3,
+    USERNAME_MAX_LENGTH: 30,
+    PASSWORD_MIN_LENGTH: 6
+};
+
+export const RATE_LIMIT = {
+    WINDOW_MS: 15 * 60 * 1000, // 15 minutes
+    MAX_REQUESTS_DEV: 10000,
+    MAX_REQUESTS_PROD: 2000
+};
+
+export const SERVER_CONFIG = {
+    DEFAULT_PORT: 5000,
+    DEFAULT_CLIENT_URL: 'http://localhost:5173'
+};

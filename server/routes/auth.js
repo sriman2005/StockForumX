@@ -7,6 +7,8 @@ import sendEmail from '../utils/email.js';
 import crypto from 'crypto';
 import { asyncHandler, ErrorResponse } from '../middleware/errorMiddleware.js';
 import Logger from '../utils/logger.js';
+import { getWelcomeEmail, getLoginAlertEmail, getPasswordResetEmail, getLoginOtpEmail, getLoginOtpAlertEmail } from '../utils/emailTemplates.js';
+import { AUTH_CONSTANTS } from '../config/constants.js';
 
 const router = express.Router();
 
@@ -15,10 +17,10 @@ const router = express.Router();
 // @desc    Register a new user
 // @access  Public
 router.post('/register', [
-    body('username').trim().isLength({ min: 3, max: 30 }).withMessage('Username must be 3-30 characters'),
+    body('username').trim().isLength({ min: AUTH_CONSTANTS.USERNAME_MIN_LENGTH, max: AUTH_CONSTANTS.USERNAME_MAX_LENGTH }).withMessage(`Username must be ${AUTH_CONSTANTS.USERNAME_MIN_LENGTH}-${AUTH_CONSTANTS.USERNAME_MAX_LENGTH} characters`),
     body('fullName').trim().notEmpty().withMessage('Full name is required'),
     body('email').isEmail().withMessage('Please enter a valid email'),
-    body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters')
+    body('password').isLength({ min: AUTH_CONSTANTS.PASSWORD_MIN_LENGTH }).withMessage(`Password must be at least ${AUTH_CONSTANTS.PASSWORD_MIN_LENGTH} characters`)
 ], asyncHandler(async (req, res, next) => {
     const { username, fullName, email, phone, location, tradingExperience, password } = req.body;
 
@@ -43,15 +45,15 @@ router.post('/register', [
         // Generate Verification OTP
         const otp = crypto.randomInt(100000, 999999).toString();
         user.otp = otp;
-        user.otpExpires = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
+        user.otpExpires = Date.now() + AUTH_CONSTANTS.OTP_EXPIRY_24H;
         await user.save();
 
         // Send Verification Email
-        const message = `Welcome to StockForumX, ${user.username}!\n\nPlease verify your email to activate your account.\nYour Verification OTP is: ${otp}`;
+        const { subject, message } = getWelcomeEmail(user.username, otp);
 
         await sendEmail({
             email: user.email,
-            subject: 'Verify your email - StockForumX',
+            subject,
             message
         });
 
@@ -123,11 +125,13 @@ router.post('/login', asyncHandler(async (req, res, next) => {
         // Send Login Alert (Async - Fire and Forget)
         const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'Unknown IP';
         const userAgent = req.headers['user-agent'] || 'Unknown Device';
-        const message = `Security Alert: Login Detected\n\nSomeone logged into your account.\nTime: ${new Date().toLocaleString()}\nIP Address: ${ip}\nDevice: ${userAgent}\n\nIf this was not you, please reset your password immediately.`;
+        const time = new Date().toLocaleString();
+
+        const { subject, message } = getLoginAlertEmail(time, ip, userAgent);
 
         sendEmail({
             email: user.email,
-            subject: 'New Login Alert - StockForumX',
+            subject,
             message
         }).catch(err => Logger.error(`Login email failed: ${err.message}`));
     } else {
@@ -161,15 +165,15 @@ router.post('/forgot-password', asyncHandler(async (req, res, next) => {
     const otp = crypto.randomInt(100000, 999999).toString();
 
     user.otp = otp;
-    user.otpExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
+    user.otpExpires = Date.now() + AUTH_CONSTANTS.OTP_EXPIRY_10M;
 
     await user.save();
 
-    const message = `Your password reset OTP is: ${otp}\nIt is valid for 10 minutes.`;
+    const { subject, message } = getPasswordResetEmail(otp);
 
     await sendEmail({
         email: user.email,
-        subject: 'Password Reset OTP - StockForumX',
+        subject,
         message
     });
 
@@ -215,13 +219,15 @@ router.post('/login-otp-init', asyncHandler(async (req, res, next) => {
 
     const otp = crypto.randomInt(100000, 999999).toString();
     user.otp = otp;
-    user.otpExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
+    user.otpExpires = Date.now() + AUTH_CONSTANTS.OTP_EXPIRY_10M;
     await user.save();
+
+    const { subject, message } = getLoginOtpEmail(otp);
 
     await sendEmail({
         email: user.email,
-        subject: 'Login OTP - StockForumX',
-        message: `Your Login OTP is: ${otp}`
+        subject,
+        message
     });
 
     res.json({ success: true, message: 'OTP sent to email' });
@@ -261,10 +267,13 @@ router.post('/login-otp-init/verify', asyncHandler(async (req, res, next) => {
 
     // Alert
     const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'Unknown IP';
+    const time = new Date().toLocaleString();
+    const { subject, message } = getLoginOtpAlertEmail(time, ip);
+
     sendEmail({
         email: user.email,
-        subject: 'New Login Alert (OTP)',
-        message: `Logged in via OTP at ${new Date().toLocaleString()}\nIP Address: ${ip}`
+        subject,
+        message
     }).catch(err => Logger.error(`OTP alert email failed: ${err.message}`));
 }));
 
