@@ -1,6 +1,7 @@
-/* Premium Neo-Brutalist Question Detail */
+/* Brutal Orange/Dark Gray Question Detail */
 .question-detail-page {
     padding: 60px 0;
+    background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
 }
 
 .question-header {
@@ -19,6 +20,8 @@
     font-weight: 900;
     text-transform: uppercase;
     line-height: 1;
+    color: #ff6600;
+    text-shadow: 3px 3px 0px rgba(0, 0, 0, 0.8);
 }
 
 .question-meta {
@@ -31,9 +34,11 @@
     font-size: 1rem;
     font-weight: 800;
     text-transform: uppercase;
-    background: var(--color-accent);
-    padding: 5px 12px;
-    border: 2px solid var(--border-color);
+    background: #ff6600;
+    color: #000;
+    padding: 8px 16px;
+    border: 3px solid #000;
+    box-shadow: 4px 4px 0px #000;
 }
 
 /* Layout Grid */
@@ -50,15 +55,15 @@
     gap: 30px;
     margin-bottom: 40px;
     padding: 30px;
-    background: white;
-    border: var(--border-width) solid var(--border-color);
-    box-shadow: 6px 6px 0px var(--border-color);
+    background: #1a1a1a;
+    border: 4px solid #ff6600;
+    box-shadow: 8px 8px 0px #ff6600;
 }
 
 .accepted-answer {
-    background: var(--bg-tertiary);
-    border-color: var(--color-success);
-    box-shadow: 8px 8px 0px var(--color-success);
+    background: #222;
+    border-color: #00ff88;
+    box-shadow: 10px 10px 0px #00ff88;
 }
 
 /* Voting Cell */
@@ -76,48 +81,55 @@
     line-height: 1.6;
     font-weight: 600;
     margin-bottom: 30px;
+    color: #fff;
 }
 
 .tag {
-    background: black;
-    color: white;
-    padding: 5px 12px;
+    background: #1a1a1a;
+    color: #ff6600;
+    padding: 6px 14px;
     font-weight: 900;
     text-transform: uppercase;
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     margin-right: 10px;
+    border: 2px solid #ff6600;
+    box-shadow: 3px 3px 0px #ff6600;
 }
 
 /* User Card */
 .user-card {
-    background: var(--color-accent);
-    border: var(--border-width) solid var(--border-color);
+    background: #ff6600;
+    border: 3px solid #000;
     padding: 15px;
     display: flex;
     flex-direction: column;
     gap: 10px;
     width: 200px;
-    box-shadow: 4px 4px 0px var(--border-color);
+    box-shadow: 5px 5px 0px #000;
+    color: #000;
 }
 
 .user-card.owner {
-    background: var(--color-primary);
-    color: white;
+    background: #1a1a1a;
+    color: #ff6600;
+    border-color: #ff6600;
+    box-shadow: 5px 5px 0px #ff6600;
 }
 
 .user-card.owner a {
-    color: white;
+    color: #ff6600;
 }
 
 .avatar-placeholder {
     width: 40px;
     height: 40px;
-    background: black;
-    color: white;
+    background: #1a1a1a;
+    color: #ff6600;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: 900;
+    border: 2px solid #ff6600;
 }
 
 /* Answers Section */
@@ -126,31 +138,34 @@
     font-weight: 900;
     text-transform: uppercase;
     margin: 60px 0 30px 0;
+    color: #ff6600;
 }
 
 /* Answer Form */
 .answer-form {
-    background: white;
-    border: var(--border-width) solid var(--border-color);
+    background: #1a1a1a;
+    border: 4px solid #ff6600;
     padding: 40px;
-    box-shadow: 8px 8px 0px var(--border-color);
+    box-shadow: 8px 8px 0px #ff6600;
 }
 
 .answer-input {
     width: 100%;
     padding: 20px;
-    border: var(--border-width) solid var(--border-color);
+    border: 3px solid #ff6600;
     font-weight: 700;
     font-size: 1.1rem;
     margin-bottom: 20px;
+    background: #222;
+    color: #fff;
 }
 
 /* Sidebar */
 .sidebar-widget {
-    background: white;
-    border: var(--border-width) solid var(--border-color);
+    background: #1a1a1a;
+    border: 4px solid #ff6600;
     padding: 30px;
-    box-shadow: 6px 6px 0px var(--border-color);
+    box-shadow: 6px 6px 0px #ff6600;
     margin-bottom: 30px;
 }
 
@@ -158,9 +173,10 @@
     font-size: 1.2rem;
     font-weight: 900;
     text-transform: uppercase;
-    border-bottom: 2px solid var(--border-color);
+    border-bottom: 3px solid #ff6600;
     padding-bottom: 10px;
     margin-bottom: 20px;
+    color: #ff6600;
 }
 
 .sidebar-stat-item {
@@ -170,6 +186,7 @@
     text-transform: uppercase;
     font-size: 0.9rem;
     margin-bottom: 10px;
+    color: #fff;
 }
 
 @media (max-width: 968px) {

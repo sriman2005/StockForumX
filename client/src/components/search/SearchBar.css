@@ -14,34 +14,35 @@
     position: absolute;
     left: 15px;
     font-size: 1.2rem;
-    color: var(--border-color);
+    color: #ff6600;
     z-index: 5;
     pointer-events: none;
 }
 
 .search-input {
     width: 100%;
-    padding: 12px 45px 12px 45px;
-    background: white;
-    border: var(--border-width) solid var(--border-color);
-    box-shadow: 4px 4px 0px var(--border-color);
+    padding: 14px 45px 14px 45px;
+    background: #000;
+    border: 3px solid #ff6600;
+    box-shadow: 6px 6px 0px #ff6600;
     border-radius: 0;
     font-family: var(--font-family);
-    font-weight: 600;
+    font-weight: 700;
     font-size: 1rem;
-    color: black;
-    transition: all 0.2s ease;
+    color: #fff;
+    transition: all 0.15s ease;
 }
 
 .search-input:focus {
     outline: none;
-    transform: translate(-2px, -2px);
-    box-shadow: 6px 6px 0px var(--border-color);
+    transform: translate(-3px, -3px);
+    box-shadow: 9px 9px 0px #ff6600;
+    background: #1a1a1a;
 }
 
 .search-input::placeholder {
-    color: #94a3b8;
-    font-weight: 500;
+    color: #999;
+    font-weight: 600;
 }
 
 .clear-search-btn {
@@ -51,29 +52,29 @@
     border: none;
     cursor: pointer;
     font-size: 1.2rem;
-    color: var(--border-color);
+    color: #ff6600;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 0;
-    transition: transform 0.2s ease;
+    transition: all 0.15s ease;
 }
 
 .clear-search-btn:hover {
-    transform: scale(1.1);
-    color: #ef4444;
+    transform: scale(1.2);
+    color: #ff8833;
 }
 
-/* Discussion Filter Bar Styles */
+/* Discussion Filter Bar - Brutal Orange */
 .discussion-filter-bar {
     display: flex;
     flex-direction: column;
     gap: 15px;
     margin-bottom: 30px;
-    padding: 20px;
-    background: white;
-    border: var(--border-width) solid var(--border-color);
-    box-shadow: var(--shadow-hard);
+    padding: 25px;
+    background: #000;
+    border: 4px solid #ff6600;
+    box-shadow: 8px 8px 0px #ff6600;
 }
 
 .filter-row {
@@ -91,32 +92,33 @@
     align-items: center;
 }
 
-/* Custom Select Styling for Neo-Brutalist Look */
+/* Brutal Sort Select */
 .sort-select {
     appearance: none;
     -webkit-appearance: none;
     -moz-appearance: none;
-    background-color: white;
-    border: var(--border-width) solid var(--border-color);
-    padding: 8px 35px 8px 15px;
-    font-weight: 700;
-    font-size: 0.9rem;
+    background-color: #ff6600;
+    color: #000;
+    border: 3px solid #000;
+    padding: 10px 40px 10px 18px;
+    font-weight: 800;
+    font-size: 0.85rem;
     cursor: pointer;
     text-transform: uppercase;
     border-radius: 0;
-    box-shadow: 3px 3px 0px #e2e8f0;
+    box-shadow: 4px 4px 0px #000;
     background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='square' stroke-linejoin='miter'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
     background-repeat: no-repeat;
-    background-position: right 10px center;
-    background-size: 12px;
-    transition: all 0.2s ease;
-    color: black;
+    background-position: right 12px center;
+    background-size: 14px;
+    transition: all 0.15s ease;
 }
 
 .sort-select:hover,
 .sort-select:focus {
     transform: translate(-2px, -2px);
-    box-shadow: 5px 5px 0px var(--border-color);
+    box-shadow: 6px 6px 0px #000;
+    background-color: #ff8833;
     outline: none;
 }
 
@@ -130,43 +132,52 @@
 }
 
 .filter-tag {
-    padding: 6px 15px;
-    background: white;
-    border: var(--border-width) solid var(--border-color);
+    padding: 8px 16px;
+    background: #000;
+    border: 2px solid #ff6600;
     border-radius: 0;
-    /* Brutalist: No radius */
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     font-weight: 800;
-    /* Bolder */
-    color: black;
+    color: #ff6600;
     white-space: nowrap;
     cursor: pointer;
-    transition: all 0.2s ease;
-    box-shadow: 3px 3px 0px #e2e8f0;
+    transition: all 0.15s ease;
+    box-shadow: 4px 4px 0px #ff6600;
+    text-transform: uppercase;
 }
 
 .filter-tag:hover {
     transform: translate(-2px, -2px);
-    box-shadow: 5px 5px 0px var(--border-color);
-    background: var(--color-accent);
+    box-shadow: 6px 6px 0px #ff6600;
+    background: #1a1a1a;
 }
 
 .filter-tag.active {
-    background: black;
-    color: white;
-    border-color: black;
+    background: #ff6600;
+    color: #000;
+    border-color: #000;
     transform: translate(-2px, -2px);
-    box-shadow: 5px 5px 0px var(--color-accent);
+    box-shadow: 5px 5px 0px #000;
 }
 
 .clear-filters-btn {
-    font-size: 0.9rem;
-    font-weight: 700;
-    text-decoration: underline;
-    background: none;
-    border: none;
+    font-size: 0.85rem;
+    font-weight: 800;
+    text-decoration: none;
+    background: #000;
+    border: 2px solid #ff6600;
+    padding: 8px 16px;
     cursor: pointer;
-    color: #ef4444;
+    color: #ff6600;
+    text-transform: uppercase;
+    box-shadow: 3px 3px 0px #ff6600;
+    transition: all 0.15s;
+}
+
+.clear-filters-btn:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 5px 5px 0px #ff6600;
+    background: #1a1a1a;
 }
 
 .search-helper-text {
@@ -176,17 +187,25 @@
     margin-top: 10px;
     font-size: 0.8rem;
     font-weight: 600;
-    color: #64748b;
+    color: #888;
     padding-left: 5px;
 }
 
 .search-helper-text b {
-    color: black;
+    color: #ff6600;
     font-weight: 800;
 }
 
 .search-helper-text .divider {
-    color: #cbd5e1;
+    color: #444;
+}
+
+.filter-label {
+    color: #fff;
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    margin-right: 10px;
 }
 
 @media (max-width: 768px) {

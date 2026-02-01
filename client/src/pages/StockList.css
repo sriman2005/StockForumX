@@ -1,222 +1,292 @@
-/* Premium Neo-Brutalist Stock List */
+/* Dark Brutalist Stock List */
 .stock-list-page {
-    padding: 80px 0;
-    background-color: var(--bg-primary);
-    background-image: radial-gradient(var(--border-color) 1px, transparent 1px);
+    padding: 40px 0;
+    background-color: #1a1a1a;
+    background-image: radial-gradient(#333 1px, transparent 1px);
     background-size: 20px 20px;
     min-height: calc(100vh - 105px);
+    color: #fff;
 }
 
+/* Page Header */
 .page-header {
-    margin-bottom: 50px;
+    margin-bottom: 40px;
+    text-align: center;
 }
 
 .page-header h1 {
-    font-size: 4rem;
+    font-size: 3.5rem;
     font-weight: 900;
     text-transform: uppercase;
-    background: var(--color-info);
-    display: inline-block;
-    padding: 15px 30px;
-    border: var(--border-width) solid var(--border-color);
-    box-shadow: 10px 10px 0px var(--border-color);
-    transform: rotate(1deg);
+    color: #ff6600;
+    text-shadow: 4px 4px 0px #000;
+    margin-bottom: 10px;
+    letter-spacing: -1px;
 }
 
 .page-header p {
-    font-size: 1.4rem;
-    font-weight: 800;
-    color: black;
-    margin-top: 20px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #ccc;
+    background: #000;
+    display: inline-block;
+    padding: 8px 16px;
+    border: 2px solid #ff6600;
+    box-shadow: 4px 4px 0px #ff6600;
 }
 
-/* Filter Section */
+/* Search & Filter Section */
 .filter-section {
-    margin-bottom: 40px;
+    margin-bottom: 30px;
 }
+
+/* Search Bar (overriding/enhancing component styles for this page if needed) */
+/* Assuming SearchBar component handles its own styles, but ensuring container spacing */
 
 .filter-buttons {
     display: flex;
     flex-wrap: wrap;
-    gap: 15px;
+    gap: 12px;
+    margin-top: 20px;
 }
 
 .filter-btn {
-    padding: 12px 20px;
-    background: white;
-    border: var(--border-width) solid var(--border-color);
+    padding: 10px 18px;
+    background: #000;
+    color: #ff6600;
+    border: 2px solid #ff6600;
     cursor: pointer;
-    font-weight: 900;
+    font-weight: 800;
     text-transform: uppercase;
-    font-size: 0.9rem;
-    box-shadow: 4px 4px 0px var(--border-color);
-    transition: all var(--transition-brute);
+    font-size: 0.85rem;
+    box-shadow: 4px 4px 0px #ff6600;
+    transition: all 0.15s ease;
 }
 
 .filter-btn:hover {
-    background: var(--color-accent);
+    background: #1a1a1a;
     transform: translate(-2px, -2px);
-    box-shadow: 6px 6px 0px var(--border-color);
+    box-shadow: 6px 6px 0px #ff6600;
+    color: #fff;
+    border-color: #ff6600;
 }
 
 .filter-btn.active {
-    background: var(--color-primary);
-    color: white;
+    background: #ff6600;
+    color: #000;
+    border-color: #000;
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0px #000;
+}
+
+.filter-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
 }
 
 /* Stocks Grid */
 .stocks-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 40px;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 30px;
+    padding-bottom: 60px;
 }
 
+/* Stock Card */
 .stock-card {
-    background: white;
-    border: var(--border-width) solid var(--border-color);
-    padding: 30px;
+    background: #000;
+    border: 3px solid #ff6600;
+    padding: 24px;
     text-decoration: none;
-    color: black;
-    box-shadow: var(--shadow-hard);
-    transition: all var(--transition-brute);
+    color: #fff;
+    box-shadow: 8px 8px 0px #ff6600;
+    transition: all 0.15s cubic-bezier(0.17, 0.67, 0.83, 0.67);
     display: flex;
     flex-direction: column;
     position: relative;
+    height: 100%;
 }
 
 .stock-card:hover {
-    transform: translate(-8px, -8px);
-    box-shadow: 16px 16px 0px var(--border-color);
-    background: var(--bg-tertiary);
-}
-
-.stock-symbol {
-    font-size: 1.8rem;
-    font-weight: 900;
-    color: black;
-}
-
-.stock-name {
-    font-size: 1.1rem;
-    font-weight: 800;
-    margin-top: 5px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 180px;
+    transform: translate(-4px, -4px);
+    box-shadow: 12px 12px 0px #ff6600;
+    background: #111;
+    z-index: 10;
 }
 
 .stock-header {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    gap: 10px;
+    margin-bottom: 20px;
+    gap: 15px;
+    /* Add gap between name and badges */
+}
+
+/* Container for Symbol and Name */
+.stock-header>div:first-child {
+    flex: 1;
+    min-width: 0;
+    /* Critical for text truncation in flex items */
+    padding-right: 10px;
+}
+
+.stock-symbol {
+    font-size: 2rem;
+    font-weight: 900;
+    color: #fff;
+    line-height: 1;
+    margin-bottom: 4px;
+}
+
+.stock-name {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #888;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+    /* Take full width of parent (which is flex:1) */
+    text-transform: uppercase;
+    display: block;
 }
 
 .badge-container {
     display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    justify-content: flex-end;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+    flex-shrink: 0;
+    /* Prevent badges from being squashed */
+    max-width: 45%;
+    /* Ensure they don't take over the entire card */
+}
+
+.badge {
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    padding: 4px 8px;
+    border: 1px solid #333;
 }
 
 .badge-info {
-    background: black;
-    color: white;
-    padding: 5px 12px;
-    font-weight: 900;
-    text-transform: uppercase;
+    background: #1a1a1a;
+    color: #aaa;
+    border: 1px solid #333;
+}
+
+.badge-success {
+    background: rgba(0, 255, 102, 0.1);
+    color: #00ff66;
+    border-color: #00ff66;
+}
+
+.badge-danger {
+    background: rgba(255, 0, 61, 0.1);
+    color: #ff003d;
+    border-color: #ff003d;
+}
+
+.badge-warning {
+    background: rgba(255, 184, 0, 0.1);
+    color: #ffb800;
+    border-color: #ffb800;
 }
 
 .stock-price {
-    margin: 25px 0;
+    margin-top: auto;
+    margin-bottom: 20px;
+    padding: 15px 0;
+    border-top: 1px solid #333;
+    border-bottom: 1px solid #333;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
 }
 
 .price {
-    font-size: 2.5rem;
+    font-size: 2.2rem;
     font-weight: 900;
-    display: block;
-    line-height: 1;
+    color: #fff;
 }
 
 .change {
-    font-size: 1.2rem;
-    font-weight: 900;
-    padding: 4px 10px;
-    border: 2px solid var(--border-color);
-    display: inline-block;
-    margin-top: 10px;
+    font-size: 1rem;
+    font-weight: 800;
+    padding: 4px 8px;
+    border-radius: 0;
 }
 
 .change.positive {
-    background: var(--color-success);
+    color: #00ff66;
+    text-shadow: 0 0 10px rgba(0, 255, 102, 0.3);
 }
 
 .change.negative {
-    background: var(--color-danger);
-    color: white;
+    color: #ff003d;
+    text-shadow: 0 0 10px rgba(255, 0, 61, 0.3);
 }
 
 .stock-stats {
-    margin-top: auto;
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 15px;
-    border-top: var(--border-width) solid var(--border-color);
-    padding-top: 20px;
+    gap: 10px;
 }
 
 .stat {
     display: flex;
     flex-direction: column;
-    gap: 4px;
 }
 
 .stat-label {
-    font-size: 0.8rem;
-    font-weight: 900;
+    font-size: 0.7rem;
+    font-weight: 700;
     text-transform: uppercase;
-    color: black;
+    color: #666;
+    margin-bottom: 2px;
 }
 
 .stat-value {
-    font-size: 1.1rem;
-    font-weight: 900;
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: #ddd;
 }
 
-/* Stock List Responsiveness */
-@media (max-width: 1024px) {
-    .page-header h1 {
-        font-size: 3rem;
-    }
+/* Pagination */
+.pagination {
+    margin-top: 20px;
+}
 
+/* Empty State Override */
+.empty-state {
+    background: #000 !important;
+    border: 3px solid #ff6600 !important;
+    box-shadow: 8px 8px 0px #ff6600 !important;
+    color: #fff !important;
+}
+
+/* Responsiveness */
+@media (max-width: 1024px) {
     .stocks-grid {
         grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-        gap: 30px;
     }
 }
 
 @media (max-width: 768px) {
-    .stock-list-page {
-        padding: 40px 0;
-    }
-
     .page-header h1 {
-        font-size: 2.2rem;
-        padding: 12px 20px;
-        transform: none;
+        font-size: 2.5rem;
     }
 
-    .page-header p {
-        font-size: 1.1rem;
-    }
-
-    .stock-symbol {
-        font-size: 1.5rem;
+    .stock-card {
+        padding: 20px;
     }
 
     .price {
-        font-size: 2rem;
+        font-size: 1.8rem;
     }
 }
 
@@ -226,11 +296,6 @@
     }
 
     .filter-buttons {
-        gap: 10px;
-    }
-
-    .filter-btn {
-        padding: 8px 15px;
-        font-size: 0.8rem;
+        justify-content: center;
     }
 }

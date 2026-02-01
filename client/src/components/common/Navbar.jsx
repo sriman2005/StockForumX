@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { FaSearch } from 'react-icons/fa';
+import { FaSearch, FaBars, FaTimes } from 'react-icons/fa';
 import { getStocks } from '../../services/api';
 import NotificationBell from './NotificationBell';
 import './Navbar.css';
@@ -24,7 +24,6 @@ const Navbar = () => {
         };
         fetchTickerData();
 
-        // Refresh every minute
         const interval = setInterval(fetchTickerData, 60000);
         return () => clearInterval(interval);
     }, []);
@@ -40,19 +39,21 @@ const Navbar = () => {
     const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
     return (
-        <nav className={`navbar ${isMenuOpen ? 'menu-open' : ''}`}>
-            <div className="market-ticker">
-                <div className="ticker-scanline"></div>
+        <nav className="navbar" role="navigation" aria-label="Main navigation">
+            {/* Market Ticker */}
+            <div className="market-ticker" aria-live="polite">
                 <div className="ticker-scroll">
-                    {/* Render twice for infinite scroll */}
                     {[...Array(2)].map((_, i) => (
                         <div key={i} className="ticker-content-group">
-                            <span className="ticker-status-badge">
-                                MARKET INDEX
-                            </span>
+                            <span className="ticker-status-badge">LIVE MARKET</span>
                             {tickerStocks.length > 0 ? (
                                 tickerStocks.map(stock => (
-                                    <Link key={stock.symbol} to={`/stock/${stock.symbol}`} className="ticker-pair">
+                                    <Link
+                                        key={`${i}-${stock.symbol}`}
+                                        to={`/stock/${stock.symbol}`}
+                                        className="ticker-pair"
+                                        aria-label={`${stock.symbol} stock price`}
+                                    >
                                         <span className="ticker-symbol">{stock.symbol}</span>
                                         <span className={stock.change >= 0 ? 'ticker-up' : 'ticker-down'}>
                                             ${stock.currentPrice.toFixed(2)} ({stock.change >= 0 ? '+' : ''}{stock.changePercent.toFixed(2)}%)
@@ -60,83 +61,167 @@ const Navbar = () => {
                                     </Link>
                                 ))
                             ) : (
-                                <span className="ticker-status-badge">INITIALIZING LIVE FEED...</span>
+                                <span className="ticker-status-badge">INITIALIZING...</span>
                             )}
-                            <div className="ticker-status-badge">
-                                <span>MARKET STATUS:</span>
-                                <span className="status-live-wrapper">
-                                    <span className="status-live-dot"></span>
-                                    <span className="status-live-ring"></span>
-                                    <span className="status-live-text">LIVE</span>
-                                </span>
-                            </div>
+                            <span className="ticker-status-badge">
+                                <span className="status-pulse"></span>REAL-TIME DATA
+                            </span>
                         </div>
                     ))}
                 </div>
             </div>
+
+            {/* Main Navigation Container */}
             <div className="navbar-container">
-                <Link to="/" className="navbar-brand" onClick={() => setIsMenuOpen(false)}>
-                    <span className="brand-logo-icon"></span>
+                {/* Brand */}
+                <Link to="/" className="navbar-brand" onClick={() => setIsMenuOpen(false)} aria-label="StockForumX Home">
                     <span className="brand-text">Stock<span className="brand-bold">ForumX</span></span>
                 </Link>
 
-                <div className="navbar-burger" onClick={toggleMenu}>
-                    <div className="burger-line"></div>
-                    <div className="burger-line"></div>
-                    <div className="burger-line"></div>
+                {/* Desktop Navigation Links - Hidden on Mobile */}
+                <div className="navbar-links navbar-links-desktop">
+                    <Link to="/stocks" className="nav-link">
+                        Stocks
+                    </Link>
+                    {isAuthenticated && (
+                        <Link to="/feed" className="nav-link">
+                            Feed
+                        </Link>
+                    )}
+                    <Link to="/leaderboard" className="nav-link">
+                        Leaderboard
+                    </Link>
+                    {isAuthenticated && (
+                        <Link to="/portfolio" className="nav-link portfolio-link">
+                            Portfolio
+                        </Link>
+                    )}
                 </div>
 
+                {/* Desktop Search Bar - Hidden on Mobile */}
+                <div className="navbar-search-wrapper">
+                    <form className="navbar-search" onSubmit={handleSearch} role="search">
+                        <FaSearch className="search-icon-nav" aria-hidden="true" />
+                        <input
+                            type="text"
+                            placeholder="Search stocks..."
+                            className="search-input-nav"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            aria-label="Search for stocks"
+                        />
+                    </form>
+                </div>
+
+                {/* Desktop Auth Section - Hidden on Mobile */}
+                <div className="navbar-auth navbar-auth-desktop">
+                    {isAuthenticated ? (
+                        <div className="user-section">
+                            <Link
+                                to={`/profile/${user?._id}`}
+                                className="user-profile-link"
+                                aria-label={`Profile for ${user?.username}`}
+                            >
+                                <div className="avatar-small">
+                                    {user?.username?.charAt(0)?.toUpperCase() || 'U'}
+                                </div>
+                                <span className="user-name">{user?.username}</span>
+                                <span className="reputation-badge">
+                                    {user?.reputation?.toFixed(0) || 0}
+                                </span>
+                            </Link>
+                            <NotificationBell />
+                            <button
+                                onClick={logout}
+                                className="btn-logout"
+                                aria-label="Log out"
+                            >
+                                Logout
+                            </button>
+                        </div>
+                    ) : (
+                        <div className="auth-buttons">
+                            <Link to="/login" className="btn btn-login">
+                                Log in
+                            </Link>
+                            <Link to="/register" className="btn btn-signup">
+                                Sign up
+                            </Link>
+                        </div>
+                    )}
+                </div>
+
+                {/* Mobile Menu Toggle */}
+                <button
+                    className="navbar-burger"
+                    onClick={toggleMenu}
+                    aria-label="Toggle navigation menu"
+                    aria-expanded={isMenuOpen}
+                >
+                    {isMenuOpen ? <FaTimes size={20} /> : <FaBars size={20} />}
+                </button>
+
+                {/* Mobile Menu - Only Visible on Mobile */}
                 <div className={`navbar-menu ${isMenuOpen ? 'is-active' : ''}`}>
-                    <div className="navbar-search-wrapper">
-                        <form className="navbar-search" onSubmit={handleSearch}>
-                            <FaSearch className="search-icon-nav" />
-                            <input
-                                type="text"
-                                placeholder="SEARCH STOCKS..."
-                                className="search-input-nav"
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                title="🇮🇳 Indian: .NS | 🌍 Global: Ticker"
-                            />
-                        </form>
+                    {/* Mobile Navigation Links */}
+                    <div className="navbar-links">
+                        <Link to="/stocks" className="nav-link" onClick={() => setIsMenuOpen(false)}>
+                            Stocks
+                        </Link>
+                        {isAuthenticated && (
+                            <Link to="/feed" className="nav-link" onClick={() => setIsMenuOpen(false)}>
+                                Feed
+                            </Link>
+                        )}
+                        <Link to="/leaderboard" className="nav-link" onClick={() => setIsMenuOpen(false)}>
+                            Leaderboard
+                        </Link>
+                        {isAuthenticated && (
+                            <Link to="/portfolio" className="nav-link portfolio-link" onClick={() => setIsMenuOpen(false)}>
+                                Portfolio
+                            </Link>
+                        )}
                     </div>
 
-                    <div className="navbar-content">
-                        <div className="navbar-links">
-                            <Link to="/stocks" className="nav-link" onClick={() => setIsMenuOpen(false)}>Stocks</Link>
-                            {isAuthenticated && (
-                                <Link to="/feed" className="nav-link" onClick={() => setIsMenuOpen(false)}>Feed</Link>
-                            )}
-                            <Link to="/leaderboard" className="nav-link" onClick={() => setIsMenuOpen(false)}>Leaderboard</Link>
-                            {isAuthenticated && (
-                                <Link to="/portfolio" className="nav-link portfolio-link" onClick={() => setIsMenuOpen(false)}>Portfolio</Link>
-                            )}
-                        </div>
 
-                        <div className="navbar-auth">
-                            {isAuthenticated ? (
-                                <div className="user-section">
-                                    <NotificationBell />
-                                    <Link to={`/profile/${user?._id}`} className="user-profile-link" onClick={() => setIsMenuOpen(false)}>
-                                        <div className="avatar-small">
-                                            {user?.username?.charAt(0)?.toUpperCase() || 'U'}
-                                        </div>
-                                        <span className="reputation-count" title="reputation">
-                                            {user?.reputation?.toFixed(0) || 0}
-                                        </span>
-                                    </Link>
-                                    <button onClick={() => { logout(); setIsMenuOpen(false); }} className="btn-logout" title="Log out">
-                                        Logout
-                                    </button>
+                    {/* Mobile Auth Section */}
+                    {isAuthenticated ? (
+                        <div className="user-section-mobile">
+                            <Link
+                                to={`/profile/${user?._id}`}
+                                className="user-profile-link"
+                                onClick={() => setIsMenuOpen(false)}
+                                aria-label={`Profile for ${user?.username}`}
+                            >
+                                <div className="avatar-small">
+                                    {user?.username?.charAt(0)?.toUpperCase() || 'U'}
                                 </div>
-                            ) : (
-                                <div className="auth-buttons">
-                                    <Link to="/login" className="btn btn-login" onClick={() => setIsMenuOpen(false)}>Log in</Link>
-                                    <Link to="/register" className="btn btn-signup" onClick={() => setIsMenuOpen(false)}>Sign up</Link>
-                                </div>
-                            )}
+                                <span className="user-name">{user?.username}</span>
+                                <span className="reputation-badge">
+                                    {user?.reputation?.toFixed(0) || 0}
+                                </span>
+                            </Link>
+                            <div className="mobile-notification-wrapper">
+                                <NotificationBell />
+                            </div>
+                            <button
+                                onClick={() => { logout(); setIsMenuOpen(false); }}
+                                className="btn-logout"
+                                aria-label="Log out"
+                            >
+                                Logout
+                            </button>
                         </div>
-                    </div>
+                    ) : (
+                        <div className="auth-buttons">
+                            <Link to="/login" className="btn btn-login" onClick={() => setIsMenuOpen(false)}>
+                                Log in
+                            </Link>
+                            <Link to="/register" className="btn btn-signup" onClick={() => setIsMenuOpen(false)}>
+                                Sign up
+                            </Link>
+                        </div>
+                    )}
                 </div>
             </div>
         </nav>

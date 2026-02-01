@@ -6,15 +6,15 @@
   --color-danger: #ff003d;
   --color-info: #00d1ff;
 
-  /* Backgrounds */
-  --bg-primary: #ffffff;
-  --bg-secondary: #ffffff;
-  --bg-tertiary: #f4f4f4;
+  /* Backgrounds - Dark Theme */
+  --bg-primary: #1a1a1a;
+  --bg-secondary: #222;
+  --bg-tertiary: #2a2a2a;
   --bg-dark: #000000;
 
-  /* Text */
-  --text-primary: #000000;
-  --text-inverted: #ffffff;
+  /* Text - Light on Dark */
+  --text-primary: #ffffff;
+  --text-inverted: #000000;
 
   /* Architecture */
   --border-width: 3px;
@@ -63,7 +63,7 @@
 
 .brute-frame {
   position: relative;
-  background: white;
+  background: #1a1a1a;
   border: var(--border-width) solid var(--border-color);
   box-shadow: var(--shadow-hard);
   transition: all var(--transition-brute);
@@ -188,8 +188,8 @@ a:hover {
   cursor: pointer;
   transition: all var(--transition-brute);
   text-decoration: none;
-  background: white;
-  color: black;
+  background: #1a1a1a;
+  color: #fff;
   box-shadow: var(--shadow-hard);
 }
 
@@ -218,7 +218,7 @@ a:hover {
 
 /* Cards */
 .card {
-  background: white;
+  background: #1a1a1a;
   border: var(--border-width) solid var(--border-color);
   border-radius: var(--border-radius);
   padding: var(--spacing-lg);
@@ -248,10 +248,10 @@ a:hover {
 .form-select {
   width: 100%;
   padding: var(--spacing-md);
-  background: white;
+  background: #222;
   border: var(--border-width) solid var(--border-color);
   border-radius: 0;
-  color: black;
+  color: #fff;
   font-size: var(--font-size-base);
   font-family: var(--font-family);
   font-weight: 600;
@@ -262,7 +262,7 @@ a:hover {
 .form-textarea:focus,
 .form-select:focus {
   outline: none;
-  background: var(--color-accent);
+  background: #2a2a2a;
   transform: translate(-3px, -3px);
   box-shadow: 6px 6px 0px var(--border-color);
 }

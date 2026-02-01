@@ -80,10 +80,10 @@ const Register = () => {
     };
 
     return (
-        <div className="auth-page brute-dot">
+        <div className="auth-page brute-morphism">
             <div className="auth-split">
                 {/* Visual Side */}
-                <div className="auth-visual brute-grid">
+                <div className="auth-visual">
                     <div className="visual-content">
                         <h1 className="visual-title">Join the <br /><span>Consensus.</span></h1>
                         <p className="visual-tagline">Crowdsourced market wisdom, verified by data.</p>
@@ -97,6 +97,8 @@ const Register = () => {
                             <span className="ticker-item">VERIFIED DATA ONLY</span>
                             <span className="ticker-item">$ETH +3.1%</span>
                             <span className="ticker-item">SECURE STORAGE</span>
+                            <span className="ticker-item">NEW MEMBER: @trader_pro</span>
+                            <span className="ticker-item">$BTC ALL-TIME HIGH</span>
                         </div>
                     </div>
                 </div>
@@ -104,7 +106,7 @@ const Register = () => {
                 {/* Form Side */}
                 <div className="auth-form-side">
                     <div className="auth-container" style={{ maxWidth: '600px' }}>
-                        <div className="auth-card brute-frame">
+                        <div className="auth-card">
                             <div className="auth-header">
                                 <h1 className="auth-title">Create Account</h1>
                                 <p className="auth-subtitle">Join thousands of traders today.</p>

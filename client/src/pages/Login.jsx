@@ -36,10 +36,10 @@ const Login = () => {
     };
 
     return (
-        <div className="auth-page brute-dot">
+        <div className="auth-page brute-morphism">
             <div className="auth-split">
                 {/* Visual Side */}
-                <div className="auth-visual brute-grid">
+                <div className="auth-visual">
                     <div className="visual-content">
                         <h1 className="visual-title">Trade <br /><span>Smarter.</span></h1>
                         <p className="visual-tagline">Real-time insights for serious investors.</p>
@@ -55,6 +55,10 @@ const Login = () => {
                             <span className="ticker-item">$AMZN -0.4%</span>
                             <span className="ticker-item">CONSENSUS REACHED</span>
                             <span className="ticker-item">$MSFT +1.2%</span>
+                            <span className="ticker-item">$AAPL +2.4%</span>
+                            <span className="ticker-item">$TSLA -1.8%</span>
+                            <span className="ticker-item">$BTC +5.2%</span>
+                            <span className="ticker-item">MARKET OPEN</span>
                         </div>
                     </div>
                 </div>
@@ -62,7 +66,7 @@ const Login = () => {
                 {/* Form Side */}
                 <div className="auth-form-side">
                     <div className="auth-container">
-                        <div className="auth-card brute-frame">
+                        <div className="auth-card">
                             <div className="auth-header">
                                 <h1 className="auth-title">Sign In</h1>
                                 <p className="auth-subtitle">Welcome back! Please enter your details.</p>

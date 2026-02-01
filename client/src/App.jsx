@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { Suspense, lazy } from 'react';
 import { AuthProvider } from './context/AuthContext';
@@ -25,13 +25,22 @@ const Portfolio = lazy(() => import('./pages/Portfolio'));
 const Analytics = lazy(() => import('./pages/Analytics'));
 const Feed = lazy(() => import('./pages/Feed'));
 
+// Component to conditionally render Navbar
+const ConditionalNavbar = () => {
+    const location = useLocation();
+    const authRoutes = ['/login', '/register', '/verify-email', '/login-otp', '/forgot-password', '/reset-password'];
+    const isAuthPage = authRoutes.includes(location.pathname);
+
+    return !isAuthPage ? <Navbar /> : null;
+};
+
 function App() {
     return (
         <AuthProvider>
             <SocketProvider>
                 <Router>
                     <div className="app">
-                        <Navbar />
+                        <ConditionalNavbar />
                         <main>
                             <ErrorBoundary>
                                 <Suspense fallback={<Loader />}>

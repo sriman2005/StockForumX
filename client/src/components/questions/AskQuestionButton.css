@@ -1,7 +1,19 @@
 .ask-question-btn {
     white-space: nowrap;
     flex-shrink: 0;
-    padding: 8px 12px;
-    font-size: var(--font-size-sm);
-    font-weight: 500;
+    padding: 12px 24px;
+    font-size: 0.85rem;
+    font-weight: 900;
+    background: #ff6600;
+    color: #000;
+    border: 3px solid #000;
+    box-shadow: 5px 5px 0px #000;
+    text-transform: uppercase;
+    transition: all 0.15s;
+}
+
+.ask-question-btn:hover {
+    transform: translate(-3px, -3px);
+    box-shadow: 8px 8px 0px #000;
+    background: #ff8833;
 }

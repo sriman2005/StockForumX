@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { FaBell } from 'react-icons/fa';
+import { FaBell, FaChartLine, FaCommentAlt, FaUserPlus, FaTrophy, FaExclamationCircle } from 'react-icons/fa';
 import { getNotifications, markAllNotificationsRead } from '../../services/api';
 import { Link } from 'react-router-dom';
 import { useSocket } from '../../context/SocketContext';
-import './Navbar.css'; // Re-use Navbar styles or create specific ones
+import './Navbar.css';
 
 const NotificationBell = () => {
     const [notifications, setNotifications] = useState([]);
@@ -22,10 +22,17 @@ const NotificationBell = () => {
         }
     };
 
+    const getNotificationIcon = (type, content) => {
+        if (content.toLowerCase().includes('stock') || content.toLowerCase().includes('price')) return <FaChartLine />;
+        if (content.toLowerCase().includes('comment') || content.toLowerCase().includes('reply')) return <FaCommentAlt />;
+        if (content.toLowerCase().includes('follow')) return <FaUserPlus />;
+        if (content.toLowerCase().includes('badge') || content.toLowerCase().includes('rank')) return <FaTrophy />;
+        return <FaExclamationCircle />;
+    };
+
     useEffect(() => {
         fetchNotifications();
 
-        // Listen for real-time notifications
         if (socket) {
             socket.on('notification:new', (newNotification) => {
                 setNotifications(prev => [newNotification, ...prev]);
@@ -40,7 +47,6 @@ const NotificationBell = () => {
         };
     }, [socket]);
 
-    // Close dropdown when clicking outside
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -55,74 +61,47 @@ const NotificationBell = () => {
         if (!isOpen && unreadCount > 0) {
             markAllNotificationsRead();
             setUnreadCount(0);
-            // Optimistically mark all as read locally
             setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
         }
         setIsOpen(!isOpen);
     };
 
     return (
-        <div className="notification-bell-container" ref={dropdownRef} style={{ position: 'relative', marginRight: '1rem' }}>
+        <div className="notification-bell-container" ref={dropdownRef}>
             <button
                 onClick={handleToggle}
-                style={{ background: 'none', border: 'none', color: 'inherit', cursor: 'pointer', position: 'relative' }}
+                className="notification-bell-btn"
+                aria-label="Notifications"
             >
                 <FaBell size={20} />
                 {unreadCount > 0 && (
-                    <span style={{
-                        position: 'absolute',
-                        top: '-5px',
-                        right: '-5px',
-                        backgroundColor: 'red',
-                        color: 'white',
-                        borderRadius: '50%',
-                        fontSize: '0.7rem',
-                        width: '16px',
-                        height: '16px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center'
-                    }}>
+                    <span className="notification-badge">
                         {unreadCount > 9 ? '9+' : unreadCount}
                     </span>
                 )}
             </button>
 
             {isOpen && (
-                <div className="notification-dropdown brute-frame" style={{
-                    position: 'absolute',
-                    top: '100%',
-                    right: 0,
-                    width: '300px',
-                    maxHeight: '400px',
-                    overflowY: 'auto',
-                    backgroundColor: '#1a1a1a',
-                    border: '1px solid #333',
-                    zIndex: 1000,
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.5)',
-                    marginTop: '10px'
-                }}>
-                    <div style={{ padding: '0.5rem', borderBottom: '1px solid #333', fontWeight: 'bold' }}>Notifications</div>
+                <div className="notification-dropdown">
+                    <div className="notification-header">Notifications</div>
                     {notifications.length === 0 ? (
-                        <div style={{ padding: '1rem', textAlign: 'center', color: '#888' }}>No notifications</div>
+                        <div className="notification-empty">No notifications</div>
                     ) : (
                         notifications.map(n => (
                             <Link
                                 key={n._id}
                                 to={n.link}
                                 onClick={() => setIsOpen(false)}
-                                style={{
-                                    display: 'block',
-                                    padding: '0.8rem',
-                                    borderBottom: '1px solid #222',
-                                    color: n.isRead ? '#aaa' : '#fff',
-                                    textDecoration: 'none',
-                                    backgroundColor: n.isRead ? 'transparent' : 'rgba(76, 175, 80, 0.1)'
-                                }}
+                                className={`notification-item ${n.isRead ? 'read' : 'unread'}`}
                             >
-                                <div style={{ fontSize: '0.9rem' }}>{n.content}</div>
-                                <div style={{ fontSize: '0.7rem', color: '#666', marginTop: '4px' }}>
-                                    {new Date(n.createdAt).toLocaleDateString()}
+                                <div className="notification-icon-wrapper">
+                                    {getNotificationIcon(n.type, n.content)}
+                                </div>
+                                <div className="notification-text-content">
+                                    <div className="notification-content">{n.content}</div>
+                                    <div className="notification-date">
+                                        {new Date(n.createdAt).toLocaleDateString()}
+                                    </div>
                                 </div>
                             </Link>
                         ))
