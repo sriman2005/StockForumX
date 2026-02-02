@@ -6,6 +6,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { FaArrowUp, FaArrowDown, FaRegComment, FaRegChartBar } from 'react-icons/fa';
 import './Home.css'; // Re-use Home styles for consistency
 import './Feed.css';
+import Loader from '../components/common/Loader';
 
 const Feed = () => {
     const [activities, setActivities] = useState([]);
@@ -28,7 +29,7 @@ const Feed = () => {
         }
     };
 
-    if (loading && page === 1) return <div className="loader"></div>;
+    if (loading && page === 1) return <Loader />;
 
     return (
         <div className="home-container">

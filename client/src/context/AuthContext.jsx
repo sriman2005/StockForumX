@@ -18,8 +18,16 @@ export const AuthProvider = ({ children }) => {
     useEffect(() => {
         // Check if user is logged in
         const token = localStorage.getItem('token');
+        const storedUser = localStorage.getItem('userInfo');
+
         if (token) {
             axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+            if (storedUser) {
+                setUser(JSON.parse(storedUser));
+                // If we have stored user, we can set loading to false immediately
+                // to prevent flicker, while we fetch fresh data in background
+                setLoading(false);
+            }
             fetchUser();
         } else {
             setLoading(false);
@@ -30,10 +38,15 @@ export const AuthProvider = ({ children }) => {
         try {
             const { data } = await axios.get('/api/auth/me');
             setUser(data.data);
+            localStorage.setItem('userInfo', JSON.stringify(data.data));
         } catch (error) {
             console.error('Error fetching user:', error);
-            localStorage.removeItem('token');
-            delete axios.defaults.headers.common['Authorization'];
+            if (error.response && error.response.status === 401) {
+                localStorage.removeItem('token');
+                localStorage.removeItem('userInfo');
+                delete axios.defaults.headers.common['Authorization'];
+                setUser(null);
+            }
         } finally {
             setLoading(false);
         }
@@ -42,6 +55,15 @@ export const AuthProvider = ({ children }) => {
     const login = async (email, password) => {
         const { data } = await axios.post('/api/auth/login', { email, password });
         localStorage.setItem('token', data.token);
+        // Store user info for optimistic loading
+        const userInfo = {
+            _id: data._id,
+            username: data.username,
+            email: data.email,
+            reputation: data.reputation
+        };
+        localStorage.setItem('userInfo', JSON.stringify(userInfo));
+
         axios.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
         setUser(data);
         return data;
@@ -51,6 +73,14 @@ export const AuthProvider = ({ children }) => {
         const { data } = await axios.post('/api/auth/register', userData);
         if (data.token) {
             localStorage.setItem('token', data.token);
+            // Store user info for optimistic loading
+            const userInfo = {
+                _id: data._id,
+                username: data.username,
+                email: data.email
+            };
+            localStorage.setItem('userInfo', JSON.stringify(userInfo));
+
             axios.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
             setUser(data);
         }
@@ -60,6 +90,15 @@ export const AuthProvider = ({ children }) => {
     const verifyEmail = async (email, otp) => {
         const { data } = await axios.post('/api/auth/verify-email', { email, otp });
         localStorage.setItem('token', data.token);
+        // Store user info
+        const userInfo = {
+            _id: data._id,
+            username: data.username,
+            email: data.email,
+            reputation: data.reputation
+        };
+        localStorage.setItem('userInfo', JSON.stringify(userInfo));
+
         axios.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
         setUser(data);
         return data;
@@ -73,6 +112,15 @@ export const AuthProvider = ({ children }) => {
     const loginOTPVerify = async (email, otp) => {
         const { data } = await axios.post('/api/auth/login-otp-verify', { email, otp });
         localStorage.setItem('token', data.token);
+        // Store user info
+        const userInfo = {
+            _id: data._id,
+            username: data.username,
+            email: data.email,
+            reputation: data.reputation
+        };
+        localStorage.setItem('userInfo', JSON.stringify(userInfo));
+
         axios.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
         setUser(data);
         return data;
@@ -80,6 +128,7 @@ export const AuthProvider = ({ children }) => {
 
     const logout = () => {
         localStorage.removeItem('token');
+        localStorage.removeItem('userInfo');
         delete axios.defaults.headers.common['Authorization'];
         setUser(null);
     };
