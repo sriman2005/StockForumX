@@ -103,11 +103,12 @@
 }
 
 .holding-card {
-    background: white;
+    background: #000;
     padding: 30px;
     text-decoration: none;
-    color: black;
+    color: #fff;
     transition: all var(--transition-brute);
+    border: var(--border-width) solid var(--border-color);
 }
 
 .holding-card:hover {
@@ -189,9 +190,11 @@
 
 /* History List */
 .history-list {
-    background: white;
+    background: #000;
     padding: 20px;
     overflow-x: auto;
+    border: var(--border-width) solid var(--border-color);
+    color: #fff;
 }
 
 .history-table {
@@ -202,7 +205,8 @@
 .history-table th {
     text-align: left;
     padding: 15px;
-    background: var(--bg-tertiary);
+    background: #111;
+    color: #fff;
     font-weight: 900;
     font-size: 0.85rem;
     border: 1px solid var(--border-color);
@@ -248,11 +252,12 @@
 }
 
 .watchlist-grid .stock-card {
-    background: white;
+    background: #000;
     padding: 25px;
     text-decoration: none;
-    color: black;
+    color: #fff;
     transition: all var(--transition-brute);
+    border: var(--border-width) solid var(--border-color);
 }
 
 .watchlist-grid .stock-card:hover {
@@ -275,8 +280,9 @@
 .price-tag {
     font-weight: 900;
     padding: 4px 10px;
-    background: black;
-    color: white;
+    padding: 4px 10px;
+    background: #fff;
+    color: #000;
 }
 
 .stock-card-body {

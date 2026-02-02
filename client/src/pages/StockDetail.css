@@ -135,16 +135,17 @@
     flex-direction: column;
     justify-content: center;
     gap: 8px;
-    background: white;
+    background: #000;
     border: var(--border-width) solid var(--border-color);
     padding: 20px;
     box-shadow: 4px 4px 0px var(--border-color);
     min-height: 100px;
+    color: #fff;
 }
 
 .stat-label {
     font-size: 0.8rem;
-    color: #000;
+    color: #fff;
     font-weight: 900;
     text-transform: uppercase;
 }
@@ -152,7 +153,7 @@
 .stat-value {
     font-size: 1.4rem;
     font-weight: 900;
-    color: #000;
+    color: #fff;
 }
 
 /* Main Content Layout */
@@ -169,19 +170,21 @@
 }
 
 .sidebar-card {
-    background: white;
+    background: #000;
     border: var(--border-width) solid var(--border-color);
     padding: 30px;
     margin-bottom: 30px;
     box-shadow: 6px 6px 0px var(--border-color);
+    color: #fff;
 }
 
 .sidebar-widget {
-    background: white;
+    background: #000;
     border: var(--border-width) solid var(--border-color);
     padding: 25px;
     margin-bottom: 30px;
     box-shadow: 6px 6px 0px var(--border-color);
+    color: #fff;
 }
 
 .sidebar-widget h3 {
@@ -190,7 +193,9 @@
     text-transform: uppercase;
     margin-bottom: 20px;
     border-bottom: var(--border-width) solid var(--border-color);
-    background: var(--color-info);
+    background: #ff6600;
+    /* changed from info blue to orange for consistency */
+    color: #000;
     padding: 15px 25px;
     margin: -25px -25px 20px -25px;
     display: block;
@@ -368,7 +373,7 @@
 
 .meta-label {
     font-weight: 900;
-    color: black;
+    color: #fff;
     text-transform: uppercase;
     font-size: 0.8rem;
     opacity: 0.6;
@@ -376,7 +381,7 @@
 
 .meta-value {
     font-weight: 900;
-    color: black;
+    color: #fff;
     text-align: right;
     text-transform: uppercase;
 }
@@ -390,7 +395,7 @@
 
 .meta-link:hover {
     background: var(--color-accent);
-    color: black;
+    color: #000;
     text-decoration: none;
-    box-shadow: 2px 2px 0px black;
+    box-shadow: 2px 2px 0px #000;
 }

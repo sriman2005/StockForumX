@@ -1,7 +1,10 @@
 .trade-box {
-    background: white;
+    background: #000;
     margin-bottom: 30px;
     overflow: hidden;
+    border: var(--border-width) solid var(--border-color);
+    box-shadow: 8px 8px 0px var(--border-color);
+    color: #fff;
 }
 
 .trade-tabs {
@@ -37,8 +40,9 @@
     display: flex;
     justify-content: space-between;
     margin-bottom: 25px;
-    background: var(--bg-tertiary);
+    background: #111;
     padding: 15px;
+    border: 2px solid #333;
 }
 
 .info-item .label {
@@ -72,6 +76,8 @@
     border: var(--border-width) solid var(--border-color);
     outline: none;
     box-shadow: 4px 4px 0px var(--border-color);
+    background: #fff;
+    color: #000;
 }
 
 .trade-summary {
@@ -91,12 +97,14 @@
 
 .summary-row .total {
     font-size: 1.8rem;
-    color: black;
+    color: #fff;
 }
 
 .summary-row.balance {
     padding: 10px;
-    background: #f0f0f0;
+    background: #1a1a1a;
+    color: #aaa;
+    border: 1px dashed #333;
 }
 
 .btn-trade {

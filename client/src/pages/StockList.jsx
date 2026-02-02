@@ -91,7 +91,7 @@ const StockList = () => {
                                 className="filter-btn"
                                 value={sortBy}
                                 onChange={(e) => setSortBy(e.target.value)}
-                                style={{ padding: '12px 20px', cursor: 'pointer', appearance: 'none', background: 'white' }}
+                                style={{ padding: '12px 20px', cursor: 'pointer', appearance: 'none', background: '#000', color: '#fff' }}
                             >
                                 <option value="symbol">A-Z</option>
                                 <option value="trending">🔥 Trending</option>
