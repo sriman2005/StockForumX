@@ -49,12 +49,12 @@ const httpServer = createServer(app);
 // Initialize Socket.io
 const io = new Server(httpServer, {
     cors: {
-        origin: process.env.CLIENT_URL || SERVER_CONFIG.DEFAULT_CLIENT_URL,
-        methods: ['GET', 'POST']
+        origin: [process.env.CLIENT_URL || SERVER_CONFIG.DEFAULT_CLIENT_URL, "http://localhost:5173", "http://127.0.0.1:5173"],
+        methods: ['GET', 'POST'],
+        credentials: true
     }
 });
 
-// Rate limiting
 // Rate limiting
 const limiter = rateLimit({
     windowMs: RATE_LIMIT.WINDOW_MS,
@@ -73,12 +73,15 @@ app.use(helmet());
 app.use(compression());
 app.use(requestLogger);
 app.use(cors({
-    origin: process.env.CLIENT_URL || SERVER_CONFIG.DEFAULT_CLIENT_URL,
+    origin: [process.env.CLIENT_URL || SERVER_CONFIG.DEFAULT_CLIENT_URL, "http://localhost:5173", "http://127.0.0.1:5173"],
     credentials: true
 }));
-app.use(limiter); // Apply to all requests
+
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+
+// Apply rate limiter only to API routes
+app.use('/api', limiter);
 
 // Routes
 app.use('/api/auth', authRoutes);
@@ -115,7 +118,6 @@ startReputationUpdater();
 startStockPriceUpdater();
 
 // Start server
-// Start server
 const PORT = process.env.PORT || SERVER_CONFIG.DEFAULT_PORT;
 httpServer.listen(PORT, () => {
     Logger.info(`
@@ -128,6 +130,7 @@ httpServer.listen(PORT, () => {
  |   > Port:     ${PORT}                                 |
  |   > URL:      http://localhost:${PORT}                |
  |   > Env:      ${process.env.NODE_ENV || 'development'}                          |
+ |   > CORS:     ${process.env.CLIENT_URL || SERVER_CONFIG.DEFAULT_CLIENT_URL}     |
  |____________________________________________________|
   `);
 });

@@ -17,13 +17,16 @@ export const SocketProvider = ({ children }) => {
     const [connected, setConnected] = useState(false);
 
     useEffect(() => {
-        // Use relative URL to let Vite proxy handle the connection
-        const newSocket = io({
-            transports: ['websocket', 'polling'],
+        // Use explicit URL to avoid proxy issues
+        const SOCKET_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+        console.log(' Connecting to WebSocket at:', SOCKET_URL);
+
+        const newSocket = io(SOCKET_URL, {
+            transports: ['websocket', 'polling'], // Try websocket first if possible? No, standard array is safer.
             withCredentials: true,
             autoConnect: true,
             reconnection: true,
-            reconnectionAttempts: Infinity, // Keep trying forever
+            reconnectionAttempts: Infinity,
             reconnectionDelay: 1000,
             reconnectionDelayMax: 5000,
             timeout: 20000
@@ -34,22 +37,26 @@ export const SocketProvider = ({ children }) => {
             console.warn('Socket connection error (retrying...):', err.message);
         });
 
+        newSocket.on('connect', () => {
+            console.log(' WebSocket Connected!', newSocket.id);
+            setConnected(true);
+        });
+
         newSocket.on('notification', (notif) => {
-            toast(notif.message, { icon: '🔔' });
+            toast(notif.message);
         });
 
         newSocket.on('prediction_result', (data) => {
             const isDirect = data.precisionLevel === 'direct';
             let message = data.isCorrect
-                ? `🎯 BOOM! Prediction on ${data.symbol} was CORRECT! (+Reputation)`
-                : `❌ Prediction on ${data.symbol} was incorrect. Better luck next time!`;
+                ? `Prediction on ${data.symbol} was CORRECT! (+Reputation)`
+                : `Prediction on ${data.symbol} was incorrect. Better luck next time!`;
 
             if (isDirect) {
-                message = `🔥 BULLSEYE! Dynamic Direct Hit on ${data.symbol}! (+Massive XP)`;
+                message = `BULLSEYE! Dynamic Direct Hit on ${data.symbol}! (+Massive XP)`;
             }
 
             toast(message, {
-                icon: isDirect ? '💎' : (data.isCorrect ? '💰' : '📉'),
                 duration: 6000,
                 style: {
                     border: '4px solid #000',
