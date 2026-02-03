@@ -79,7 +79,7 @@ func connectToDatabase() *mongo.Client {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI(mongoURI))
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI(mongoURI).SetMaxPoolSize(50))
 	if err != nil {
 		log.Fatal("Connection failed:", err)
 	}
@@ -136,7 +136,8 @@ func watchPriceUpdates(stocksColl, alertsColl, notifsColl *mongo.Collection) {
 		fmt.Printf("Price Update: %s @ $%.2f\n", symbol, priceVal)
 
 		// Check if this price change triggers any alerts associated with the stock
-		checkAndProcessAlerts(alertsColl, notifsColl, symbol, priceVal)
+		// Run in goroutine to not block the stream watcher
+		go checkAndProcessAlerts(alertsColl, notifsColl, symbol, priceVal)
 	}
 }
 

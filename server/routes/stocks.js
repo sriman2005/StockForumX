@@ -198,9 +198,11 @@ router.get('/:symbol', async (req, res) => {
             });
         }
 
-        // 5. Get additional stats
-        const questionCount = await Question.countDocuments({ stockId: stock._id });
-        const predictionCount = await Prediction.countDocuments({ stockId: stock._id });
+        // 5. Get additional stats in parallel
+        const [questionCount, predictionCount] = await Promise.all([
+            Question.countDocuments({ stockId: stock._id }),
+            Prediction.countDocuments({ stockId: stock._id })
+        ]);
 
         res.json({
             ...stock.toObject(),
