@@ -14,6 +14,11 @@ Stock Forum X uses a distributed microservices architecture to handle high-perfo
 
 ## Architecture Design
 
+### Watcher Pattern
+
+> [!NOTE]
+> Most services use MongoDB Change Streams. This allows them to react instantly to data changes without the main backend explicitly triggers them.
+
 Most services follow the **Watcher Pattern** using MongoDB Change Streams. This allows them to react instantly to data changes (like a price update or a new post) without the main Node.js backend having to "call" them, decoupling the systems and improving scalability.
 
 ### Data Flow

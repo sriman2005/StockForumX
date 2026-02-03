@@ -37,6 +37,9 @@ cd ../server && npm install
 
 ## Step 3: Set Up MongoDB
 
+> [!TIP]
+> If you don't want to install MongoDB locally, you can use the Docker setup which comes with a pre-configured database. See [Docker Deployment](../deployment/DOCKER.md).
+
 ### Local MongoDB
 
 Start the MongoDB service.

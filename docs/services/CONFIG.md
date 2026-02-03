@@ -31,4 +31,5 @@ Since these services are stateless (relying on MongoDB for state), you can run m
 - **Analytics Service** (Load balanced)
 - **Sentiment Service** (Using Change Stream Resume Tokens)
 
-*Note: Avoid running duplicate instances of the **Oracle Service** or **Price Updater** without a distributed lock mechanisms to prevent duplicate evaluations or external API spam.*
+> [!WARNING]
+> Avoid running duplicate instances of the **Oracle Service** or **Price Updater** without a distributed lock mechanisms to prevent duplicate evaluations or external API spam.

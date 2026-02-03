@@ -120,6 +120,9 @@ localStorage.debug = '*';
 
 If all else fails:
 
+> [!WARNING]
+> The following command can cause permanent data loss.
+
 ```bash
 # Clear deps and reinstall
 rm -rf node_modules

@@ -153,6 +153,10 @@ The reputation score is calculated using the following formula:
 - **Accuracy Tracking**: Updates user statistics and reputation score.
 
 ### 5. Q&A System
+
+> [!WARNING]
+> Answers have a Time-To-Live (TTL) of 30 days. They are automatically deleted by MongoDB after this period to ensure content freshness.
+
 - Time-expiring answers (30 days TTL) to ensure freshness.
 - Upvoting/downvoting mechanism.
 - Accepted answers by question authors.
@@ -224,6 +228,9 @@ sequenceDiagram
 ```
 
 ## Security Features
+
+> [!IMPORTANT]
+> Ensure all production deployments use HTTPS to secure JWT transmission.
 
 1.  **Rate Limiting**: 100 requests per 15 minutes per IP.
 2.  **JWT Authentication**: Secure token-based auth for state management.
