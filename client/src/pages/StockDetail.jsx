@@ -119,6 +119,14 @@ const StockDetail = () => {
         }
     };
 
+    const MemoizedChart = useMemo(() => (
+        <CandlestickChart
+            data={chartData}
+            volumeData={volumeData}
+            height={450}
+        />
+    ), [chartData, volumeData]);
+
     if (loading) return <Loader />;
 
     if (!stock) {
@@ -128,14 +136,6 @@ const StockDetail = () => {
             </div>
         );
     }
-
-    const MemoizedChart = useMemo(() => (
-        <CandlestickChart
-            data={chartData}
-            volumeData={volumeData}
-            height={450}
-        />
-    ), [chartData, volumeData]);
 
     return (
         <div className="stock-detail-page fade-in">
