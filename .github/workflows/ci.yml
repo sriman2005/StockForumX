@@ -16,13 +16,19 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - name: Clean install dependencies
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-client-${{ hashFiles('client/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-client-
+      - name: Install dependencies
         working-directory: ./client
-        run: |
-          rm -rf node_modules package-lock.json
-          npm install --legacy-peer-deps --include=optional
-      - run: npm run build
+        run: npm ci --legacy-peer-deps --force
+      - name: Build client
         working-directory: ./client
+        run: npm run build
 
   build-server:
     name: Build Server
