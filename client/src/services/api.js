@@ -9,18 +9,34 @@ axios.defaults.timeout = APP_CONFIG.API_TIMEOUT;
 // Add a response interceptor
 axios.interceptors.response.use(
     (response) => response,
-    (error) => {
+    async (error) => {
+        const originalRequest = error.config;
+
+        // Handle 401: Auto-logout
         if (error.response && error.response.status === 401) {
-            // Auto-logout on 401
             localStorage.removeItem('token');
             localStorage.removeItem('userInfo');
-            // Use window.location for a hard redirect to ensure state clear
             if (window.location.pathname !== '/login') {
                 window.location.href = '/login';
             }
-            // Return pending promise to halt chain and suppress error logging
             return new Promise(() => { });
         }
+
+        // Handle Retry Logic (Status 5xx or Network Error)
+        if (
+            (error.code === 'ERR_NETWORK' || (error.response && error.response.status >= 500 && error.response.status < 600)) &&
+            !originalRequest._retry
+        ) {
+            originalRequest._retry = true;
+            originalRequest._retryCount = (originalRequest._retryCount || 0) + 1;
+
+            if (originalRequest._retryCount <= 2) {
+                const delay = Math.pow(2, originalRequest._retryCount) * 300; // Exponential backoff: 600ms, 1200ms
+                await new Promise(resolve => setTimeout(resolve, delay));
+                return axios(originalRequest);
+            }
+        }
+
         return Promise.reject(error);
     }
 );
