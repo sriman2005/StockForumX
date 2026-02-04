@@ -21,7 +21,7 @@ jobs:
           cache: 'npm'
           # cache-dependency-path: client/package-lock.json
           # Note: 'npm install' is used instead of 'npm ci' because package-lock.json is not present.
-      - run: npm install
+      - run: npm install --force
         working-directory: ./client
       - run: npm run build
         working-directory: ./client

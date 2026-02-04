@@ -71,6 +71,10 @@ app.use((req, res, next) => {
     req.io = io;
     next();
 });
+
+// Trust proxy - required when running behind nginx reverse proxy
+app.set('trust proxy', 1);
+
 app.use(helmet());
 app.use(compression());
 app.use(requestLogger);
