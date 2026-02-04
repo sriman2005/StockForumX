@@ -151,27 +151,38 @@ npm run dev:server  # Backend on http://localhost:5000
 npm run dev:client  # Frontend on http://localhost:5173
 ```
 
-### Docker Quick Start
+### Running with Docker (Recommended)
+This is the easiest way to run the entire application (Frontend, Backend, Database, Services) without installing Node.js, Go, or MongoDB locally.
 
-For a consistent environment, Docker is recommended.
+#### 1. Install Docker
+- **Windows/Mac**: Download and install [Docker Desktop](https://www.docker.com/products/docker-desktop).
+- **Linux**: Install `docker` and `docker-compose`.
 
-1.  **Configure Environment**
+#### 2. Configure Environment
+Copy the Docker-specific environment config:
+```bash
+cp .env.docker .env
+```
 
-    ```bash
-    cp .env.docker .env
-    ```
+#### 3. Start the Application
+Run the following command in the project root:
+```bash
+docker-compose up --build
+```
+- The first run will take a few minutes to download images and build the project.
+- Once you see "Entered start loop" or similar logs, the app is ready.
 
-2.  **Start Services**
+#### 4. Access the App
+- **Frontend**: http://localhost (Running on port 80 via Nginx)
+- **Backend API**: http://localhost/api/health (Proxied via Nginx)
 
-    ```bash
-    docker-compose up -d --build
-    ```
-
-3.  **Access App**
-    Open [http://localhost](http://localhost) in your browser.
-
+#### 5. Stop the Application
+Press `Ctrl+C` in the terminal, or run:
+```bash
+docker-compose down
+```
 > [!TIP]
-> See the [Docker Deployment Guide](docs/deployment/DOCKER.md) for advanced configuration options.
+> See the [Docker Deployment Guide](docs/deployment/DOCKER.md) for detailed production configuration.
 
 ## Configuration
 
