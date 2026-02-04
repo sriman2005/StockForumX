@@ -171,7 +171,7 @@ func takeSnapshots(db *mongo.Database) {
 
 func calculateDiversification(db *mongo.Database, userId primitive.ObjectID) ([]Diversification, error) {
 	holdingsColl := db.Collection("holdings")
-	stocksColl := db.Collection("stocks")
+
 
 	// Pipeline to join holdings with stocks and group by sector
 	pipeline := mongo.Pipeline{
