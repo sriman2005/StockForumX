@@ -33,8 +33,14 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-          cache-dependency-path: server/package-lock.json
-      - run: npm ci
+          # Cache depends on package-lock.json which is missing in server, so we skip specific path or rely on default behavior
+          # If we want to cache, we should commit package-lock.json. For now, we will attempt to cache but without strict path if possible, 
+          # or simply remove cache-dependency-path if it causes hard failure. 
+          # The error was "specified paths were not resolved", so removing the explicit path is the fix.
+          # However, default cache requires package-lock.json at root.
+          # Safest to just remove 'cache' for server or point to package.json (but npm cache keys off lockfile).
+          # Let's run without cache for server for now to fix the specific error.
+      - run: npm install
         working-directory: ./server
       # No build script for server, just checking install correctness
 
